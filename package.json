@@ -1,0 +1,11 @@
+{
+  "name": "expense-claim-app",
+  "version": "1.0.0",
+  "description": "A web-based application to make internal expense claims.",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "BSD-3-Clause"
+}
