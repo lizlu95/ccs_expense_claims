@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "BSD-3-Clause",
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node app.js"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
