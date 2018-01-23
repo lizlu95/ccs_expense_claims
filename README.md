@@ -33,7 +33,3 @@ A web application to track internal expense claims for Coast Capital Savings Cre
     ```npm start```
 
 7. Access server via web browser.
-
-http://localhost:3000
-
-8. Enjoy!
