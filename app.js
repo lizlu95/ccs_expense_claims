@@ -10,6 +10,7 @@ var login = require('./routes/authenticate/login');
 var logout = require('./routes/authenticate/logout');
 var users = require('./routes/users');
 
+const port = process.env.PORT || 3000;
 var app = express();
 
 // view engine setup
@@ -47,6 +48,8 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(3000, () => console.log('Listening on port 3000!'));
+app.server = app.listen(port, function () {
+  console.log('Listening on port ' + port + '!');
+});
 
 module.exports = app;
