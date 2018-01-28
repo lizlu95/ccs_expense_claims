@@ -6,12 +6,13 @@ A web application to track internal expense claims for Coast Capital Savings Cre
 
 * Node.js >= 9.2.0
 * npm >= 5.5.1
+* knex >= 0.14.2
 
 # Getting Started
 
 1. Ensure requirements are installed and working.
 2. Ensure your MySQL database is installed and running.
-3. Setup necessary environment variables.
+3. Set up necessary environment variables.
 
     ```
     $ export ECA_DATABASE_HOST=localhost
@@ -23,6 +24,10 @@ A web application to track internal expense claims for Coast Capital Savings Cre
 4. Navigate to cloned directory.
 
     ```$ cd ccs-expense-claims```
+
+5. Run migrations.
+
+    ```$ knex migrate:latest```
 
 5. Install required dependencies.
 
