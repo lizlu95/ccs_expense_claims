@@ -10,29 +10,20 @@ const LocalStrategy = require('passport-local').Strategy;
 const uuidv4 = require('uuid/v4');
 const Sequelize = require('sequelize');
 
+// routes
 const index = require('./routes/index');
 const login = require('./routes/authenticate/login');
 const logout = require('./routes/authenticate/logout');
 
 const port = process.env.PORT || 3000;
-const app = express();
+const app = module.exports = express();
 
 // database setup
-const connection = new Sequelize(
-  process.env.ECA_DATABASE_NAME || '',
-  process.env.ECA_DATABASE_USER || 'username',
-  process.env.ECA_DATABASE_PASS || 'password',
-  {
-    host: process.env.ECA_DATABASE_HOST || 'localhost',
-    dialect: 'mysql',
+app.connection = require('./database');
 
-    pool: {
-      max: 5,
-      min: 0,
-      idle: 10000
-    },
-  }
-);
+// models
+const models = require('./models/index');
+const Employee = models.Employee;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -94,7 +85,5 @@ app.server = app.listen(port, function () {
 // app process exit
 process.on('exit', function () {
   // TODO possibly check for a better graceful exit
-  connection.close();
+  app.connection.close();
 });
-
-module.exports = app;

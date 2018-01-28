@@ -1,0 +1,10 @@
+fixtures:
+  - model: Employee
+    data:
+      id: 1
+      employeeId: 1
+      email: one@one.com
+      password: password
+      name: One One
+      managerId: 2
+      isAdmin: 0

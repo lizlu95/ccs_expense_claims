@@ -4,7 +4,7 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "start": "node app.js",
-    "test": "PORT=3001 mocha --recursive test"
+    "test": "PORT=3001 mocha --recursive tests"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
@@ -19,7 +19,9 @@
     "passport-local": "^1.0.0",
     "pug": "2.0.0-beta11",
     "sequelize": "^4.32.2",
+    "sequelize-fixtures": "^0.7.0",
     "serve-favicon": "~2.4.5",
+    "underscore": "^1.8.3",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
