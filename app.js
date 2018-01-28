@@ -8,6 +8,7 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const uuidv4 = require('uuid/v4');
+const mysql = require('mysql');
 
 const index = require('./routes/index');
 const login = require('./routes/authenticate/login');
@@ -15,6 +16,16 @@ const logout = require('./routes/authenticate/logout');
 
 const port = process.env.PORT || 3000;
 const app = express();
+
+// database setup
+var connection = mysql.createConnection({
+  host: process.env.ECA_DATABASE_HOST || 'localhost',
+  user: process.env.ECA_DATABASE_USER || 'username',
+  password: process.env.ECA_DATABASE_PASS || 'password',
+  database: process.env.ECA_DATABASE_NAME || '',
+});
+
+connection.connect();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -71,6 +82,11 @@ app.use(function(err, req, res, next) {
 
 app.server = app.listen(port, function () {
   console.log('Listening on port ' + port + '!');
+});
+
+// app process exit
+process.on('exit', function () {
+  connection.close();
 });
 
 module.exports = app;
