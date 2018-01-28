@@ -10,14 +10,14 @@ A web application to track internal expense claims for Coast Capital Savings Cre
 # Getting Started
 
 1. Ensure requirements are installed and working.
-2. # TODO database instructions
-
-    ```$ TODO```
-
+2. Ensure your MySQL database is installed and running.
 3. Setup necessary environment variables.
 
     ```
-    TODO
+    $ export ECA_DATABASE_HOST=localhost
+    $ export ECA_DATABASE_USER=username
+    $ export ECA_DATABASE_PASS=password
+    $ export ECA_DATABASE_NAME=name
     ```
 
 4. Navigate to cloned directory.
