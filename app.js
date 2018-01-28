@@ -8,6 +8,7 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const uuidv4 = require('uuid/v4');
+const Sequelize = require('sequelize');
 
 const index = require('./routes/index');
 const login = require('./routes/authenticate/login');
@@ -17,14 +18,21 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 // database setup
-var connection = mysql.createConnection({
-  host: process.env.ECA_DATABASE_HOST || 'localhost',
-  user: process.env.ECA_DATABASE_USER || 'username',
-  password: process.env.ECA_DATABASE_PASS || 'password',
-  database: process.env.ECA_DATABASE_NAME || '',
-});
+const connection = new Sequelize(
+  process.env.ECA_DATABASE_NAME || '',
+  process.env.ECA_DATABASE_USER || 'username',
+  process.env.ECA_DATABASE_PASS || 'password',
+  {
+    host: process.env.ECA_DATABASE_HOST || 'localhost',
+    dialect: 'mysql',
 
-connection.connect();
+    pool: {
+      max: 5,
+      min: 0,
+      idle: 10000
+    },
+  }
+);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -85,6 +93,7 @@ app.server = app.listen(port, function () {
 
 // app process exit
 process.on('exit', function () {
+  // TODO possibly check for a better graceful exit
   connection.close();
 });
 
