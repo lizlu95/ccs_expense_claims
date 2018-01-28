@@ -1,9 +1,10 @@
 const Sequelize = require('sequelize');
+const config = require('./config/config')['database'][process.env.NODE_ENV];
 
 const connection = new Sequelize(
-  process.env.ECA_DATABASE_NAME || '',
-  process.env.ECA_DATABASE_USER || 'username',
-  process.env.ECA_DATABASE_PASS || 'password',
+  config.name,
+  config.user,
+  config.pass,
   {
     host: process.env.ECA_DATABASE_HOST || 'localhost',
     dialect: 'mysql',

@@ -4,7 +4,7 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "start": "node app.js",
-    "test": "PORT=3001 mocha --recursive tests"
+    "test": "PORT=3001 NODE_ENV=test mocha --recursive tests"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
