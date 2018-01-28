@@ -4,11 +4,23 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mysql = require('mysql');
 
+// routers
 var index = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
+
+// database setup
+var connection = mysql.createConnection({
+  host: process.env.ECA_DATABASE_HOST || 'localhost',
+  user: process.env.ECA_DATABASE_USER || 'username',
+  password: process.env.ECA_DATABASE_PASS || 'password',
+  database: process.env.ECA_DATABASE_NAME || '',
+});
+
+connection.connect();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -44,5 +56,10 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(3000, () => console.log('Listening on port 3000!'));
+
+// app process exit
+process.on('exit', function () {
+  connection.close();
+});
 
 module.exports = app;
