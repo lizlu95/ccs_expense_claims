@@ -8,7 +8,6 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const uuidv4 = require('uuid/v4');
-const mysql = require('mysql');
 
 const index = require('./routes/index');
 const login = require('./routes/authenticate/login');
