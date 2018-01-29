@@ -15,10 +15,10 @@ A web application to track internal expense claims for Coast Capital Savings Cre
 3. Set up necessary environment variables.
 
     ```
-    $ export ECA_DATABASE_HOST=localhost
-    $ export ECA_DATABASE_USER=username
-    $ export ECA_DATABASE_PASS=password
-    $ export ECA_DATABASE_NAME=name
+    $ export ECA_DATABASE_HOST_TEST=localhost
+    $ export ECA_DATABASE_USER_TEST=username
+    $ export ECA_DATABASE_PASS_TEST=password
+    $ export ECA_DATABASE_NAME_TEST=name
     ```
 
 4. Navigate to cloned directory.

@@ -1,8 +1,10 @@
+const config = require('./config/config')['database'][process.env.NODE_ENV];
+
 var connection = {
-  host: process.env.ECA_DATABASE_HOST || 'localhost',
-  user: process.env.ECA_DATABASE_USER || 'username',
-  password: process.env.ECA_DATABASE_PASS || 'password',
-  database: process.env.ECA_DATABASE_NAME || '',
+  host: config.host,
+  user: config.user,
+  password: config.pass,
+  database: config.name,
 };
 
 module.exports = {
