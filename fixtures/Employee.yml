@@ -8,3 +8,12 @@ fixtures:
       name: One One
       managerId: 2
       isAdmin: 0
+  - model: Employee
+    data:
+      id: 2
+      employeeId: 2
+      email: two@two.com
+      password: password
+      name: Two Two
+      managerId: null
+      isAdmin: 1

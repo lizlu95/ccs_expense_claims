@@ -32,6 +32,12 @@ const Employee = connection.define('employee', {
   },
 }, {
   timestamps: false,
+  underscored: true,
+});
+
+Employee.belongsTo(Employee, {
+  foreignKey: 'manager_id',
+  as: 'manager',
 });
 
 module.exports = Employee;
