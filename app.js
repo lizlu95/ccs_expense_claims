@@ -42,16 +42,21 @@ app.use(passport.session());
 
 // passport middleware
 passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) {
+  function(email, password, done) {
+    Employee.findOne({
+      where: {
+        email: email,
+      }
+    }).then((employee) => {
+      if (!employee) {
         return done(null, false, { message: 'Incorrect username.' });
+      } else {
+        if (!validPassword) {
+          return done(null, false, { message: 'Incorrect password.' });
+        } else {
+          return done(null, employee);
+        }
       }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
     });
   }
 ));
