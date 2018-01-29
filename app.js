@@ -51,7 +51,7 @@ passport.use(new LocalStrategy(
       if (!employee) {
         return done(null, false, { message: 'Incorrect username.' });
       } else {
-        if (false) {
+        if (employee.password !== password) {
           return done(null, false, { message: 'Incorrect password.' });
         } else {
           return done(null, employee);
