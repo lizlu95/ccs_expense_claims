@@ -41,8 +41,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // passport middleware
-passport.use(new LocalStrategy(
-  function(email, password, done) {
+passport.use(new LocalStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+  }, function(email, password, done) {
     Employee.findOne({
       where: {
         email: email,
@@ -71,8 +73,19 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-app.use('/', index);
+// globally accessible routes
 app.use('/login', login);
+
+app.use(function (req, res, next) {
+  if (req.user) {
+    next();
+  } else {
+    res.redirect('/login');
+  }
+});
+
+// login protected routes
+app.use('/', index);
 app.use('/logout', logout);
 
 // catch 404 and forward to error handler
