@@ -1,17 +1,25 @@
 const assert = require('chai').assert;
 const app = require('../../../app');
 const server = app.server;
+const async = require('async');
 const request = require('supertest');
+const helper = require('../../helper');
+const manager = require('../../../fixtures/manager');
 
-describe('home page', function () {
-  after(function () {
-    server.close();
+describe('logout page', function () {
+  beforeEach(function (done) {
+    manager.load(done);
   });
 
-  it('/ should return 200', function (done) {
+  afterEach(function (done) {
+    manager.destroy(done);
+  });
+
+  it('/logout should redirect to login when not authenticated', function (done) {
     request(app)
-      .get('/')
-      .expect(200)
+      .get('/logout')
+      .expect(302)
+      .expect('Location', '/login')
       .end(function (err, res) {
         if (err) {
           done(err);
@@ -19,5 +27,47 @@ describe('home page', function () {
           done();
         }
       });
+  });
+
+  it('/logout should log user out when authenticated', function (done) {
+    var agent = request.agent(app);
+
+    async.waterfall([
+      function (callback) {
+        helper.authenticate(agent, callback);
+      },
+      function (err, callback) {
+        if (err) {
+          done(err);
+        } else {
+          request(app)
+            .get('/logout')
+            .expect(302)
+            .expect('Location', '/login')
+            .end(function (err, res) {
+              if (err) {
+                done(err);
+              }
+
+              callback(null);
+            });
+        }
+      },
+      function (callback) {
+        request(app)
+          .get('/')
+          .expect(302)
+          .expect('Location', '/login')
+          .end(function (err, res) {
+            if (err) {
+              done(err);
+            } else {
+              callback();
+
+              done();
+            }
+          });
+      },
+    ]);
   });
 });

@@ -7,6 +7,7 @@
     "test": "PORT=3001 NODE_ENV=test mocha --recursive tests"
   },
   "dependencies": {
+    "async": "^2.6.0",
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
@@ -23,7 +24,8 @@
     "sequelize-fixtures": "^0.7.0",
     "serve-favicon": "~2.4.5",
     "underscore": "^1.8.3",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
