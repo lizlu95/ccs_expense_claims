@@ -6,7 +6,9 @@ const _ = require('underscore');
 const load = function (done) {
   sanityCheck();
 
-  sequelizeFixtures.loadFile('fixtures/*.yml', models).then(function () {
+  sequelizeFixtures.loadFile('fixtures/*.yml', models, {
+      log: function () {},
+    }).then(function () {
       if (done) {
         done();
       }
