@@ -6,15 +6,20 @@ const connection = new Sequelize(
   config.user,
   config.pass,
   {
-    host: process.env.ECA_DATABASE_HOST || 'localhost',
+    host: config.host,
     dialect: 'mysql',
-
     pool: {
       max: 5,
       min: 0,
       idle: 10000
     },
+    logging: false,
   }
 );
+
+process.on('exit', function () {
+  // TODO possibly check for a better graceful exit
+  connection.close();
+});
 
 module.exports = connection;

@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "license": "BSD-3-Clause",
   "scripts": {
-    "start": "node app.js",
-    "test": "PORT=3001 NODE_ENV=test mocha --recursive tests"
+    "start": "node index.js",
+    "test": "NODE_ENV=test mocha --exit --recursive tests"
   },
   "dependencies": {
     "async": "^2.6.0",

@@ -6,12 +6,12 @@ const _ = require('underscore');
 const load = function (done) {
   sanityCheck();
 
-  sequelizeFixtures.loadFile('fixtures/*.yml', models).then(function () {
-    if (done) {
-      done();
-    }
-
-    console.log('Fixtures loaded!');
+  sequelizeFixtures.loadFile('fixtures/*.yml', models, {
+      log: function () {},
+    }).then(function () {
+      if (done) {
+        done();
+      }
   });
 };
 
@@ -25,8 +25,6 @@ const destroy = function (done) {
   if (done) {
     done();
   }
-
-  console.log('Fixtures destroyed!');
 };
 
 function sanityCheck() {
