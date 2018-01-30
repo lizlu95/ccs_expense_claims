@@ -7,11 +7,9 @@ const load = function (done) {
   sanityCheck();
 
   sequelizeFixtures.loadFile('fixtures/*.yml', models).then(function () {
-    if (done) {
-      done();
-    }
-
-    console.log('Fixtures loaded!');
+      if (done) {
+        done();
+      }
   });
 };
 
@@ -25,8 +23,6 @@ const destroy = function (done) {
   if (done) {
     done();
   }
-
-  console.log('Fixtures destroyed!');
 };
 
 function sanityCheck() {
