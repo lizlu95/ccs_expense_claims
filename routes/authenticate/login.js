@@ -4,7 +4,11 @@ const passport = require('passport');
 
 // GET /login
 router.get('/', function(req, res, next) {
-  res.render('authenticate/login', { title: 'Login' });
+  if (req.user) {
+    res.redirect('/');
+  } else {
+    res.render('authenticate/login', { title: 'Login' });
+  }
 });
 
 // POST /login
