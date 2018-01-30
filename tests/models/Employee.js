@@ -32,6 +32,8 @@ describe('employee tests', function () {
     Employee.findById(2).then((employee) => {
       employee.getManager().then((manager) => {
         assert.equal(manager, null);
+
+        done();
       });
     });
   });
