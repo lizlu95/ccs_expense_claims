@@ -15,11 +15,7 @@ const index = require('./routes/index');
 const login = require('./routes/authenticate/login');
 const logout = require('./routes/authenticate/logout');
 
-const port = process.env.PORT || 3000;
 const app = module.exports = express();
-
-// database setup
-app.connection = require('./database');
 
 // models
 const models = require('./models/index');
@@ -104,14 +100,4 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-});
-
-app.server = app.listen(port, function () {
-  console.log('Listening on port ' + port + '!');
-});
-
-// app process exit
-process.on('exit', function () {
-  // TODO possibly check for a better graceful exit
-  app.connection.close();
 });
