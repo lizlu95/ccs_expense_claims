@@ -1,7 +1,8 @@
 const YAML = require('yamljs');
 
-const employeeFixtures = YAML.load('fixtures/Employee.yml');
-const employeeOne = employeeFixtures['fixtures'][0]['data'];
+const employeeFixtures = YAML.load('fixtures/Employee.yml')['fixtures'];
+const employeeOne = employeeFixtures[0]['data'];
+const employeeTwo = employeeFixtures[1]['data'];
 
 const helper = {};
 
