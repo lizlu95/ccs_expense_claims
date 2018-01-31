@@ -26,7 +26,7 @@ A web application to track internal expense claims for Coast Capital Savings Cre
     $ export ECA_DATABASE_USERNAME_PRODUCTION=username
     $ export ECA_DATABASE_PASSWORD_PRODUCTION=password
     $ export ECA_DATABASE_NAME_PRODUCTION=name
-    ``
+    ```
 
 4. Navigate to cloned directory.
 
