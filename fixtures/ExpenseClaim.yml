@@ -1,0 +1,4 @@
+fixtures:
+  - model: ExpenseClaim
+    data:
+      id: 1

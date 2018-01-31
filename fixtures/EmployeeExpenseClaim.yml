@@ -1,0 +1,8 @@
+fixtures:
+  - model: EmployeeExpenseClaim
+    data:
+      id: 1
+      employeeId: 1
+      expenseClaimId: 1
+      isOwner: 1
+      isActive: 1

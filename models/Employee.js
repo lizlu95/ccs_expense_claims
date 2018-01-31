@@ -2,6 +2,10 @@
 
 module.exports = (sequelize, DataTypes) => {
   var Employee = sequelize.define('Employee', {
+    id: {
+      primaryKey: true,
+      type: DataTypes.INTEGER,
+    },
     employeeId: {
       type: DataTypes.INTEGER,
       field: 'employee_id',
@@ -25,12 +29,27 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       field: 'updated_at',
     },
+  }, {
+    underscored: true,
+    tableName: 'employees',
   });
 
-  Employee.belongsTo(Employee, {
-    foreign_key: 'manager_id',
-    as: 'manager',
-  });
+  Employee.associate = function (models) {
+    models.Employee.belongsTo(models.Employee, {
+      foreign_key: 'manager_id',
+      as: 'manager',
+    });
+
+    models.Employee.hasMany(models.Employee, {
+      foreign_key: 'manager_id',
+      as: 'managee',
+    });
+
+    models.Employee.belongsToMany(models.ExpenseClaim, {
+      through: 'employees_expense_claims',
+      foreign_key: 'employee_id',
+    });
+  };
 
   return Employee;
 };
