@@ -45,3 +45,27 @@ A web application to track internal expense claims for Coast Capital Savings Cre
     ```npm start```
 
 7. Access server via browser on PORT or 3000.
+
+# Contributing
+
+1. Fork.
+2. Create feature branch.
+
+    ```$ git checkout -b my-new-feature```
+
+3. Commit changes.
+
+    ```
+    $ git add .
+    $ git commit -m 'My new feature'
+    ```
+
+4. Verify tests.
+
+    ```$ npm test```
+
+5. Push to branch.
+
+    ```$ git push origin my-new-feature```
+
+6. Create new pull request.
