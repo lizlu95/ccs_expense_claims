@@ -6,35 +6,42 @@ A web application to track internal expense claims for Coast Capital Savings Cre
 
 * Node.js >= 9.2.0
 * npm >= 5.5.1
-* knex >= 0.14.2
 
 # Getting Started
 
 1. Ensure requirements are installed and working.
 2. Ensure your MySQL database is installed and running.
-3. Set up necessary environment variables.
+3. Set your environment variables.
 
     ```
     $ export ECA_DATABASE_HOST_TEST=localhost
-    $ export ECA_DATABASE_USER_TEST=username
-    $ export ECA_DATABASE_PASS_TEST=password
+    $ export ECA_DATABASE_USERNAME_TEST=username
+    $ export ECA_DATABASE_PASSWORD_TEST=password
     $ export ECA_DATABASE_NAME_TEST=name
-    ```
+    $ export ECA_DATABASE_HOST_DEVELOPMENT=localhost
+    $ export ECA_DATABASE_USERNAME_DEVELOPMENT=username
+    $ export ECA_DATABASE_PASSWORD_DEVELOPMENT=password
+    $ export ECA_DATABASE_NAME_DEVELOPMENT=name
+    $ export ECA_DATABASE_HOST_PRODUCTION=localhost
+    $ export ECA_DATABASE_USERNAME_PRODUCTION=username
+    $ export ECA_DATABASE_PASSWORD_PRODUCTION=password
+    $ export ECA_DATABASE_NAME_PRODUCTION=name
+    ``
 
 4. Navigate to cloned directory.
 
     ```$ cd ccs-expense-claims```
 
-5. Run migrations.
-
-    ```$ knex migrate:latest```
-
 5. Install required dependencies.
 
     ```npm install```
+
+5. Run migrations.
+
+    ```$ node_modules/.bin/sequelize db:migrate```
 
 6. Start server.
 
     ```npm start```
 
-7. Access server via web browser.
+7. Access server via browser on PORT or 3000.
