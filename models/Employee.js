@@ -36,18 +36,21 @@ module.exports = (sequelize, DataTypes) => {
 
   Employee.associate = function (models) {
     models.Employee.belongsTo(models.Employee, {
-      foreign_key: 'manager_id',
+      foreignKey: 'manager_id',
+      targetKey: 'employeeId',
       as: 'manager',
     });
 
     models.Employee.hasMany(models.Employee, {
-      foreign_key: 'manager_id',
-      as: 'managee',
+      foreignKey: 'manager_id',
+      sourceKey: 'employeeId',
+      as: 'managees',
     });
 
     models.Employee.belongsToMany(models.ExpenseClaim, {
       through: 'employees_expense_claims',
-      foreign_key: 'employee_id',
+      foreignKey: 'employee_id',
+      otherKey: 'expense_claim_id',
     });
   };
 

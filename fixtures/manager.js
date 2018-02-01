@@ -1,4 +1,5 @@
 const connection = require('../database');
+const Sequelize = require('sequelize');
 const sequelizeFixtures = require('sequelize-fixtures');
 const models = require('../models/index');
 const _ = require('underscore');
@@ -18,8 +19,10 @@ const load = function (done) {
 const destroy = function (done) {
   sanityCheck();
 
-  _.each(Object.values(connection.models), function (model) {
-    model.destroy({ truncate: true });
+  _.each(models, function (model) {
+    if (!(model instanceof Sequelize) && model !== Sequelize) {
+      model.destroy({ truncate: true });
+    }
   });
 
   if (done) {
@@ -37,5 +40,5 @@ function sanityCheck() {
 
 module.exports = {
   load: load,
-  destroy: destroy
+  destroy: destroy,
 };
