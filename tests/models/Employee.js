@@ -58,7 +58,7 @@ describe('employee tests', function () {
   });
 
   it('employee with no expense claims has no expense claims', function (done) {
-    Employee.findById(2).then((employee) => {
+    Employee.findById(3).then((employee) => {
       employee.getExpenseClaims().then((expenseClaims) => {
         assert.isEmpty(expenseClaims);
 

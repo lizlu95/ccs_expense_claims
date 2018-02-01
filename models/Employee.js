@@ -49,8 +49,6 @@ module.exports = (sequelize, DataTypes) => {
 
     models.Employee.belongsToMany(models.ExpenseClaim, {
       through: 'employees_expense_claims',
-      foreignKey: 'employee_id',
-      otherKey: 'expense_claim_id',
     });
   };
 

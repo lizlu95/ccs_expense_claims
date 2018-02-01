@@ -2,3 +2,6 @@ fixtures:
   - model: ExpenseClaim
     data:
       id: 1
+  - model: ExpenseClaim
+    data:
+      id: 2

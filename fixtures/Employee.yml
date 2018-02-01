@@ -17,3 +17,12 @@ fixtures:
       name: Two Two
       managerId: null
       isAdmin: 1
+  - model: Employee
+    data:
+      id: 3
+      employeeId: 30
+      email: three@three.com
+      password: password
+      name: Three Three
+      managerId: 2
+      isAdmin: 1

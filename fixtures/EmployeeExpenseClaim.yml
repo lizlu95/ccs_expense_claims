@@ -6,3 +6,10 @@ fixtures:
       expenseClaimId: 1
       isOwner: 1
       isActive: 1
+  - model: EmployeeExpenseClaim
+    data:
+      id: 2
+      employeeId: 2
+      expenseClaimId: 1
+      isOwner: 0
+      isActive: 1
