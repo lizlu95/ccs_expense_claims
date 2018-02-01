@@ -1,0 +1,17 @@
+fixtures:
+  - model: ExpenseClaimItem
+    data:
+      id: 1
+      expenseClaimId: 1
+      name: Test One
+      amount: 1
+      isDeleted: 0
+      receiptId: 1
+  - model: ExpenseClaimItem
+    data:
+      id: 2
+      expenseClaimId: 1
+      name: Test Two
+      amount: 2
+      isDeleted: 0
+      receiptId: 1
