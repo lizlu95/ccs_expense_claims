@@ -19,6 +19,7 @@
     "passport-local": "^1.0.0",
     "pug": "2.0.0-beta11",
     "sequelize": "^4.32.2",
+    "sequelize-cli": "^3.2.0",
     "sequelize-fixtures": "^0.7.0",
     "serve-favicon": "~2.4.5",
     "underscore": "^1.8.3",
