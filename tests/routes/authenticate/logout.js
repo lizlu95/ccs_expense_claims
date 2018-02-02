@@ -39,21 +39,30 @@ describe('logout page', function () {
         if (err) {
           done(err);
         } else {
-          request(app)
-            .get('/logout')
-            .expect(302)
-            .expect('Location', '/login')
+          agent
+            .get('/')
+            .expect(200)
             .end(function (err, res) {
               if (err) {
                 done(err);
+              } else {
+                agent
+                  .get('/logout')
+                  .expect(302)
+                  .expect('Location', '/login')
+                  .end(function (err, res) {
+                    if (err) {
+                      done(err);
+                    } else {
+                      callback(null);
+                    }
+                });
               }
-
-              callback(null);
             });
         }
       },
       function (callback) {
-        request(app)
+        agent
           .get('/')
           .expect(302)
           .expect('Location', '/login')
