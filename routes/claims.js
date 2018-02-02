@@ -32,6 +32,3 @@ router.post('', function (req, res, next) {
 });
 
 module.exports = router;
-ll: false,
-        autoIncrement: true,
-        primaryKey: 
