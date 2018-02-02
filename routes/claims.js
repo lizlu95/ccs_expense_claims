@@ -11,10 +11,7 @@ router.get('/new', function (req, res, next) {
 router.get('/:id', function (req, res, next) {
   var expenseClaimId = req.params.id;
   ExpenseClaim.findById(expenseClaimId).then((expenseClaim) => {
-    console.log("BEFORE")
-    console.log(expenseClaimId)
     if (expenseClaim) {
-      console.log("MADE IT")
       res.locals.id = expenseClaimId;
       res.locals.status = expenseClaim.status;
 
@@ -35,3 +32,6 @@ router.post('', function (req, res, next) {
 });
 
 module.exports = router;
+ll: false,
+        autoIncrement: true,
+        primaryKey: 
