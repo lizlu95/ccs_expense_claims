@@ -57,4 +57,14 @@ describe('expense claim tests', function () {
       });
     });
   });
+
+  it('expense claim belongs to cost centre', function (done) {
+    ExpenseClaim.findById(1).then((expenseClaim) => {
+      expenseClaim.getCostCentre().then((costCentre) => {
+        assert.isNotNull(costCentre);
+
+        done();
+      });
+    });
+  });
 });
