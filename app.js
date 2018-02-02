@@ -14,6 +14,7 @@ const Sequelize = require('sequelize');
 const index = require('./routes/index');
 const login = require('./routes/authenticate/login');
 const logout = require('./routes/authenticate/logout');
+const claims = require('./routes/claims');
 
 const app = module.exports = express();
 
@@ -84,6 +85,7 @@ app.use(function (req, res, next) {
 // login protected routes
 app.use('/', index);
 app.use('/logout', logout);
+app.use('/claim', claims);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
