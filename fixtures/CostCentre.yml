@@ -1,0 +1,13 @@
+fixtures:
+  - model: CostCentre
+    data:
+      id: 1
+      name: CCSU - BANKING
+  - model: CostCentre
+    data:
+      id: 2
+      name: CCFM - FINANCIAL MGMT
+  - model: CostCentre
+    data:
+      id: 3
+      name: TFL - TRAVELERS FINANCE LTD

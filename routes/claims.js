@@ -1,13 +1,17 @@
+const async = require('async');
 const express = require('express');
 const router = express.Router();
+
 const models = require('../models/index');
 const ExpenseClaim = models.ExpenseClaim;
 
 /* GET /claims/new */
 router.get('/new', function (req, res, next) {
+
   res.render('claims/new', { title: 'Expense Claim' });
 });
 
+/* GET /claims/:id */
 router.get('/:id', function (req, res, next) {
   var expenseClaimId = req.params.id;
   ExpenseClaim.findById(expenseClaimId).then((expenseClaim) => {

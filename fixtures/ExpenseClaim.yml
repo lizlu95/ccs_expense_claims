@@ -2,6 +2,8 @@ fixtures:
   - model: ExpenseClaim
     data:
       id: 1
+      CostCentre: 1
   - model: ExpenseClaim
     data:
       id: 2
+      CostCentre: 1
