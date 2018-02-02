@@ -1,5 +1,7 @@
+const async = require('async');
 const express = require('express');
 const router = express.Router();
+
 const models = require('../models/index');
 const ExpenseClaim = models.ExpenseClaim;
 
