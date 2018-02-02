@@ -2,16 +2,14 @@ fixtures:
   - model: Employee
     data:
       id: 1
-      employeeId: 10
       email: one@one.com
       password: password
       name: One One
-      managerId: 20
+      managerId: 2
       isAdmin: 0
   - model: Employee
     data:
       id: 2
-      employeeId: 20
       email: two@two.com
       password: password
       name: Two Two
@@ -20,7 +18,6 @@ fixtures:
   - model: Employee
     data:
       id: 3
-      employeeId: 30
       email: three@three.com
       password: password
       name: Three Three

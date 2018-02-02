@@ -20,7 +20,7 @@ describe('employee tests', function () {
   it('employee with manager belongs to a manager', function (done) {
     Employee.findById(1).then((employee) => {
       employee.getManager().then((manager) => {
-        assert.equal(employee.managerId, manager.employeeId);
+        assert.equal(employee.managerId, manager.id);
 
         done();
       });

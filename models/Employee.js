@@ -6,10 +6,6 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER,
     },
-    employeeId: {
-      type: DataTypes.INTEGER,
-      field: 'employee_id',
-    },
     managerId: {
       type: DataTypes.INTEGER,
       field: 'manager_id',
@@ -37,13 +33,11 @@ module.exports = (sequelize, DataTypes) => {
   Employee.associate = function (models) {
     models.Employee.belongsTo(models.Employee, {
       foreignKey: 'manager_id',
-      targetKey: 'employeeId',
       as: 'manager',
     });
 
     models.Employee.hasMany(models.Employee, {
       foreignKey: 'manager_id',
-      sourceKey: 'employeeId',
       as: 'managees',
     });
 
