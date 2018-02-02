@@ -41,6 +41,8 @@ module.exports = (sequelize, DataTypes) => {
       as: 'managees',
     });
 
+    models.Employee.hasMany(models.ApprovalLimit);
+
     models.Employee.belongsToMany(models.ExpenseClaim, {
       through: 'employees_expense_claims',
     });

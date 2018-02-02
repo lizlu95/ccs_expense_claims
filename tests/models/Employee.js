@@ -76,4 +76,24 @@ describe('employee tests', function () {
       });
     });
   });
+
+  it('employee with no approval limits has no approval limits', function (done) {
+    Employee.findById(3).then((employee) => {
+      employee.getApprovalLimits().then((approvalLimits) => {
+        assert.isEmpty(approvalLimits);
+
+        done();
+      });
+    });
+  });
+
+  it('employee with >= 1 approval limits has approval limits', function (done) {
+    Employee.findById(1).then((employee) => {
+      employee.getApprovalLimits().then((approvalLimits) => {
+        assert.isNotEmpty(approvalLimits);
+
+        done();
+      });
+    });
+  });
 });

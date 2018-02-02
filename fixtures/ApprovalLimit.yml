@@ -1,0 +1,11 @@
+fixtures:
+  - model: ApprovalLimit
+    data:
+      id: 1
+      employee_id: 1
+      cost_centre_id: 1
+  - model: ApprovalLimit
+    data:
+      id: 2
+      employee_id: 1
+      cost_centre_id: 1

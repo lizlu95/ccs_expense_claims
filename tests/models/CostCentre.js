@@ -12,7 +12,7 @@ const ExpenseClaim = models.ExpenseClaim;
 const ExpenseClaimItem = models.ExpenseClaimItem;
 const CostCentre = models.CostCentre;
 
-describe('expense claim tests', function () {
+describe('cost centre tests', function () {
   beforeEach(function (done) {
     manager.load(done);
   });
@@ -36,6 +36,26 @@ describe('expense claim tests', function () {
       costCentre.getExpenseClaims().then((expenseClaims) => {
         assert(expenseClaims[0] instanceof ExpenseClaim);
         assert.isNotNull(expenseClaims);
+
+        done();
+      });
+    });
+  });
+
+  it('cost centre with no approval limits has no approval limits', function (done) {
+    CostCentre.findById(3).then((costCentre) => {
+      costCentre.getApprovalLimits().then((approvalLimits) => {
+        assert.isEmpty(approvalLimits);
+
+        done();
+      });
+    });
+  });
+
+  it('cost centre with >= 1 approval limits has approval limits', function (done) {
+    CostCentre.findById(1).then((costCentre) => {
+      costCentre.getApprovalLimits().then((approvalLimits) => {
+        assert.isNotEmpty(approvalLimits);
 
         done();
       });
