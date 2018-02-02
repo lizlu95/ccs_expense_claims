@@ -7,6 +7,7 @@ const ExpenseClaim = models.ExpenseClaim;
 
 /* GET /claims/new */
 router.get('/new', function (req, res, next) {
+
   res.render('claims/new', { title: 'Expense Claim' });
 });
 
