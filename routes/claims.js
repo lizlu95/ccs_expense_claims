@@ -8,6 +8,7 @@ router.get('/new', function (req, res, next) {
   res.render('claims/new', { title: 'Expense Claim' });
 });
 
+/* GET /claims/:id */
 router.get('/:id', function (req, res, next) {
   var expenseClaimId = req.params.id;
   ExpenseClaim.findById(expenseClaimId).then((expenseClaim) => {
