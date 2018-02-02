@@ -85,7 +85,7 @@ app.use(function (req, res, next) {
 // login protected routes
 app.use('/', index);
 app.use('/logout', logout);
-app.use('/claim', claims);
+app.use('/claims', claims);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
