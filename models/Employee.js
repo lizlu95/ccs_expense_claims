@@ -43,6 +43,8 @@ module.exports = (sequelize, DataTypes) => {
 
     models.Employee.hasMany(models.ApprovalLimit);
 
+    models.Employee.hasMany(models.Report);
+
     models.Employee.belongsToMany(models.ExpenseClaim, {
       through: 'employees_expense_claims',
     });

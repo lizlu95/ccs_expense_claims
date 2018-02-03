@@ -1,0 +1,9 @@
+fixtures:
+  - model: Report
+    data:
+      id: 1
+      Employee: 1
+  - model: Report
+    data:
+      id: 2
+      Employee: 1

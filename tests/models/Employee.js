@@ -96,4 +96,24 @@ describe('employee tests', function () {
       });
     });
   });
+
+  it('employee with no reports has no reports', function (done) {
+    Employee.findById(3).then((employee) => {
+      employee.getReports().then((reports) => {
+        assert.isEmpty(reports);
+
+        done();
+      });
+    });
+  });
+
+  it('employee with >= 1 reports has reports', function (done) {
+    Employee.findById(1).then((employee) => {
+      employee.getReports().then((reports) => {
+        assert.isNotEmpty(reports);
+
+        done();
+      });
+    });
+  });
 });
