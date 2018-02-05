@@ -1,0 +1,19 @@
+html, body {
+	background: $background-primary;
+}
+
+.background-alt {
+  background: $background-primary;
+}
+
+.btn-green {
+	color: white;
+	background-color: $button-primary;
+	border-color: $button-primary;
+}
+
+.btn-green:hover {
+	background-color: $button-primary;
+	border-color: $button-primary;
+	text-decoration-line: underline;
+}
