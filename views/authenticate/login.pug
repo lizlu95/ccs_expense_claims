@@ -1,21 +1,23 @@
 extends ../layout
 
 block content
+  style
+    include static/css/style.css
+  body
   div(class='row')
-    div(class='col-6 offset-3')
-      h1= title
-      p Please login using the form below.
+    div(class='col-4 offset-4')
+      img.d-block.mx-auto.mb-4#logo(src="http://rethinkcanada.com/app/uploads/2015/02/coast-logo-320x320.png" alt="" width="160" height="160")
 
   div(class='row')
-    div(class='col-6 offset-3')
+    div(class='col-4 offset-4')
       form(method='POST' action='/login')
-        h1(class='h3 mb-3 font-weight-normal') Please sign in
+        h1(class='h3 mb-3 font-weight-normal' style='color:white; text-align:center') Please Login
         label(for='inputEmail' class='sr-only') Email address
         input(type='email' id='email' name='email' class='form-control' placeholder='Email address' required='' autofocus='' style='background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAkCAYAAADo6zjiAAAAAXNSR0IArs4c6QAAAUxJREFUWAntV8sNgzAMNV2AAXqCYRiADdiIJXqAKboMcOkISKlfaBD5tKIRBqnFkjGxg9/DNmpDNMmVzY21Y1UbK3IiNzCCgsCDdWtgNx8wgiTAzt0stQaWJyiRFKCbF1iWJLzCpj0FmLNc5ruDbn6bQFmW1HUdwX4Sd1A2WzdNoyCwTMCoxUW0BUkyzZuxFvJrIUogBOj6LAJpmlJRFJTnubuPYmNeooBD9ybLMjUMg+7ZOI6qqirTMxUba9tW54NlXKMeBR2o61pvNheeXvOAio2tIWC1wKO2k0O/aWyZPz23pgJ4x7nUPGiKh1DxEM4+E4+JfU3AgG1l1xA4fAZECfAXxcXkHr+sXjgXUQL8G0B93xPsOzn/kIi24F3Zl34Q6JcO4XsPCwTuwqDL9EGsww8mYAgSODRInBGQE7mDpyL2n3JW4KzAn1fgCRQ97oWiBxZGAAAAAElFTkSuQmCC&quot;); background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%; cursor: auto;' autocomplete='off')
         label(for='inputPassword' class='sr-only') Password
         input(type='password' id='password' name='password' class='form-control' placeholder='Password' required='' style='background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAkCAYAAADo6zjiAAAAAXNSR0IArs4c6QAAAbNJREFUWAntV8FqwkAQnaymUkpChB7tKSfxWCie/Yb+gbdeCqGf0YsQ+hU95QNyDoWCF/HkqdeiIaEUqyZ1ArvodrOHxanQOiCzO28y781skKwFW3scPV1/febP69XqarNeNTB2KGs07U3Ttt/Ozp3bh/u7V7muheQf6ftLUWyYDB5yz1ijuPAub2QRDDunJsdGkAO55KYYjl0OUu1VXOzQZ64Tr+IiPXedGI79bQHdbheCIAD0dUY6gV6vB67rAvo6IxVgWVbFy71KBKkAFaEc2xPQarXA931ot9tyHphiPwpJgSbfe54Hw+EQHMfZ/msVEEURjMfjCjbFeG2dFxPo9/sVOSYzxmAwGIjnTDFRQLMQAjQ5pJAQkCQJ5HlekeERxHEsiE0xUUCzEO9AmqYQhiF0Oh2Yz+ewWCzEY6aYKKBZCAGYs1wuYTabKdNNMWWxnaA4gp3Yry5JBZRlWTXDvaozUgGTyQSyLAP0dbb3DtQlmcan0yngT2ekE9ARc+z4AvC7nauh9iouhpcGamJeX8XF8MaClwaeROWRA7nk+tUnyzGvZrKg0/40gdME/t8EvgG0/NOS6v9NHQAAAABJRU5ErkJggg==&quot;); background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%; cursor: auto;' autocomplete='off')
         div(class='checkbox mb-3')
-          label
-            input(type='checkbox' value='remember-me')
-            p Remember me
-        button(class='btn btn-lg btn-primary btn-block' type='submit') Sign in
+          label(class='container')
+            input(class='checkbox-green' type='checkbox', name='rememberMe', value='yes' )
+            |  Remember Me
+        button(class='btn btn-lg btn-block btn-green' type='submit') Log in
