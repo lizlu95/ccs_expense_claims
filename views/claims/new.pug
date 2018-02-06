@@ -1,162 +1,124 @@
 extends ../dashboard
 
 block inner-content
-  h1= title
+  //h1 general
   .container
     .py-5.text-center
-      img.d-block.mx-auto.mb-4(src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72")
       .row
-        .col-md-4.order-md-2.mb-4
-          h4.d-flex.justify-content-between.align-items-center.mb-3
-            span.text-muted Your cart
-            span.badge.badge-secondary.badge-pill 3
-          ul.list-group.mb-3
-            li.list-group-item.d-flex.justify-content-between.lh-condensed
-              div
-                h6.my-0 Product name
-                small.text-muted Brief description
-              span.text-muted $12
-            li.list-group-item.d-flex.justify-content-between.lh-condensed
-              div
-                h6.my-0 Second product
-                small.text-muted Brief description
-              span.text-muted $8
-            li.list-group-item.d-flex.justify-content-between.lh-condensed
-              div
-                h6.my-0 Third item
-                small.text-muted Brief description
-              span.text-muted $5
-            li.list-group-item.d-flex.justify-content-between.bg-light
-              .text-success
-                h6.my-0 Promo code
-                small EXAMPLECODE
-              span.text-success -$5
-            li.list-group-item.d-flex.justify-content-between
-              span Total (USD)
-              strong $20
-          form.card.p-2
-            .input-group
-              input.form-control(type="text" placeholder="Promo code")
-              .input-group-append
-                button.btn.btn-secondary(type="submit") Redeem
-        .col-md-8.order-md-1
-          h4.mb-3 Billing address
+        .col-md-12
+          //h4.mb-3 Billing address
           form.needs-validation(novalidate="")
+            //TODO pre-filled name and emp ID
             .row
-              .col-md-5.mb-3
-                label(for="cost-centre") Cost Centre
-                select#country.custom-select.d-block.w-100(required="")
-                  option(value="") Choose...
-                  option United States
-                .invalid-feedback
-                  | Please select a valid country.
+              .col-md-3.mb-3
+                label(for="name") Name
+                input#name.form-control(type="text" value="Liz Lu" readonly=true)
+              .col-md-2.mb-3
+                label(for="employeeID") Employee ID
+                input#employeeID.form-control(type="number" value="12345678" readonly=true)
+              .col-md-2.mb-3
+                label(for="date") Date
+                input#date.form-control(type="date" value="" required="")
+              .col-md-2
+                .mb-0 CCS Account
+                  .custom-control.custom-radio
+                    input#CCS.custom-control-input(name="ccsacct" type="radio" required="")
+                    label.custom-control-label(for="CCS") YES
+                  .custom-control.custom-radio
+                    input#nonCCS.custom-control-input(name="ccsacct" type="radio" required="")
+                    label.custom-control-label(for="nonCCS") NO
+              .col-md-3.mb-3
+                //TODO check must be 14 digits if CCS ticked YES, jquery?
+                label(for="bankAcct") Bank Account #
+                input#bankAcct.form-control(type="number" value="")
             .row
-              .col-md-6.mb-3
-                label(for="firstName") First name
-                input#firstName.form-control(type="text" placeholder="" value="" required="" style='background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAfBJREFUWAntVk1OwkAUZkoDKza4Utm61iP0AqyIDXahN2BjwiHYGU+gizap4QDuegWN7lyCbMSlCQjU7yO0TOlAi6GwgJc0fT/fzPfmzet0crmD7HsFBAvQbrcrw+Gw5fu+AfOYvgylJ4TwCoVCs1ardYTruqfj8fgV5OUMSVVT93VdP9dAzpVvm5wJHZFbg2LQ2pEYOlZ/oiDvwNcsFoseY4PBwMCrhaeCJyKWZU37KOJcYdi27QdhcuuBIb073BvTNL8ln4NeeR6NRi/wxZKQcGurQs5oNhqLshzVTMBewW/LMU3TTNlO0ieTiStjYhUIyi6DAp0xbEdgTt+LE0aCKQw24U4llsCs4ZRJrYopB6RwqnpA1YQ5NGFZ1YQ41Z5S8IQQdP5laEBRJcD4Vj5DEsW2gE6s6g3d/YP/g+BDnT7GNi2qCjTwGd6riBzHaaCEd3Js01vwCPIbmWBRx1nwAN/1ov+/drgFWIlfKpVukyYihtgkXNp4mABK+1GtVr+SBhJDbBIubVw+Cd/TDgKO2DPiN3YUo6y/nDCNEIsqTKH1en2tcwA9FKEItyDi3aIh8Gl1sRrVnSDzNFDJT1bAy5xpOYGn5fP5JuL95ZjMIn1ya7j5dPGfv0A5eAnpZUY3n5jXcoec5J67D9q+VuAPM47D3XaSeL4AAAAASUVORK5CYII="); background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%; cursor: auto;')
-                .invalid-feedback
-                  | Valid first name is required.
-              .col-md-6.mb-3
-                label(for="lastName") Last name
-                input#lastName.form-control(type="text" placeholder="" value="" required="")
-                .invalid-feedback
-                  | Valid last name is required.
-            .mb-3
-              label(for="username") Username
-              .input-group
-                .input-group-prepend
-                  span.input-group-text @
-                input#username.form-control(type="text" placeholder="Username" required="")
-                .invalid-feedback(style="width: 100%;")
-                  | Your username is required.
-            .mb-3
-              label(for="email")
-                | Email 
-                span.text-muted (Optional)
-              input#email.form-control(type="email" placeholder="you@example.com")
-              .invalid-feedback
-                | Please enter a valid email address for shipping updates.
-            .mb-3
-              label(for="address") Address
-              input#address.form-control(type="text" placeholder="1234 Main St" required="")
-              .invalid-feedback
-                | Please enter your shipping address.
-            .mb-3
-              label(for="address2")
-                | Address 2 
-                span.text-muted (Optional)
-              input#address2.form-control(type="text" placeholder="Apartment or suite")
-            .row
-              .col-md-5.mb-3
-                label(for="country") Country
-                select#country.custom-select.d-block.w-100(required="")
-                  option(value="") Choose...
-                  option United States
-                .invalid-feedback
-                  | Please select a valid country.
+              .col-md-3.mb-3
+                label(for="preMileage") Previous Total Mileage
+                input#preMileage.form-control(type="number" value="" required="")
+              // TODO auto calculated based on no km travelled below
+              .col-md-3.mb-3
+                label(for="carryMileage") Carry Forward Mileage
+                input#carryMileage.form-control(type="number" value="" readonly=true)
+              //cost centre
               .col-md-4.mb-3
-                label(for="state") State
-                select#state.custom-select.d-block.w-100(required="")
+                label(for="costCentre") Cost Centre
+                select#costCentre.custom-select(required="")
                   option(value="") Choose...
-                  option California
+                  option 0754
+                  //TODO add more options from database
                 .invalid-feedback
-                  | Please provide a valid state.
-              .col-md-3.mb-3
-                label(for="zip") Zip
-                input#zip.form-control(type="text" placeholder="" required="")
-                .invalid-feedback
-                  | Zip code required.
-            hr.mb-4
-            .custom-control.custom-checkbox
-              input#same-address.custom-control-input(type="checkbox")
-              label.custom-control-label(for="same-address") Shipping address is the same as my billing address
-            .custom-control.custom-checkbox
-              input#save-info.custom-control-input(type="checkbox")
-              label.custom-control-label(for="save-info") Save this information for next time
-            hr.mb-4
-            h4.mb-3 Payment
-            .d-block.my-3
-              .custom-control.custom-radio
-                input#credit.custom-control-input(name="paymentMethod" type="radio" checked="" required="")
-                label.custom-control-label(for="credit") Credit card
-              .custom-control.custom-radio
-                input#debit.custom-control-input(name="paymentMethod" type="radio" required="")
-                label.custom-control-label(for="debit") Debit card
-              .custom-control.custom-radio
-                input#paypal.custom-control-input(name="paymentMethod" type="radio" required="")
-                label.custom-control-label(for="paypal") Paypal
-            .row
-              .col-md-6.mb-3
-                label(for="cc-name") Name on card
-                input#cc-name.form-control(type="text" placeholder="" required="")
-                small.text-muted Full name as displayed on card
-                .invalid-feedback
-                  | Name on card is required
-              .col-md-6.mb-3
-                label(for="cc-number") Credit card number
-                input#cc-number.form-control(type="text" placeholder="" required="")
-                .invalid-feedback
-                  | Credit card number is required
-            .row
-              .col-md-3.mb-3
-                label(for="cc-expiration") Expiration
-                input#cc-expiration.form-control(type="text" placeholder="" required="")
-                .invalid-feedback
-                  | Expiration date required
-              .col-md-3.mb-3
-                label(for="cc-expiration") CVV
-                input#cc-cvv.form-control(type="text" placeholder="" required="")
-                .invalid-feedback
-                  | Security code required
-            hr.mb-4
-            button.btn.btn-primary.btn-lg.btn-block(type="submit") Continue to checkout
-      footer.my-5.pt-5.text-muted.text-center.text-small
-        p.mb-1 © 2017-2018 Company Name
-        ul.list-inline
-          li.list-inline-item
-            a(href="#") Privacy
-          li.list-inline-item
-            a(href="#") Terms
-          li.list-inline-item
-            a(href="#") Support
+                  | Please select a valid country.
 
+            //expense claim form
+            hr.mb-4
+            table(border="1" cellpadding="5")
+              tr
+                th #
+                th DATE
+                th EXPENSE CATEGORY
+                th GL
+                th RECEIPT LOST
+                th RECEIPT TOTAL
+                th NO. OF KM TRAVELLED ($0.54<5000KM, %0.48>5000KM)
+                th MILEAGE AMOUNT
+                th TOTALS
+              // TODO how to auto generate numbers?
+              tr
+                td 1
+                td
+                  label(for="itemDate")
+                  input#itemDate(type="date" value="" required="")
+                // TODO expCat and GL should be auto-filled once one is filled in
+                td
+                  label(for="expCat")
+                  select#expCat.custom-select(required="")
+                    option(value="") Choose...
+                    option FUND FOR FUN
+                    // TODO add more options from database
+                  .invalid-feedback
+                    | Please select a valid country.
+                td
+                  label(for="GL")
+                  input#GL(type="number" value="633544" required="")
+                td
+                  .custom-control.custom-radio
+                    input#lost.custom-control-input(name="lost" type="radio")
+                    label.custom-control-label(for="lost") YES
+                td
+                  label(for="receiptTotal")
+                  input#receiptTotal(type="number" step="0.01" value="" required="")
+                td
+                  label(for="nokm")
+                  input#nokm(type="number" step="0.01" value="" required="")
+                //TODO auto calculated based on no km travelled
+                td
+                  label(for="mileage")
+                  input#mileage(type="number" step="0.01" value="" style="background-color:#D3D3D3" readonly=true)
+                // TODO auto calculated total $ based on receipt total and mileage
+                td
+                  label(for="total")
+                  input#total(type="number" step="0.01" value="" style="background-color:#D3D3D3" readonly=true)
+              tr
+                th(colspan="2") DESCRIPTION
+                td(colspan="4")
+                  label(for="description")
+                  input#description(type="text" value="" size="70" required="")
+                th RECEIPT UPLOAD
+                // TODO required only if receipt lost is not ticked
+                td(colspan="2")
+                  label(for="receipt")
+                  input#receipt(type="file" required="")
+              //TODO add a new row
+              tr
+                td(colspan="9")
+                  label(for="addNew")
+                  input#addNew(type="button" value="Add Another Item")
+              tr
+                //TODO auto calculate totals
+                th(colspan="8") TOTAL
+                td
+                  label(for="totals")
+                  input#totals(type="number" step="0.01" value="" style="background-color:#D3D3D3" readonly=true)
+
+            hr.mb-4
+            button.btn.btn-primary.btn-lg(type="submit") Submit

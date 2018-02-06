@@ -76,4 +76,44 @@ describe('employee tests', function () {
       });
     });
   });
+
+  it('employee with no approval limits has no approval limits', function (done) {
+    Employee.findById(3).then((employee) => {
+      employee.getApprovalLimits().then((approvalLimits) => {
+        assert.isEmpty(approvalLimits);
+
+        done();
+      });
+    });
+  });
+
+  it('employee with >= 1 approval limits has approval limits', function (done) {
+    Employee.findById(1).then((employee) => {
+      employee.getApprovalLimits().then((approvalLimits) => {
+        assert.isNotEmpty(approvalLimits);
+
+        done();
+      });
+    });
+  });
+
+  it('employee with no reports has no reports', function (done) {
+    Employee.findById(3).then((employee) => {
+      employee.getReports().then((reports) => {
+        assert.isEmpty(reports);
+
+        done();
+      });
+    });
+  });
+
+  it('employee with >= 1 reports has reports', function (done) {
+    Employee.findById(1).then((employee) => {
+      employee.getReports().then((reports) => {
+        assert.isNotEmpty(reports);
+
+        done();
+      });
+    });
+  });
 });
