@@ -1,12 +1,10 @@
 extends ../dashboard
 
 block inner-content
-  //h1 general
   .container
     .py-5.text-center
       .row
         .col-md-12
-          //h4.mb-3 Billing address
           form.needs-validation(novalidate="")
             //TODO pre-filled name and emp ID
             .row
@@ -22,15 +20,17 @@ block inner-content
               .col-md-2
                 .mb-0 CCS Account
                   .custom-control.custom-radio
-                    input#CCS.custom-control-input(name="ccsacct" type="radio" required="")
+                    input#CCS.custom-control-input(name="ccsacct" type="radio" required="" onclick='showText()')
                     label.custom-control-label(for="CCS") YES
+
                   .custom-control.custom-radio
-                    input#nonCCS.custom-control-input(name="ccsacct" type="radio" required="")
+                    input#nonCCS.custom-control-input(name="ccsacct" type="radio" required="" onclick='hideBankAcct()')
                     label.custom-control-label(for="nonCCS") NO
+
               .col-md-3.mb-3
-                //TODO check must be 14 digits if CCS ticked YES, jquery?
-                label(for="bankAcct") Bank Account #
-                input#bankAcct.form-control(type="number" value="")
+                  label(for="bankAcct" style="visibility:hidden" id='bankAcctLable') Bank Account #
+                  input#bankAcct.form-control(style="visibility:hidden" type="text" required="" maxlength="14" minlength="14")
+>>>>>>> master
             .row
               .col-md-3.mb-3
                 label(for="preMileage") Previous Total Mileage
@@ -47,23 +47,23 @@ block inner-content
                   option 0754
                   //TODO add more options from database
                 .invalid-feedback
-                  | Please select a valid country.
-
+                  | Please select a valid cost centre.
             //expense claim form
             hr.mb-4
             table(border="1" cellpadding="5")
-              tr
-                th #
-                th DATE
-                th EXPENSE CATEGORY
-                th GL
-                th RECEIPT LOST
-                th RECEIPT TOTAL
-                th NO. OF KM TRAVELLED ($0.54<5000KM, %0.48>5000KM)
-                th MILEAGE AMOUNT
-                th TOTALS
+              thead
+                tr
+                  th #
+                  th DATE
+                  th EXPENSE CATEGORY
+                  th GL
+                  th RECEIPT LOST
+                  th RECEIPT TOTAL
+                  th NO. OF KM TRAVELLED ($0.54<5000KM, $0.48>5000KM)
+                  th MILEAGE AMOUNT
+                  th TOTALS
               // TODO how to auto generate numbers?
-              tr
+              tr(id="newRow")
                 td 1
                 td
                   label(for="itemDate")
@@ -71,19 +71,39 @@ block inner-content
                 // TODO expCat and GL should be auto-filled once one is filled in
                 td
                   label(for="expCat")
-                  select#expCat.custom-select(required="")
-                    option(value="") Choose...
-                    option FUND FOR FUN
+                  select#expCat.custom-select(required="" onchange="getVal(this)")
+                    option Choose...
+                    option(value= "gas") AUTO GAS (Community or Facilities employees only)
+                    option(value= "repairs") AUTO REPAIRS (Community or Facilities employees only)
+                    option(value= "books") BOOKS & SUBSCRIPTIONS (Newspaper, magazine, website subscription)
+                    option(value= "conference") CONFERENCE FEE (Registration, travel, & hotel relating to conference)
+                    option(value= "customer") DELIGHT THE CUSTOMER (For customer benefit only)
+                    option(value= "fun") FUND FOR FUN
+                    option(value= "golf") GOLF (For business development and relationship building, NO FOOD)
+                    option(value= "hotel") HOTEL (Room only, NO FOOD)
+                    option(value= "staff") MEALS & ENTERTAINMENT STAFF (Food, beverage)
+                    option(value= "promo") MEALS & ENTERTAINMENT PROMO(Food,beverage when entertaining clients)
+                    option(value= "meeting") MEETINGS (Room/equipment rental for business meetings, NO FOOD)
+                    option(value= "mileage") MILEAGE (kilometres traveled using personal vehicle)
+                    option(value= "other") OTHER (Miscellaneous expenses)
+                    option(value= "parking") PARKING (Hourly, daily, monthly parking cost)
+                    option(value= "dues") PERSONAL/PROF DUES, MBERSHP
+                    option(value= "prizes") PRIZES
+                    option(value= "tel") TELEPHONE (Telephone, cell, pager, internet stick)
+                    option(value= "travel") TRAVEL (Hotel, ferry, taxi, parking, mileage)
                     // TODO add more options from database
                   .invalid-feedback
-                    | Please select a valid country.
+                    | Please select a expense category
                 td
                   label(for="GL")
-                  input#GL(type="number" value="633544" required="")
+                  select#GL.custom-select(required="")
+                    option "Choose..."
+                    option(value="1") 633710
+
                 td
                   .custom-control.custom-radio
-                    input#lost.custom-control-input(name="lost" type="radio")
-                    label.custom-control-label(for="lost") YES
+                    input#lost.custom-control-input(name="lost" type="checkbox" )
+                    label.custom-control-label(for="lost" onclick="receiptLost(this)" value="1") YES
                 td
                   label(for="receiptTotal")
                   input#receiptTotal(type="number" step="0.01" value="" required="")
@@ -98,12 +118,12 @@ block inner-content
                 td
                   label(for="total")
                   input#total(type="number" step="0.01" value="" style="background-color:#D3D3D3" readonly=true)
-              tr
+              tr(id="newDesp")
                 th(colspan="2") DESCRIPTION
                 td(colspan="4")
                   label(for="description")
                   input#description(type="text" value="" size="70" required="")
-                th RECEIPT UPLOAD
+                th(id="upload") RECEIPT UPLOAD
                 // TODO required only if receipt lost is not ticked
                 td(colspan="2")
                   label(for="receipt")
@@ -112,13 +132,84 @@ block inner-content
               tr
                 td(colspan="9")
                   label(for="addNew")
-                  input#addNew(type="button" value="Add Another Item")
+                  input#addNew(type="button" value="Add Another Item" onclick='addRow()')
               tr
                 //TODO auto calculate totals
                 th(colspan="8") TOTAL
                 td
                   label(for="totals")
                   input#totals(type="number" step="0.01" value="" style="background-color:#D3D3D3" readonly=true)
-
             hr.mb-4
             button.btn.btn-primary.btn-lg(type="submit") Submit
+
+            script.
+                var showText = function () {
+                    document.getElementById('bankAcctLable').style.visibility = 'visible';
+                    document.getElementById('bankAcct').style.visibility = 'visible';
+                    document.getElementById('receipt').required = 'true';
+                }
+
+                function hideBankAcct() {
+                    document.getElementById('bankAcctLable').style.visibility = 'hidden';
+                    document.getElementById('bankAcct').style.visibility = 'hidden';
+                    document.getElementById('receipt').required = 'false';
+                }
+
+                function receiptLost(checkbox){
+                    var visibility = checkbox.value;
+                    if(visibility % 2 != 0){
+                        document.getElementById('upload').style.visibility = 'hidden';
+                        document.getElementById('receipt').style.visibility = 'hidden';
+                        document.getElementById('receipt').required = 'false';
+                        checkbox.value = 2;
+                    }
+                    else{
+                        document.getElementById('upload').style.visibility = 'visible';
+                        document.getElementById('receipt').style.visibility = 'visible';
+                        document.getElementById('receipt').required = 'true';
+                        checkbox.value = 1;
+                    }
+                }
+
+                var addRow = function () {
+                    document.getElementById('newRow').style.visibility = 'visible';
+                }
+
+                function getVal(sel) {
+                    switch (sel.value) {
+                        case "gas":
+                            document.getElementById("#GL").val("1");
+                    }
+                    //alert(sel.value);
+                }
+
+                function addField(table) {
+
+                    var tableRef = document.getElementById(table);
+                    var newRow = tableRef.insertRow(-1);
+
+                    var newCell = newRow.insertCell(0);
+                    var newElem = document.createElement('input');
+                    newElem.setAttribute("name", "links");
+                    newElem.setAttribute("type", "text");
+                    newCell.appendChild(newElem);
+
+                    newCell = newRow.insertCell(1);
+                    newElem = document.createElement('input');
+                    newElem.setAttribute("name", "keywords");
+                    newElem.setAttribute("type", "text");
+                    newCell.appendChild(newElem);
+
+                    newCell = newRow.insertCell(2);
+                    newElem = document.createElement('input');
+                    newElem.setAttribute("name", "violationtype");
+                    newElem.setAttribute("type", "text");
+                    newCell.appendChild(newElem);
+
+                    newCell = newRow.insertCell(3);
+                    newElem = document.createElement('input');
+                    newElem.setAttribute("type", "button");
+                    newElem.setAttribute("value", "Delete Row");
+                    newElem.setAttribute("onclick", 'SomeDeleteRowFunction(this)')
+                    newCell.appendChild(newElem);
+                }

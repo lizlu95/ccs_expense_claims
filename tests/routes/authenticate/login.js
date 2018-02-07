@@ -28,31 +28,16 @@ describe('login page', function () {
   });
 
   it('/login should redirect to homepage when authenticated', function (done) {
-    var agent = request.agent(app);
-
-    async.waterfall([
-      function (callback) {
-        helper.authenticate(agent, callback);
+    helper.withAuthenticate([
+      function (agent, callback) {
+        agent
+          .get('/login')
+          .expect(302)
+          .expect('Location', '/')
+          .end(function (err, res) {
+            callback(err);
+          });
       },
-      function (err, callback) {
-        if (err) {
-          done(err);
-        } else {
-          agent
-            .get('/login')
-            .expect(302)
-            .expect('Location', '/')
-            .end(function (err, res) {
-              if (err) {
-                done(err);
-              } else {
-                callback(null);
-
-                done();
-              }
-            });
-        }
-      },
-    ]);
+    ], done);
   });
 });

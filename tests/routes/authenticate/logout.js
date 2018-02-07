@@ -29,53 +29,34 @@ describe('logout page', function () {
   });
 
   it('/logout should log user out when authenticated', function (done) {
-    var agent = request.agent(app);
-
-    async.waterfall([
-      function (callback) {
-        helper.authenticate(agent, callback);
-      },
-      function (err, callback) {
-        if (err) {
-          done(err);
-        } else {
-          agent
-            .get('/')
-            .expect(200)
-            .end(function (err, res) {
-              if (err) {
-                done(err);
-              } else {
-                agent
-                  .get('/logout')
-                  .expect(302)
-                  .expect('Location', '/login')
-                  .end(function (err, res) {
-                    if (err) {
-                      done(err);
-                    } else {
-                      callback(null);
-                    }
+    helper.withAuthenticate([
+      function (agent, callback) {
+        agent
+          .get('/')
+          .expect(200)
+          .end(function (err, res) {
+            if (err) {
+              callback(err);
+            } else {
+              agent
+                .get('/logout')
+                .expect(302)
+                .expect('Location', '/login')
+                .end(function (err, res) {
+                  callback(err);
                 });
-              }
-            });
-        }
+            }
+          });
       },
-      function (callback) {
+      function (agent, callback) {
         agent
           .get('/')
           .expect(302)
           .expect('Location', '/login')
           .end(function (err, res) {
-            if (err) {
-              done(err);
-            } else {
-              callback();
-
-              done();
-            }
+            callback(err);
           });
       },
-    ]);
+    ], done);
   });
 });
