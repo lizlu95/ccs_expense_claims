@@ -27,16 +27,15 @@ block inner-content
                   .custom-control.custom-radio
                     input#nonCCS.custom-control-input(name="ccsacct" type="radio" required="" onclick='hideBankAcct()')
                     label.custom-control-label(for="nonCCS") NO
-
               .col-md-3.mb-3
                   label(for="bankAcct" style="visibility:hidden" id='bankAcctLable') Bank Account #
                   input#bankAcct.form-control(style="visibility:hidden" type="text" required="" maxlength="14" minlength="14")
             .row
-              .col-md-3.mb-3
+              .col-md-4.mb-3
                 label(for="preMileage") Previous Total Mileage
                 input#preMileage.form-control(type="number" value="" required="")
               // TODO auto calculated based on no km travelled below
-              .col-md-3.mb-3
+              .col-md-4.mb-3
                 label(for="carryMileage") Carry Forward Mileage
                 input#carryMileage.form-control(type="number" value="" readonly=true)
               //cost centre
@@ -51,95 +50,77 @@ block inner-content
 
             //expense claim form
             hr.mb-4
-            table(border="1" cellpadding="5")
-              thead
-                tr
-                  th #
-                  th DATE
-                  th EXPENSE CATEGORY
-                  th GL
-                  th RECEIPT LOST
-                  th RECEIPT TOTAL
-                  th NO. OF KM TRAVELLED ($0.54<5000KM, $0.48>5000KM)
-                  th MILEAGE AMOUNT
-                  th TOTALS
-              // TODO how to auto generate numbers?
-              tr(id="newRow")
-                td 1
-                td
-                  label(for="itemDate")
-                  input#itemDate(type="date" value="" required="")
+            .row.mb-2(id="newRow")
+              .col-md-1 1
+              .col-md-2
+                label(for="itemDate") Date
+                input#itemDate.form-control(type="date" value="" required="")
                 // TODO expCat and GL should be auto-filled once one is filled in
-                td
-                  label(for="expCat")
-                  select#expCat.custom-select(required="" onchange="getVal(this)")
-                    option Choose...
-                    option(value= "gas") AUTO GAS (Community or Facilities employees only)
-                    option(value= "repairs") AUTO REPAIRS (Community or Facilities employees only)
-                    option(value= "books") BOOKS & SUBSCRIPTIONS (Newspaper, magazine, website subscription)
-                    option(value= "conference") CONFERENCE FEE (Registration, travel, & hotel relating to conference)
-                    option(value= "customer") DELIGHT THE CUSTOMER (For customer benefit only)
-                    option(value= "fun") FUND FOR FUN
-                    option(value= "golf") GOLF (For business development and relationship building, NO FOOD)
-                    option(value= "hotel") HOTEL (Room only, NO FOOD)
-                    option(value= "staff") MEALS & ENTERTAINMENT STAFF (Food, beverage)
-                    option(value= "promo") MEALS & ENTERTAINMENT PROMO(Food,beverage when entertaining clients)
-                    option(value= "meeting") MEETINGS (Room/equipment rental for business meetings, NO FOOD)
-                    option(value= "mileage") MILEAGE (kilometres traveled using personal vehicle)
-                    option(value= "other") OTHER (Miscellaneous expenses)
-                    option(value= "parking") PARKING (Hourly, daily, monthly parking cost)
-                    option(value= "dues") PERSONAL/PROF DUES, MBERSHP
-                    option(value= "prizes") PRIZES
-                    option(value= "tel") TELEPHONE (Telephone, cell, pager, internet stick)
-                    option(value= "travel") TRAVEL (Hotel, ferry, taxi, parking, mileage)
-                    // TODO add more options from database
-                  .invalid-feedback
-                    | Please select a expense category
-                td
-                  label(for="GL")
-                  select#GL.custom-select(required="")
-                    option "Choose..."
-                    option(value="1") 633710
-
-                td
-                  .custom-control.custom-radio
-                    input#lost.custom-control-input(name="lost" type="checkbox" )
-                    label.custom-control-label(for="lost" onclick="receiptLost(this)" value="1") YES
-                td
-                  label(for="receiptTotal")
-                  input#receiptTotal(type="number" step="0.01" value="" required="")
-                td
-                  label(for="nokm")
-                  input#nokm(type="number" step="0.01" value="" required="")
+              .col-md-4
+                label(for="expCat") Expense Category
+                select#expCat.custom-select(required="" onchange="getVal(this)")
+                  option Choose...
+                  option(value= "gas") AUTO GAS (Community or Facilities employees only)
+                  option(value= "repairs") AUTO REPAIRS (Community or Facilities employees only)
+                  option(value= "books") BOOKS & SUBSCRIPTIONS (Newspaper, magazine, website subscription)
+                  option(value= "conference") CONFERENCE FEE (Registration, travel, & hotel relating to conference)
+                  option(value= "customer") DELIGHT THE CUSTOMER (For customer benefit only)
+                  option(value= "fun") FUND FOR FUN
+                  option(value= "golf") GOLF (For business development and relationship building, NO FOOD)
+                  option(value= "hotel") HOTEL (Room only, NO FOOD)
+                  option(value= "staff") MEALS & ENTERTAINMENT STAFF (Food, beverage)
+                  option(value= "promo") MEALS & ENTERTAINMENT PROMO(Food,beverage when entertaining clients)
+                  option(value= "meeting") MEETINGS (Room/equipment rental for business meetings, NO FOOD)
+                  option(value= "mileage") MILEAGE (kilometres traveled using personal vehicle)
+                  option(value= "other") OTHER (Miscellaneous expenses)
+                  option(value= "parking") PARKING (Hourly, daily, monthly parking cost)
+                  option(value= "dues") PERSONAL/PROF DUES, MBERSHP
+                  option(value= "prizes") PRIZES
+                  option(value= "tel") TELEPHONE (Telephone, cell, pager, internet stick)
+                  option(value= "travel") TRAVEL (Hotel, ferry, taxi, parking, mileage)
+                  // TODO add more options from database
+                .invalid-feedback
+                  | Please select an expense category
+              .col-md-3
+                label(for="GL") GL
+                select#GL.custom-select(required="")
+                  option Choose...
+                  option(value="1") 633710
+              .col-md-2
+                label(for="receiptTotal") Receipt Total
+                input#receiptTotal.form-control(type="number" step="0.01" value="" required="")
+            .row.mb-2
+              .col-md-3
+                label(for="nokm") No. of KM Travelled
+                input#nokm.form-control(type="number" step="0.01" placeholder="$0.54<5000KM, $0.48>5000KM" value="" required="")
                 //TODO auto calculated based on no km travelled
-                td
-                  label(for="mileage")
-                  input#mileage(type="number" step="0.01" value="" style="background-color:#D3D3D3" readonly=true)
+              .col-md-3
+                label(for="mileage") Mileage Amount
+                input#mileage.form-control(type="number" step="0.01" value="" readonly=true)
+              .col-md-2
+                .mb-3 Receipt Lost
+                .custom-control.custom-radio
+                  input#lost.custom-control-input(name="lost" type="checkbox")
+                  label.custom-control-label(for="lost" onclick="receiptLost(this)" value="1") YES
+              .col-md-4(id="upload")
+                label(for="receipt") Receipt Upload
+                input#receipt.form-control(type="file" required="")
+            .row.mb-3(id="newDesp")
+              .col-md-9
+                label(for="description") Description
+                input#description.form-control(type="text" value="" size="70" required="")
                 // TODO auto calculated total $ based on receipt total and mileage
-                td
-                  label(for="total")
-                  input#total(type="number" step="0.01" value="" style="background-color:#D3D3D3" readonly=true)
-              tr(id="newDesp")
-                th(colspan="2") DESCRIPTION
-                td(colspan="4")
-                  label(for="description")
-                  input#description(type="text" value="" size="70" required="")
-                th(id="upload") RECEIPT UPLOAD
-                // TODO required only if receipt lost is not ticked
-                td(colspan="2")
-                  label(for="receipt")
-                  input#receipt(type="file" required="")
-              //TODO add a new row
-              tr
-                td(colspan="9")
-                  label(for="addNew")
-                  input#addNew(type="button" value="Add Another Item" onclick='addRow()')
-              tr
-                //TODO auto calculate totals
-                th(colspan="8") TOTAL
-                td
-                  label(for="totals")
-                  input#totals(type="number" step="0.01" value="" style="background-color:#D3D3D3" readonly=true)
+              .col-md-3
+                label(for="total") Total
+                input#total.form-control(type="number" step="0.01" value="" readonly=true)
+            //TODO add a new row
+            .mb-3
+              label(for="addNew")
+              input#addNew(type="button" value="Add Another Item" onclick='addRow()')
+            //TODO auto calculate totals
+            .mb-3
+              label(for="totals") Total
+              input#totals.form-control(type="number" step="0.01" value="" readonly=true)
 
             hr.mb-4
             button.btn.btn-primary.btn-lg(type="submit") Submit
