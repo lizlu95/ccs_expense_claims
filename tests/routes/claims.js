@@ -20,6 +20,7 @@ describe('home page', function () {
   });
 
   it('/claims GET routes should redirect to login when user is not authenticated', function (done) {
+    // TODO async eachSeries here.. buggy
     _.each(CLAIMS_ROUTES, function (route) {
       request(app)
         .get(route)
@@ -36,30 +37,23 @@ describe('home page', function () {
   });
 
   it('/claims GET routes should 200 when user is authenticated', function (done) {
-    var agent = request.agent(app);
+    helper.withAuthenticate([
+      function (agent, callback) {
+        _.each(CLAIMS_ROUTES, function (route, index, list) {
+          agent
+            .get(CLAIMS_ROUTES)
+            .expect(200)
+            .end(function (err, res) {
+              if (err) {
+                assert.fail(null, err);
+              }
 
-    async.waterfall([
-      function (callback) {
-        helper.authenticate(agent, callback);
+              if (index == (list.length - 1)) {
+                callback(null);
+              }
+            });
+        });
       },
-      function(err, callback) {
-        if (err) {
-          done(err);
-        } else {
-          _.each(CLAIMS_ROUTES, function (route) {
-            agent
-              .get(CLAIMS_ROUTES)
-              .expect(200)
-              .end(function (err, res) {
-                if (err) {
-                  done(err);
-                } else {
-                  done();
-                }
-              });
-          });
-        }
-      },
-    ]);
+    ], done);
   });
 });
