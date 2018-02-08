@@ -94,9 +94,9 @@ block inner-content
                 .custom-control.custom-radio
                   input#lost.custom-control-input(name="lost" type="checkbox")
                   label.custom-control-label(for="lost" onclick="receiptLost(this)" value="1") YES
-              .col-md-4(id="upload")
-                label(for="receipt") Receipt Upload
-                input#receipt.form-control(type="file" required="")
+              .col-md-4#upload
+                label(class='custom-file-label' for="receipt") Choose Receipt
+                input#receipt.form-control(class='custom-file-input' type="file" required="")
             .row.mb-3(id="newDesp")
               .col-md-9
                 label(for="description") Description
