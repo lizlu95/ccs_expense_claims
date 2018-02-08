@@ -29,28 +29,15 @@ describe('home page', function () {
   });
 
   it('/ should 200 when user is authenticated', function (done) {
-    var agent = request.agent(app);
-
-    async.waterfall([
-      function (callback) {
-        helper.authenticate(agent, callback);
+    helper.withAuthenticate([
+      function(agent, callback) {
+        agent
+          .get('/')
+          .expect(200)
+          .end(function (err, res) {
+            callback(err);
+          });
       },
-      function(err, callback) {
-        if (err) {
-          done(err);
-        } else {
-          agent
-            .get('/')
-            .expect(200)
-            .end(function (err, res) {
-              if (err) {
-                done(err);
-              } else {
-                done();
-              }
-            });
-        }
-      },
-    ]);
+    ], done);
   });
 });
