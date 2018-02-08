@@ -49,23 +49,25 @@ block inner-content
                 .invalid-feedback
                   | Please select a valid cost centre.
 
+          .table-responsive
             //expense claim form
-            hr.mb-4
-            table(border="1" cellpadding="5")
-              thead
-                tr
-                  th #
-                  th DATE
-                  th EXPENSE CATEGORY
-                  th GL
-                  th RECEIPT LOST
-                  th RECEIPT TOTAL
-                  th NO. OF KM TRAVELLED ($0.54<5000KM, $0.48>5000KM)
-                  th MILEAGE AMOUNT
-                  th TOTALS
-              // TODO how to auto generate numbers?
-              tr(id="newRow")
-                td 1
+            //hr.mb-4
+            //table(id= "claimTable" border="1" cellpadding="5")
+          thead
+            tr
+              th #
+              th DATE
+              th EXPENSE CATEGORY
+              th GL
+              th RECEIPT LOST
+              th RECEIPT TOTAL
+              th NO. OF KM TRAVELLED ($0.54<5000KM, $0.48>5000KM)
+              th MILEAGE AMOUNT
+              th TOTALS
+          // TODO how to auto generate numbers?
+          tbody(id="claimBody")
+            tr
+              td 1
                 td
                   label(for="itemDate")
                   input#itemDate(type="date" value="" required="")
@@ -119,8 +121,8 @@ block inner-content
                 td
                   label(for="total")
                   input#total(type="number" step="0.01" value="" style="background-color:#D3D3D3" readonly=true)
-              tr(id="newDesp")
-                th(colspan="2") DESCRIPTION
+            tr(id="newDesp")
+              th(colspan="2") DESCRIPTION
                 td(colspan="4")
                   label(for="description")
                   input#description(type="text" value="" size="70" required="")
@@ -131,12 +133,12 @@ block inner-content
                   input#receipt(type="file" required="")
               //TODO add a new row
               tr
-                td(colspan="9")
+                td(colspan="5")
                   label(for="addNew")
-                  input#addNew(type="button" value="Add Another Item" onclick='addRow()')
-              tr
+                  input#addNew(type="button" value="Add Another Item" onclick='addField()')
+
                 //TODO auto calculate totals
-                th(colspan="8") TOTAL
+                th(colspan="3") TOTAL
                 td
                   label(for="totals")
                   input#totals(type="number" step="0.01" value="" style="background-color:#D3D3D3" readonly=true)
@@ -174,7 +176,7 @@ block inner-content
                 }
 
                 var addRow = function () {
-                    document.getElementById('newRow').style.visibility = 'visible';
+                    //document.getElementById('newRow').style.visibility = 'visible';
                 }
 
                 function getVal(sel) {
@@ -185,22 +187,51 @@ block inner-content
                     //alert(sel.value);
                 }
 
-                function addField(table) {
+                function incrementRow(row) {
+                    var newCell = row.insertCell(0);
+                    var newElem = document.createElement('td');
+                    newElem.innerHTML = "2";
+                    newCell.appendChild(newElem);
+                }
 
-                    var tableRef = document.getElementById(table);
-                    var newRow = tableRef.insertRow(-1);
-
+                function generateExpense(newRow){
                     var newCell = newRow.insertCell(0);
-                    var newElem = document.createElement('input');
-                    newElem.setAttribute("name", "links");
+                    var newElem = document.createElement('td');
+                    newCell = newRow.insertCell(2);
+                    newElem = document.createElement('input');
+                    newElem.setAttribute("name", "violationtype");
                     newElem.setAttribute("type", "text");
                     newCell.appendChild(newElem);
 
-                    newCell = newRow.insertCell(1);
-                    newElem = document.createElement('input');
-                    newElem.setAttribute("name", "keywords");
-                    newElem.setAttribute("type", "text");
+                }
+
+                function addField() {
+
+                    //var tableRef = document.getElementById("claimTable");
+                    //var newRow = tableRef.insertRow(-1);
+                    var tbody = document.getElementById("claimBody");
+                    var newRow = document.createElement('tr');
+
+                    //var newCell = newRow.insertCell(0);
+                    //incrementRow(newCell);
+                    incrementRow(newRow);
+
+                    var newCell = newRow.insertCell(1);
+                    var newElem = document.createElement('input');
+                    newElem.setAttribute('type', 'date');
+                    newElem.setAttribute('required', 'true');
                     newCell.appendChild(newElem);
+
+
+                    //newElem.setAttribute("name", "links");
+                    //newElem.setAttribute("type", "text");
+                    //newCell.appendChild(newElem);
+
+                    //newCell = newRow.insertCell(1);
+                    //newElem = document.createElement('input');
+                    //newElem.setAttribute("name", "keywords");
+                    //newElem.setAttribute("type", "text");
+                    //newCell.appendChild(newElem);
 
                     newCell = newRow.insertCell(2);
                     newElem = document.createElement('input');
@@ -214,4 +245,6 @@ block inner-content
                     newElem.setAttribute("value", "Delete Row");
                     newElem.setAttribute("onclick", 'SomeDeleteRowFunction(this)')
                     newCell.appendChild(newElem);
+
+                    tbody.append(newRow);
                 }
