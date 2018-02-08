@@ -8,10 +8,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     name: DataTypes.STRING,
     amount: DataTypes.INTEGER,
-    isDeleted: {
-      type: DataTypes.BOOLEAN,
-      field: 'is_deleted',
-    },
     receiptId: {
       type: DataTypes.INTEGER,
       field: 'receipt_id',
