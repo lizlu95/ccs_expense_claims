@@ -23,11 +23,11 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   ExpenseClaim.associate = function (models) {
-    models.ExpenseClaim.hasMany(models.ExpenseClaimItem);
+    ExpenseClaim.ExpenseClaimItems = ExpenseClaim.hasMany(models.ExpenseClaimItem);
 
-    models.ExpenseClaim.belongsTo(models.CostCentre);
+    ExpenseClaim.CostCentre = ExpenseClaim.belongsTo(models.CostCentre);
 
-    models.ExpenseClaim.belongsToMany(models.Employee, {
+    ExpenseClaim.Employees = ExpenseClaim.belongsToMany(models.Employee, {
       through: 'employees_expense_claims',
     });
   };
