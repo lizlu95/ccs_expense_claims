@@ -3,203 +3,116 @@ extends ../dashboard
 block inner-content
   .container
     .py-5
-      .row
-        .col-md-8
-          form.needs-validation(novalidate='')
-            //TODO pre-filled name and emp ID
-            .row
-              .col-md-6.mb-3
-                label(for='name') Name
-                input#name.form-control(type='text' value='Liz Lu' readonly=true)
-              .col-md-6.mb-3
-                label(for='employeeID') Employee ID
-                input#employeeID.form-control(type='number' value='12345678' readonly=true)
-            .row
-              .col-md-4.mb-3
-                label(for='date') Date
-                input#date.form-control(type='date' value='' required='')
-              //cost centre
-              .col-md-4.mb-3
-                label(for='costCentre') Cost Centre
-                select#costCentre.custom-select(required='')
-                  option(value='') Choose...
-                  option 0754
-                  //TODO add more options from database
-                  .invalid-feedback
-                    | Please select a valid cost centre.
-              .col-md-4
-                .mb-0 CCS Account
-                  .custom-control.custom-radio
-                    input#CCS.custom-control-input(name='ccsacct' type='radio' required='' onclick='showText()')
-                    label.custom-control-label(for='CCS') YES
-
-                  .custom-control.custom-radio
-                    input#nonCCS.custom-control-input(name='ccsacct' type='radio' required='' onclick='hideBankAcct()')
-                    label.custom-control-label(for='nonCCS') NO
-              .col-12.mb-3
-                  label(for='bankAcct' style='visibility:hidden' id='bankAcctLable') Bank Account #
-                  input#bankAcct.form-control(style='visibility:hidden' type='text' required='' maxlength='14' minlength='14')
-            .row
-            //expense claim form
-            hr.mb-4
-            .row.mb-2(id='newRow')
-              .col-md-1 1
-              .col-md-2
-                label(for='itemDate') Date
-                input#itemDate.form-control(type='date' value='' required='')
-                // TODO expCat and GL should be auto-filled once one is filled in
-              .col-md-4
-                label(for='expCat') Expense Category
-                select#expCat.custom-select(required='' onchange='getVal(this)')
-                  option Choose...
-                  option(value= 'gas') AUTO GAS (Community or Facilities employees only)
-                  option(value= 'repairs') AUTO REPAIRS (Community or Facilities employees only)
-                  option(value= 'books') BOOKS & SUBSCRIPTIONS (Newspaper, magazine, website subscription)
-                  option(value= 'conference') CONFERENCE FEE (Registration, travel, & hotel relating to conference)
-                  option(value= 'customer') DELIGHT THE CUSTOMER (For customer benefit only)
-                  option(value= 'fun') FUND FOR FUN
-                  option(value= 'golf') GOLF (For business development and relationship building, NO FOOD)
-                  option(value= 'hotel') HOTEL (Room only, NO FOOD)
-                  option(value= 'staff') MEALS & ENTERTAINMENT STAFF (Food, beverage)
-                  option(value= 'promo') MEALS & ENTERTAINMENT PROMO(Food,beverage when entertaining clients)
-                  option(value= 'meeting') MEETINGS (Room/equipment rental for business meetings, NO FOOD)
-                  option(value= 'mileage') MILEAGE (kilometres traveled using personal vehicle)
-                  option(value= 'other') OTHER (Miscellaneous expenses)
-                  option(value= 'parking') PARKING (Hourly, daily, monthly parking cost)
-                  option(value= 'dues') PERSONAL/PROF DUES, MBERSHP
-                  option(value= 'prizes') PRIZES
-                  option(value= 'tel') TELEPHONE (Telephone, cell, pager, internet stick)
-                  option(value= 'travel') TRAVEL (Hotel, ferry, taxi, parking, mileage)
-                  // TODO add more options from database
-                .invalid-feedback
-                  | Please select an expense category
-              .col-md-3
-                label(for='GL') GL
-                select#GL.custom-select(required='')
-                  option Choose...
-                  option(value='1') 633710
-              .col-md-2
-                label(for='receiptTotal') Receipt Total
-                input#receiptTotal.form-control(type='number' step='0.01' value='' required='')
-            .row.mb-2
-              .col-md-3
-                label(for='nokm') No. of KM Travelled
-                input#nokm.form-control(type='number' step='0.01' placeholder='$0.54<5000KM, $0.48>5000KM' value='' required='')
-                //TODO auto calculated based on no km travelled
-              .col-md-3
-                label(for='mileage') Mileage Amount
-                input#mileage.form-control(type='number' step='0.01' value='' readonly=true)
-              .col-md-2
-                .mb-3 Receipt Lost
-                .custom-control.custom-radio
-                  input#lost.custom-control-input(name='lost' type='checkbox')
-                  label.custom-control-label(for='lost' onclick='receiptLost(this)' value='1') YES
-              .col-md-4#upload
-                label(class='custom-file-label' for='receipt') Choose Receipt
-                input#receipt.form-control(class='custom-file-input' type='file' required='')
-            .row.mb-3(id='newDesp')
-              .col-md-9
-                label(for='description') Description
-                input#description.form-control(type='text' value='' size='70' required='')
-                // TODO auto calculated total $ based on receipt total and mileage
-              .col-md-3
-                label(for='total') Total
-                input#total.form-control(type='number' step='0.01' value='' readonly=true)
-            //TODO add a new row
-            .mb-3
-              label(for='addNew')
-              input#addNew(type='button' value='Add Another Item' onclick='addRow()')
-        .col-md-4
-          .row
-            .col-12.mb-3
-              label(for='preMileage') Previous Total Mileage
-              input#preMileage.form-control(type='number' value='' required='')
-          .row
-            // TODO auto calculated based on no km travelled below
-            .col-12.mb-3
-              label(for='carryMileage') Carry Forward Mileage
-              input#carryMileage.form-control(type='number' value='' readonly=true)
-          .row
-            .col-12
-              //TODO auto calculate totals
-              hr
-              .mb-3
-                label(for='totals') Total
-                input#totals.form-control(type='number' step='0.01' value='' readonly=true)
-          .row
-            .col-12
-              hr.mb-4
-              button.btn.btn-primary.btn-lg(type='submit') Submit
-
-
-            script.
-                var showText = function () {
-                    document.getElementById('bankAcctLable').style.visibility = 'visible';
-                    document.getElementById('bankAcct').style.visibility = 'visible';
-                    document.getElementById('receipt').required = 'true';
-                }
-
-                function hideBankAcct() {
-                    document.getElementById('bankAcctLable').style.visibility = 'hidden';
-                    document.getElementById('bankAcct').style.visibility = 'hidden';
-                    document.getElementById('receipt').required = 'false';
-                }
-
-                function receiptLost(checkbox){
-                    var visibility = checkbox.value;
-                    if(visibility % 2 != 0){
-                        document.getElementById('upload').style.visibility = 'hidden';
-                        document.getElementById('receipt').style.visibility = 'hidden';
-                        document.getElementById('receipt').required = 'false';
-                        checkbox.value = 2;
-                    }
-                    else{
-                        document.getElementById('upload').style.visibility = 'visible';
-                        document.getElementById('receipt').style.visibility = 'visible';
-                        document.getElementById('receipt').required = 'true';
-                        checkbox.value = 1;
-                    }
-                }
-
-                var addRow = function () {
-                    document.getElementById('newRow').style.visibility = 'visible';
-                }
-
-                function getVal(sel) {
-                    switch (sel.value) {
-                        case 'gas':
-                            document.getElementById('#GL').val('1');
-                    }
-                    //alert(sel.value);
-                }
-
-                function addField(table) {
-
-                    var tableRef = document.getElementById(table);
-                    var newRow = tableRef.insertRow(-1);
-
-                    var newCell = newRow.insertCell(0);
-                    var newElem = document.createElement('input');
-                    newElem.setAttribute('name', 'links');
-                    newElem.setAttribute('type', 'text');
-                    newCell.appendChild(newElem);
-
-                    newCell = newRow.insertCell(1);
-                    newElem = document.createElement('input');
-                    newElem.setAttribute('name', 'keywords');
-                    newElem.setAttribute('type', 'text');
-                    newCell.appendChild(newElem);
-
-                    newCell = newRow.insertCell(2);
-                    newElem = document.createElement('input');
-                    newElem.setAttribute('name', 'violationtype');
-                    newElem.setAttribute('type', 'text');
-                    newCell.appendChild(newElem);
-
-                    newCell = newRow.insertCell(3);
-                    newElem = document.createElement('input');
-                    newElem.setAttribute('type', 'button');
-                    newElem.setAttribute('value', 'Delete Row');
-                    newElem.setAttribute('onclick', 'SomeDeleteRowFunction(this)')
-                    newCell.appendChild(newElem);
-                }
+     form.row.needs-validation(novalidate='', action='/claims', method='POST')
+       .col-md-8
+         .row
+           .col-md-6.mb-3
+             label(for='name') Name
+             input#employee-name.form-control(type='text' value='Liz Lu' readonly=true)
+           .col-md-6.mb-3
+             label(for='employee-id') Employee ID
+             input#employee-id.form-control(type='number' value='12345678' readonly=true)
+         .row
+           .col-md-4.mb-3
+             label(for='date') Date
+             input#date.form-control(type='date' value='' required='')
+           .col-md-4.mb-3
+             label(for='cost-centre') Cost Centre
+             select#cost-centre.custom-select(name='costCentre' required='')
+               option(value='') Choose...
+               option 0754
+               .invalid-feedback
+                 Please select a valid cost centre.
+           .col-md-4.mb-3
+             .mb-0 CCS Account
+               .custom-control.custom-radio
+                 label.custom-control-label(for='ccs') YES
+                 input#ccs-account.custom-control-input(type='radio' required='')
+               .custom-control.custom-radio
+                 label.custom-control-label(for='non-ccs') NO
+                 input#non-ccs.custom-control-input(type='radio' required='')
+           .col-12.mb-3
+               label(for='bank-account' style='visibility:hidden') Bank Account #
+               input#bank-account.form-control(style='visibility:hidden' type='text' required='' maxlength='14' minlength='14')
+         .row
+           hr.mb-4
+           .row
+             .col-md-1 1
+             .col-md-2
+               label(for='item-date') Date
+               input#item-date.form-control(type='date' value='' required='')
+             .col-md-4
+               label(for='expense-category') Expense Category
+               select#expense-category.custom-select(required='')
+                 option Choose...
+                 option(value= 'gas') AUTO GAS (Community or Facilities employees only)
+                 option(value= 'repairs') AUTO REPAIRS (Community or Facilities employees only)
+                 option(value= 'books') BOOKS & SUBSCRIPTIONS (Newspaper, magazine, website subscription)
+                 option(value= 'conference') CONFERENCE FEE (Registration, travel, & hotel relating to conference)
+                 option(value= 'customer') DELIGHT THE CUSTOMER (For customer benefit only)
+                 option(value= 'fun') FUND FOR FUN
+                 option(value= 'golf') GOLF (For business development and relationship building, NO FOOD)
+                 option(value= 'hotel') HOTEL (Room only, NO FOOD)
+                 option(value= 'staff') MEALS & ENTERTAINMENT STAFF (Food, beverage)
+                 option(value= 'promo') MEALS & ENTERTAINMENT PROMO(Food,beverage when entertaining clients)
+                 option(value= 'meeting') MEETINGS (Room/equipment rental for business meetings, NO FOOD)
+                 option(value= 'mileage') MILEAGE (kilometres traveled using personal vehicle)
+                 option(value= 'other') OTHER (Miscellaneous expenses)
+                 option(value= 'parking') PARKING (Hourly, daily, monthly parking cost)
+                 option(value= 'dues') PERSONAL/PROF DUES, MBERSHP
+                 option(value= 'prizes') PRIZES
+                 option(value= 'tel') TELEPHONE (Telephone, cell, pager, internet stick)
+                 option(value= 'travel') TRAVEL (Hotel, ferry, taxi, parking, mileage)
+               .invalid-feedback
+                 | Please select an expense category
+             .col-md-3
+               label(for='gl') GL
+               select#gl.custom-select(name='gl' required='')
+                 option Choose...
+                 option(value='1') 633710
+             .col-md-2
+               label(for='receipt-total') Receipt Total
+               input#receipt-total.form-control(type='number' value='' required='')
+         .row.mb-2
+           .col-md-3
+             label(for='num_km') No. of Km Travelled
+             input#num_km.form-control(name='num_km' type='number' placeholder='$0.54<5000KM, $0.48>5000KM' value='' required='')
+           .col-md-3
+             label(for='mileage') Mileage Amount
+             input#mileage.form-control(type='number' value='' readonly=true)
+           .col-md-2
+             .mb-3 Receipt Lost
+             .custom-control.custom-radio
+               input#receipt-lost.custom-control-input(type='checkbox')
+           .col-md-4#upload
+             label(class='custom-file-label' for='receipt') Choose Receipt
+             input#receipt.form-control(name='receipt' class='custom-file-input' type='file' required='')
+         .row
+           .col-md-9
+             label(for='description') Description
+             input#description.form-control(name='description' type='text' value='' size='70' required='')
+           .col-md-3
+             label(for='total') Total
+             input#total.form-control(type='number' value='' readonly=true)
+         .mb-3
+           label(for='add-item')
+           input#add-item(type='button' value='Add Item')
+       .col-md-4
+         .row
+           .col-12.mb-3
+             label(for='previous-total-mileage') Previous Total Mileage
+             input#previous-total-mileage.form-control(type='number' value='' required='')
+         .row
+           .col-12.mb-3
+             label(for='carry-mileage') Carry Forward Mileage
+             input#carry-mileage.form-control(type='number' value='' readonly=true)
+         .row
+           .col-12
+             hr
+             .mb-3
+               label(for='total') Total
+               input#total.form-control(type='number' value='' readonly=true)
+         .row
+           .col-12
+             hr.mb-4
+             button.btn.btn-primary.btn-lg(type='submit') Submit
