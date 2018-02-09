@@ -1,0 +1,56 @@
+extends ../dashboard
+
+block inner-content
+  h1 Statistic Reports
+  h3 Filters
+  .container
+    .row
+      .col-4.mb-2
+        label(for='submitters') Submitters
+        input.form-control(type="text" list="submitters")
+        datalist#submitters
+          option(value='') Choose...
+          option Name
+      .col-2.mt-4
+        .custom-control.custom-radio
+          input#allsub.custom-control-input(name='allsub' type='radio' required='')
+          label.custom-control-label(for='allsub') All Submitters
+    .row
+      .col-4.mb-2
+        label(for='approvers') Approvers
+        input.form-control(type="text" list="approvers")
+        datalist#approvers
+          option(value='') Choose...
+          option Name
+      .col-2.mt-4
+        .custom-control.custom-radio
+          input#allapp.custom-control-input(name='allapp' type='radio' required='')
+          label.custom-control-label(for='allapp') All Approvers
+    .row
+      .col-4.mb-2
+        label(for='costCentres') Cost Centres
+        input.form-control(type="text" list="costCentres")
+        datalist#costCentres
+          option(value='') Choose...
+          option cost centre
+      .col-2.mt-4
+        .custom-control.custom-radio
+          input#allcc.custom-control-input(name='allcc' type='radio' required='')
+          label.custom-control-label(for='allcc') All Cost Centres
+    .row
+      .col-4.mb-3
+        label(for='fdate') From Date
+        input#fdate.form-control(type='date' value='' required='')
+      .col-4.mb-3
+        label(for='tdate') To Date
+        input#tdate.form-control(type='date' value='' required='')
+
+    hr.mb-4
+    p Number of submitted requests:
+    p Number of pending request(s):
+    p Number of approved request(s):
+    p Number of declined request(s):
+
+    .row
+      .col-2.mb-3
+        button.btn.btn-primary.btn-lg(type='submit') Save

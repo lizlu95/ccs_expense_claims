@@ -5,7 +5,6 @@ fixtures:
       expenseClaimId: 1
       name: Test One
       amount: 1
-      isDeleted: 0
       receiptId: 1
   - model: ExpenseClaimItem
     data:
@@ -13,5 +12,4 @@ fixtures:
       expenseClaimId: 1
       name: Test Two
       amount: 2
-      isDeleted: 0
       receiptId: 1
