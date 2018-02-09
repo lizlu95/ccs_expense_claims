@@ -1,0 +1,36 @@
+extends ../dashboard
+
+block inner-content
+  h1 Configuration
+    .container
+      .row
+        p.col-3
+        p.col-3.mt-4 Current Value
+        p.col-3.mt-4 New Value
+      .row
+        p.col-3.mt-4 Max Per Diem daily amount
+        .col-3.mb-3
+          label(for='maxDiem')
+          input#maxDiem.form-control(type='number' value='1000' readonly=true)
+        .col-3.mb-3
+          label(for='newMaxDiem')
+          input#newMaxDiem.form-control(type='number')
+      .row
+        p.col-3.mt-4 $ value for Mileage
+        .col-3.mb-3
+          label(for='mileage')
+          input#mileage.form-control(type='number' value='1' readonly=true)
+        .col-3.mb-3
+          label(for='newMileage')
+          input#newMileage.form-control(type='number')
+      .row
+        p.col-3.mt-4 Max per meal expense
+        .col-3.mb-3
+          label(for='meal')
+          input#meal.form-control(type='number' value='100' readonly=true)
+        .col-3.mb-3
+          label(for='newMeal')
+          input#newMeal.form-control(type='number')
+      .row
+        .col-2.mb-3
+          button.btn.btn-primary.btn-lg(type='submit') Save
