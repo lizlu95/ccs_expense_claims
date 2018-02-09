@@ -29,7 +29,7 @@ td
 
 th
 {
-    background: #0067C6;
+    background: #666;
     color: white;
     padding: 5px 10px;
 }
@@ -39,10 +39,4 @@ td:hover
     cursor: pointer;
     background: #666;
     color: white;
-}
-
-.tab {
-    overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
 }

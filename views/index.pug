@@ -1,68 +1,39 @@
 extends dashboard
 
 block inner-content
-  //<link rel="stylesheet" href="/stylesheets/style.css" media="screen">
-  //<link rel="scss/stylesheet" type="text/css" href="index.scss">
-  //<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
   .container
-    .row
-      .col-md-12
-        <div>
+    .row.mb-6
+      button.btn.btn-sm.btn-outline-secondary.btn-green(id="newClaim") Create New Claim
+    .py-5
+      .row
+        .col-md-12
+          ul(class="nav nav-tabs")
+            li(class="nav-item")
+              a(class="nav-link active" href="#all" id="all-tab" data-toggle="tab" aria-controls="home" aria-expanded="true") All
+            li(class="nav-item")
+              a(class="nav-link" href="#pending" id="pending-tab" role="tab" data-toggle="tab") Pending
+            li(class="nav-item")
+              a(class="nav-link" href="#approved" id="approved-tab" role="tab" data-toggle="tab") Approved
+            li(class="nav-item")
+              a(class="nav-link" href="#approved" id="rejected-tab" role="tab" data-toggle="tab") Rejected
+            li(class="nav-item")
+              a(class="nav-link" href="#approved" id="forward-tab" role="tab" data-toggle="tab") Forwarded
 
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
-        <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
-        <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
-        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
-        </ul>
+          div(class="tab-content")
 
-        <!-- Tab panes -->
-        <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="home">...</div>
-        <div role="tabpanel" class="tab-pane" id="profile">...</div>
-        <div role="tabpanel" class="tab-pane" id="messages">...</div>
-        <div role="tabpanel" class="tab-pane" id="settings">...</div>
-        </div>
-
-        </div>
-        //div(class="bs-example bs-example-tabs" role="tabpanel" data-example-id="togglable-tabs")
-          ul(class="nav nav-tabs responsive")
-            li(role="presentation" class="active")
-              a(href="#all" id="all-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true")
-                span(class="text" ) All
-            li(role="presentation" class="next")
-              a(href="#pending" id="pending-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true")
-                span(class="text") Pending
-            li(role="presentation" class="active")
-              a(href="#approved" id="approved-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true")
-                span(class="text") Approved
-            li(role="presentation" class="active")
-              a(href="#approved" id="rejected-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true")
-                span(class="text") Rejected
-            li(role="presentation" class="active")
-              a(href="#approved" id="forward-tab" role="tab" data-toggle="tab" aria-controls="home" aria-expanded="true")
-                span(class="text") Forwarded
-
-        div(class="tab-content")
-          div(role="tabpanel")
-        //div(class='tab' width="100%")
-
-          button(class="tablinks" onclick="openCity(event,'all')" width="20%") All
-          button(class="tablinks" onclick="openCity(event,'pending')" width="20%") Pending
-          button(class="tablinks" onclick="openCity(event,'approved')" width="20%") Approved
-          button(class="tablinks" onclick="openCity(event,'rejected')" width="20%") Rejected
-          button(class="tablinks" onclick="openCity(event,'forwarded')" width="20%") Forwarded
-        hr.mb-4
-        table(id="resultTable" border="1" cellpadding="5" width="100%")
-          thead
-            tr
-              th(width="10%") Claim ID
-              th(width="10%") Date
-              th(width="20%") Manager
-              th(width="45%") Description
-              th(width="20%") Current Status
-          tbody(id="row")
+          .table-responsive
+            table(class="table table-striped" id="resultTable" border="1" cellpadding="5" width="100%")
+              thead
+                tr
+                  th(width="10%") Claim ID
+                  th(width="10%") Date
+                  th(width="20%") Manager
+                  th(width="45%") Description
+                  th(width="20%") Current Status
+              tbody(id="row")
 
 
-
+    script.
+      $("#newClaim").click(function () {
+          window.location.href = "/claims/new";
+      });
