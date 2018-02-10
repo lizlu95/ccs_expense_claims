@@ -3,6 +3,11 @@ image: node:latest
 services:
   - mysql:latest
 
+connect:
+  image: mysql
+  script:
+    - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=mysql "$MYSQL_DATABASE"
+
 variables:
   MYSQL_ROOT_PASSWORD: password
   MYSQL_DATABASE: eca_test
