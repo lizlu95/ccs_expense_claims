@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     underscored: true,
+    tableName: 'reports',
   });
 
   Report.associate = function (models) {
