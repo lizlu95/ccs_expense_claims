@@ -19,7 +19,7 @@ test:
     - npm install
     - node_modules/.bin/sequelize db:migrate
     - npm test
-    - npm coverage
+    - npm run coverage
   artifacts:
     paths:
       - node_modules/
