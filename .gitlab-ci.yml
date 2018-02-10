@@ -9,6 +9,7 @@ connect:
     - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=mysql "$MYSQL_DATABASE"
 
 variables:
+  NODE_ENV: test
   MYSQL_ROOT_PASSWORD: password
   MYSQL_DATABASE: eca_test
   MYSQL_USER: eca_admin
