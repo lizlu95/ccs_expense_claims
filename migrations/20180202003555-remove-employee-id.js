@@ -3,7 +3,7 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.removeColumn(
-      'expense_claims',
+      'employees',
       'employee_id',
       Sequelize.STRING
     );
