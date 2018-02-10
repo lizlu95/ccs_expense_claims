@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   CostCentre.associate = function (models) {
-    models.CostCentre.hasMany(models.ExpenseClaim);
+    CostCentre.ExpenseClaims = CostCentre.hasMany(models.ExpenseClaim);
 
-    models.CostCentre.hasMany(models.ApprovalLimit);
+    CostCentre.ApprovalLimits = CostCentre.hasMany(models.ApprovalLimit);
   };
 
   return CostCentre;
