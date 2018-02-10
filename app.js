@@ -9,6 +9,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const uuidv4 = require('uuid/v4');
 const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const sassMiddleware = require('node-sass-middleware');
 const vueOptions = {
   rootPath: path.join(__dirname, '/views'),
@@ -61,7 +62,9 @@ passport.use(new LocalStrategy({
     // TODO stored procedure
     Employee.findOne({
       where: {
-        email: email,
+        email: {
+          [Op.eq]: email,
+        }
       }
     }).then((employee) => {
       if (!employee) {

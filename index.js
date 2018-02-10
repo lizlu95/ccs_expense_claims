@@ -1,5 +1,5 @@
 const app = require('./app');
-const connection = require('./database');
+const database = require('./models/index');
 const port = process.env.PORT || 3000;
 
 const server = app.listen(port, function () {

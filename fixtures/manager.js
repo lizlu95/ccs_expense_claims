@@ -1,4 +1,3 @@
-const database = require('../database');
 const Sequelize = require('sequelize');
 const sequelizeFixtures = require('sequelize-fixtures');
 const models = require('../models/index');
