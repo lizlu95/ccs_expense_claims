@@ -1,3 +1,5 @@
+[![pipeline status](https://gitlab.com/cpsc3192017w2/coast-capital/Dining-Philosophers/ccs-expense-claims/badges/master/pipeline.svg)](https://gitlab.com/cpsc3192017w2/coast-capital/Dining-Philosophers/ccs-expense-claims/commits/master)
+
 # ccs-expense-claims
 
 A web application to track internal expense claims for Coast Capital Savings Credit Union.
