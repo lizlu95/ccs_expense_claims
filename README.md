@@ -1,4 +1,4 @@
-[![pipeline status](https://gitlab.com/cpsc3192017w2/coast-capital/Dining-Philosophers/ccs-expense-claims/badges/master/pipeline.svg)](https://gitlab.com/cpsc3192017w2/coast-capital/Dining-Philosophers/ccs-expense-claims/commits/master)
+[![pipeline status](https://gitlab.com/cpsc3192017w2/coast-capital/Dining-Philosophers/ccs-expense-claims/badges/master/pipeline.svg)](https://gitlab.com/cpsc3192017w2/coast-capital/Dining-Philosophers/ccs-expense-claims/commits/master) [![coverage report](https://gitlab.com/cpsc3192017w2/coast-capital/Dining-Philosophers/ccs-expense-claims/badges/master/coverage.svg)](https://gitlab.com/cpsc3192017w2/coast-capital/Dining-Philosophers/ccs-expense-claims/commits/master)
 
 # ccs-expense-claims
 
