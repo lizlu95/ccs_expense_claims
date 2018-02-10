@@ -1,14 +1,23 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var Sequelize = require('sequelize');
-var basename = path.basename(__filename);
-var env = process.env.NODE_ENV || 'development';
-var config = require(__dirname + '/../config/config.js')['database'][env];
-var database = {};
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.js')['database'][env];
+const _ = require('underscore');
 
-var sequelize = new Sequelize(config.database, config.username, config.password, config);
+const database = {};
+
+var sequelize = new Sequelize(
+  config.database,
+  config.username,
+  config.password,
+  _.extend(config, {
+    operatorsAliases: false,
+  }),
+);
 
 fs
   .readdirSync(__dirname)

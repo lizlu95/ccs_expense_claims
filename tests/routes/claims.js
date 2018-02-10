@@ -1,6 +1,5 @@
 const assert = require('chai').assert;
 const app = require('../../app');
-const database = require('../../database');
 const request = require('supertest');
 const async = require('async');
 const helper = require('./../helper');

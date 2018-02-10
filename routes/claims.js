@@ -1,7 +1,6 @@
 const async = require('async');
 const express = require('express');
 const router = express.Router();
-const database = require('../database');
 const _ = require('underscore');
 const moment = require('moment');
 
