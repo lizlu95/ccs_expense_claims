@@ -3,6 +3,10 @@ image: node:latest
 services:
   - mysql:latest
 
+cache:
+  paths:
+  - node_modules/
+
 before_script:
   - npm install
   - node_modules/.bin/sequelize db:migrate && NODE_ENV=test node_modules/.bin/sequelize db:migrate
