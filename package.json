@@ -4,7 +4,7 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "start": "node index.js",
-    "test": "NODE_ENV=test mocha --exit --recursive tests"
+    "test": "NODE_ENV=test nyc mocha --exit --recursive tests"
   },
   "dependencies": {
     "async": "^2.6.0",
