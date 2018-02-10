@@ -43,7 +43,7 @@ helper.withAuthenticate = function (steps, done) {
         step(agent, callback);
       }, function(err, results) {
         if (err) {
-          assert.fail(null, err);
+          done(err);
         } else {
           callback(null);
         }
