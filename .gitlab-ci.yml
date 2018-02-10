@@ -19,8 +19,7 @@ test:
     - npm install
     - node_modules/.bin/sequelize db:migrate
     - npm test
-    - npm run coverage
   artifacts:
     paths:
       - node_modules/
-  coverage: /Statements.*?(\d+(?:\.\d+)?)%/
+  coverage: '/Statements.*?(\d+(?:\.\d+)?)%/'
