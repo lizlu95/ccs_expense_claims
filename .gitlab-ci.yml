@@ -3,11 +3,6 @@ image: node:latest
 services:
   - mysql:latest
 
-connect:
-  image: mysql
-  script:
-    - echo "SELECT 'OK';" | mysql --user=root --password="$MYSQL_ROOT_PASSWORD" --host=mysql "$MYSQL_DATABASE"
-
 variables:
   NODE_ENV: test
   MYSQL_ROOT_PASSWORD: password
@@ -20,7 +15,11 @@ cache:
   - node_modules/
 
 test:
+  image: mysql
   script:
     - npm install
     - NODE_ENV=test node_modules/.bin/sequelize db:migrate
     - npm test
+  artifacts:
+    paths:
+      - node_modules/
