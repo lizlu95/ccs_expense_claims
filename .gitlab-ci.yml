@@ -19,7 +19,8 @@ test:
     - npm install
     - node_modules/.bin/sequelize db:migrate
     - npm test
+    - npm coverage
   artifacts:
     paths:
       - node_modules/
-  coverage: /Lines\s*:\s*(\d*\.?\d+)%/
+  coverage: Statements.*?(\d+(?:\.\d+)?)%
