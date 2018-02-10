@@ -10,6 +10,15 @@ const LocalStrategy = require('passport-local').Strategy;
 const uuidv4 = require('uuid/v4');
 const Sequelize = require('sequelize');
 const sassMiddleware = require('node-sass-middleware');
+const vueOptions = {
+  rootPath: path.join(__dirname, '/views'),
+  layout: {
+    start: '<div id="expense-claim-app">',
+    end: '</div>'
+  }
+};
+const expressVueMiddleware = require('express-vue').init(vueOptions);
+
 
 // routes
 const index = require('./routes/index');
@@ -34,6 +43,7 @@ app.use(sassMiddleware({
   dest: path.join(__dirname, 'public'),
   outputStyle: 'compressed',
 }));
+app.use(expressVueMiddleware);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
