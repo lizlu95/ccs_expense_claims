@@ -1,6 +1,39 @@
 extends dashboard
 
 block inner-content
-  h1= title
-  p Welcome to #{title}
+  .container
+    .row.mb-6
+      button.btn.btn-sm.btn-outline-secondary.btn-green(id="newClaim") Create New Claim
+    .py-5
+      .row
+        .col-md-12
+          ul(class="nav nav-tabs")
+            li(class="nav-item")
+              a(class="nav-link active" href="#all" id="all-tab" data-toggle="tab" aria-controls="home" aria-expanded="true") All
+            li(class="nav-item")
+              a(class="nav-link" href="#pending" id="pending-tab" role="tab" data-toggle="tab") Pending
+            li(class="nav-item")
+              a(class="nav-link" href="#approved" id="approved-tab" role="tab" data-toggle="tab") Approved
+            li(class="nav-item")
+              a(class="nav-link" href="#approved" id="rejected-tab" role="tab" data-toggle="tab") Rejected
+            li(class="nav-item")
+              a(class="nav-link" href="#approved" id="forward-tab" role="tab" data-toggle="tab") Forwarded
 
+          div(class="tab-content")
+
+          .table-responsive
+            table(class="table table-striped" id="resultTable" border="1" cellpadding="5" width="100%")
+              thead
+                tr
+                  th(width="10%") Claim ID
+                  th(width="10%") Date
+                  th(width="20%") Manager
+                  th(width="45%") Description
+                  th(width="20%") Current Status
+              tbody(id="row")
+
+
+    script.
+      $("#newClaim").click(function () {
+          window.location.href = "/claims/new";
+      });
