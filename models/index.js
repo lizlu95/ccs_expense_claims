@@ -16,6 +16,7 @@ var sequelize = new Sequelize(
   config.password,
   _.extend(config, {
     operatorsAliases: false,
+    logging: process.env.DEBUG == 'sequeqlize*',
   }),
 );
 
