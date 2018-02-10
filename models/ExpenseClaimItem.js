@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   ExpenseClaimItem.associate = function (models) {
-    models.ExpenseClaimItem.belongsTo(models.ExpenseClaim);
+    ExpenseClaimItem.ExpenseClaim = ExpenseClaimItem.belongsTo(models.ExpenseClaim);
   };
 
   return ExpenseClaimItem;

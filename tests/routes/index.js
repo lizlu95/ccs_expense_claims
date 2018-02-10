@@ -35,7 +35,7 @@ describe('home page', function () {
           .get('/')
           .expect(200)
           .end(function (err, res) {
-            callback(err);
+            callback(null, err);
           });
       },
     ], done);

@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Report.associate = function (models) {
-    models.Report.belongsTo(models.Employee);
+    Report.Employee = Report.belongsTo(models.Employee);
   };
 
   return Report;

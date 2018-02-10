@@ -31,21 +31,24 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   Employee.associate = function (models) {
-    models.Employee.belongsTo(models.Employee, {
+    Employee.Manager = Employee.belongsTo(Employee, {
       foreignKey: 'manager_id',
       as: 'manager',
     });
 
-    models.Employee.hasMany(models.Employee, {
+    Employee.Managees = Employee.hasMany(Employee, {
       foreignKey: 'manager_id',
       as: 'managees',
     });
 
-    models.Employee.hasMany(models.ApprovalLimit);
+    Employee.ApprovalLimits = Employee.hasMany(models.ApprovalLimit);
 
-    models.Employee.hasMany(models.Report);
+    Employee.Reports = Employee.hasMany(models.Report);
 
-    models.Employee.belongsToMany(models.ExpenseClaim, {
+    // used for Sequelize#create purposes via associations
+    Employee.EmployeesExpenseClaims = Employee.hasMany(models.EmployeeExpenseClaim);
+
+    Employee.ExpenseClaims = Employee.belongsToMany(models.ExpenseClaim, {
       through: 'employees_expense_claims',
     });
   };
