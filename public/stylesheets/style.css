@@ -34,7 +34,7 @@ th
     padding: 5px 10px;
 }
 
-td:hover
+tr:hover
 {
     cursor: pointer;
     background: #666;
