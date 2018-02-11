@@ -20,7 +20,6 @@ const vueOptions = {
 };
 const expressVueMiddleware = require('express-vue').init(vueOptions);
 
-
 // routes
 const index = require('./routes/index');
 const login = require('./routes/authenticate/login');
