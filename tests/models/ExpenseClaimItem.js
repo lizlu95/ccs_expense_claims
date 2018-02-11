@@ -29,4 +29,14 @@ describe('expense claim tests', function () {
       });
     });
   });
+
+  it('expense claim item with receipt belongs to one receipt', function (done) {
+    ExpenseClaimItem.findById(1).then((expenseClaimItem) => {
+      expenseClaimItem.getReceipt().then((receipt) => {
+        assert.isNotNull(receipt);
+
+        done();
+      });
+    });
+  });
 });

@@ -25,8 +25,8 @@ describe('receipt tests', function () {
 
   it('report with expense claim item has an expense claim item', function (done) {
     Receipt.findById(1).then((receipt) => {
-      receipt.getExpenseClaimItem().then((expenseClaimItem) => {
-        assert.isNotNull(expenseClaimItem);
+      receipt.getExpenseClaimItems().then((expenseClaimItems) => {
+        assert.isNotEmpty(expenseClaimItems);
 
         done();
       });

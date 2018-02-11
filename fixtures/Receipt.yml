@@ -6,4 +6,4 @@ fixtures:
   - model: Receipt
     data:
       id: 2
-      ExpenseClaimItem: 1
+      ExpenseClaimItem: 2
