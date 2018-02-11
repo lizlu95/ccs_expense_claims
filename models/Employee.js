@@ -2,10 +2,6 @@
 
 module.exports = (sequelize, DataTypes) => {
   var Employee = sequelize.define('Employee', {
-    id: {
-      primaryKey: true,
-      type: DataTypes.INTEGER,
-    },
     managerId: {
       type: DataTypes.INTEGER,
       field: 'manager_id',

@@ -2,10 +2,6 @@
 
 module.exports = (sequelize, DataTypes) => {
   var EmployeeExpenseClaim = sequelize.define('EmployeeExpenseClaim', {
-    id: {
-      primaryKey: true,
-      type: DataTypes.INTEGER,
-    },
     employeeId: {
       type: DataTypes.INTEGER,
       field: 'employee_id',
