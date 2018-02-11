@@ -3,13 +3,18 @@ const express = require('express');
 const router = express.Router();
 const _ = require('underscore');
 const moment = require('moment');
+const sequelize = require('../models/index').sequelize;
+const Op = require('sequelize').Op;
 
 const models = require('../models/index');
 const ExpenseClaim = models.ExpenseClaim;
 const ExpenseClaimItem = models.ExpenseClaimItem;
+const CostCentre = models.CostCentre;
 
 /* GET /claims/new */
 router.get('/new', function (req, res, next) {
+  res.locals.title = 'Expense Claim';
+
   res.render('claims/new', { title: 'Expense Claim' });
 });
 
@@ -30,59 +35,85 @@ router.get('/:id', function (req, res, next) {
 
 /* POST /claims */
 router.post('', function (req, res, next) {
-  var expenseClaimItems = _.map(req.body.items, function (expenseClaimItem) {
-    return {
-      employeeId: req.user.id,
-      date: moment().toString(),
-      gl: expenseClaimItem.gl,
-      numKm: expenseClaimItem.numKm,
-      description: expenseClaimItem.description,
-      amount: expenseClaimItem.amount,
-      receipt: {
-        path: expenseClaimItem.receipt,
-      },
-    };
-  });
-
-  var employeesExpenseClaims = [
-    {
-      employeeId: req.user.id,
-      isOwner: true,
-      isActive: true,
+  async.waterfall([
+    function (callback) {
+      CostCentre.findOne({
+        where: {
+          number: {
+            [Op.eq]: req.body.costCentreNumber,
+          }
+        }
+      }).then((costCentre) => {
+        if (costCentre) {
+          callback(null, costCentre.id);
+        } else {
+          callback('Failed to find cost centre!');
+        }
+      });
     },
-    {
-      employeeId: req.body.managerId,
-      isOwner: false,
-      isActive: true,
+    function (costCentreId, callback) {
+      var expenseClaimItems = _.map(req.body.items, function (expenseClaimItem) {
+        return {
+          employeeId: req.user.id,
+          date: expenseClaimItem.date,
+          gl: expenseClaimItem.gl,
+          numKm: expenseClaimItem.numKm,
+          receipt: {
+            path: expenseClaimItem.receipt,
+          },
+          description: expenseClaimItem.description,
+          total: expenseClaimItem.total,
+        };
+      });
+
+      var employeesExpenseClaims = [
+        {
+          employeeId: req.user.id,
+          isOwner: true,
+          isActive: true,
+        },
+        {
+          employeeId: req.body.managerId,
+          isOwner: false,
+          isActive: true,
+        },
+      ];
+
+      var expenseClaim = {
+        status: ExpenseClaim.STATUS.DEFAULT,
+        bankAccount: req.body.bankAccount,
+        costCentreId: costCentreId,
+        expenseClaimItems: expenseClaimItems,
+        employeesExpenseClaims: employeesExpenseClaims,
+      };
+
+      sequelize.transaction(function (t) {
+        ExpenseClaim.create(expenseClaim, {
+          include: [{
+            association: ExpenseClaim.ExpenseClaimItems,
+            include: [
+              ExpenseClaimItem.Receipt,
+            ]
+          }, {
+            association: ExpenseClaim.EmployeesExpenseClaims,
+          }]
+        }, {
+          transaction: t,
+        }).then(function (expenseClaim) {
+          callback(null);
+        }).catch(function( err) {
+          // TODO handle errors here.. is this how you pass to err handler?
+          callback(err);
+        });
+      });
     },
-  ];
-
-  var expenseClaim = {
-    status: ExpenseClaim.STATUS.DEFAULT,
-    bankAccount: req.body.bankAccount,
-    costCentreId: req.body.costCentreId,
-    expenseClaimItems: expenseClaimItems,
-    employeesExpenseClaims: employeesExpenseClaims,
-  };
-
-  database.transaction(function (t) {
-    ExpenseClaim.create(expenseClaim, {
-      include: [{
-        association: ExpenseClaim.ExpenseClaimItems,
-        include: [
-          ExpenseClaimItem.Receipt,
-        ]
-      }, {
-        association: ExpenseClaim.EmployeesExpenseClaims,
-      }]
-    }, {
-      transaction: t,
-    }).then(function (expenseClaim) {
-      res.redirect('/claims/' + expenseClaim.id);
-    }).catch(function( err) {
-      // TODO handle errors here.. is this how you pass to err handler?
+  ], function (err, result) {
+    if (err) {
+      // TODO handle errors
       next(err);
-    });
+    } else {
+      res.redirect('/claims/' + expenseClaim.id);
+    }
   });
 });
 

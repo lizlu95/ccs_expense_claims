@@ -3,7 +3,7 @@ extends ../dashboard
 block inner-content
   .container
     .py-5
-     form.row.needs-validation(novalidate='', action='/claims', method='POST')
+     form.row.needs-validation(enctype='multipart/form-data' novalidate='', action='/claims', method='POST')
        .col-md-8
          .row
            .col-md-6.mb-3
@@ -13,17 +13,14 @@ block inner-content
              label(for='employee-id') Employee ID
              input#employee-id.form-control(type='number' value='12345678' readonly=true)
          .row
-           .col-md-4.mb-3
-             label(for='date') Date
-             input#date.form-control(type='date' value='' required='')
-           .col-md-4.mb-3
+           .col-md-6.mb-3
              label(for='cost-centre') Cost Centre
-             select#cost-centre.custom-select(name='costCentre' required='')
+             select#cost-centre.custom-select(name='costCentreNumber' required='')
                option(value='') Choose...
                option 0754
                .invalid-feedback
                  Please select a valid cost centre.
-           .col-md-4.mb-3
+           .col-md-6.mb-3
              .mb-0 CCS Account
                .custom-control.custom-radio
                  label.custom-control-label(for='ccs') YES
@@ -31,9 +28,10 @@ block inner-content
                .custom-control.custom-radio
                  label.custom-control-label(for='non-ccs') NO
                  input#non-ccs.custom-control-input(type='radio' required='')
+         .row
            .col-12.mb-3
                label(for='bank-account' style='visibility:hidden') Bank Account #
-               input#bank-account.form-control(style='visibility:hidden' type='text' required='' maxlength='14' minlength='14')
+               input#bank-account.form-control(name='bankAccount' style='visibility:hidden' type='text' required='' maxlength='14' minlength='14')
          .row
            hr.mb-4
            .row
@@ -70,16 +68,10 @@ block inner-content
                select#gl.custom-select(name='gl' required='')
                  option Choose...
                  option(value='1') 633710
-             .col-md-2
-               label(for='receipt-total') Receipt Total
-               input#receipt-total.form-control(type='number' value='' required='')
          .row.mb-2
            .col-md-3
-             label(for='num_km') No. of Km Travelled
-             input#num_km.form-control(name='num_km' type='number' placeholder='$0.54<5000KM, $0.48>5000KM' value='' required='')
-           .col-md-3
-             label(for='mileage') Mileage Amount
-             input#mileage.form-control(type='number' value='' readonly=true)
+             label(for='num-km') No. of Km Travelled
+             input#num-km.form-control(name='numKm' type='number' placeholder='$0.54<5000KM, $0.48>5000KM' value='' required='')
            .col-md-2
              .mb-3 Receipt Lost
              .custom-control.custom-radio
@@ -93,7 +85,7 @@ block inner-content
              input#description.form-control(name='description' type='text' value='' size='70' required='')
            .col-md-3
              label(for='total') Total
-             input#total.form-control(type='number' value='' readonly=true)
+             input#total.form-control(name='total' type='number' value='' readonly=true)
          .mb-3
            label(for='add-item')
            input#add-item(type='button' value='Add Item')
