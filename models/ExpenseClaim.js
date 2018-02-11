@@ -5,6 +5,10 @@ module.exports = (sequelize, DataTypes) => {
     status: {
       type: DataTypes.STRING,
     },
+    costCentreId: {
+      type: DataTypes.STRING,
+      field: 'cost_centre_id',
+    },
     createdAt: {
       type: DataTypes.DATE,
       field: 'created_at',
@@ -24,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     ExpenseClaim.CostCentre = ExpenseClaim.belongsTo(models.CostCentre);
 
     // used for Sequelize#create purposes via associations
-    ExpenseClaim.EmployeesExpenseClaims = ExpenseClaim.hasMany(models.EmployeeExpenseClaim);
+    ExpenseClaim.EmployeeExpenseClaims = ExpenseClaim.hasMany(models.EmployeeExpenseClaim);
 
     ExpenseClaim.Employees = ExpenseClaim.belongsToMany(models.Employee, {
       through: 'employees_expense_claims',

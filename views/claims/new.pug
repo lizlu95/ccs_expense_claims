@@ -37,8 +37,8 @@ block inner-content
            .row
              .col-md-1 1
              .col-md-2
-               label(for='item-date') Date
-               input#item-date.form-control(type='date' value='' required='')
+               label(for='date') Date
+               input#date.form-control(name='items[0][date]' type='date' value='' required='')
              .col-md-4
                label(for='expense-category') Expense Category
                select#expense-category.custom-select(required='')
@@ -65,27 +65,27 @@ block inner-content
                  | Please select an expense category
              .col-md-3
                label(for='gl') GL
-               select#gl.custom-select(name='gl' required='')
+               select#gl.custom-select(name='items[0][gl]' required='')
                  option Choose...
                  option(value='1') 633710
          .row.mb-2
            .col-md-3
              label(for='num-km') No. of Km Travelled
-             input#num-km.form-control(name='numKm' type='number' placeholder='$0.54<5000KM, $0.48>5000KM' value='' required='')
+             input#num-km.form-control(name='items[0][numKm]' type='number' placeholder='$0.54<5000KM, $0.48>5000KM' value='' required='')
            .col-md-2
              .mb-3 Receipt Lost
              .custom-control.custom-radio
                input#receipt-lost.custom-control-input(type='checkbox')
            .col-md-4#upload
              label(class='custom-file-label' for='receipt') Choose Receipt
-             input#receipt.form-control(name='receipt' class='custom-file-input' type='file' required='')
+             input#receipt.form-control(name='items[0][receipt]' class='custom-file-input' value='' type='file' required='')
          .row
            .col-md-9
              label(for='description') Description
-             input#description.form-control(name='description' type='text' value='' size='70' required='')
+             input#description.form-control(name='[0][description]' type='text' value='' size='70' required='')
            .col-md-3
              label(for='total') Total
-             input#total.form-control(name='total' type='number' value='' readonly=true)
+             input#total.form-control(name='items[0][total]' type='number' value='' readonly=true)
          .mb-3
            label(for='add-item')
            input#add-item(type='button' value='Add Item')

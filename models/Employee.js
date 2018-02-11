@@ -41,8 +41,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Employee.Reports = Employee.hasMany(models.Report);
 
-    // used for Sequelize#create purposes via associations
-    Employee.EmployeesExpenseClaims = Employee.hasMany(models.EmployeeExpenseClaim);
+    Employee.EmployeeExpenseClaims = Employee.hasMany(models.EmployeeExpenseClaim);
 
     Employee.ExpenseClaims = Employee.belongsToMany(models.ExpenseClaim, {
       through: 'employees_expense_claims',

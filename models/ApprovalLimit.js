@@ -4,6 +4,14 @@ const models = require('../models/index');
 
 module.exports = (sequelize, DataTypes) => {
   var ApprovalLimit = sequelize.define('ApprovalLimit', {
+    employeeId: {
+      type: DataTypes.INTEGER,
+      field: 'employee_id',
+    },
+    costCentreId: {
+      type: DataTypes.INTEGER,
+      field: 'cost_centre_id',
+    },
     limit: DataTypes.INTEGER
   }, {
     underscored: true,
