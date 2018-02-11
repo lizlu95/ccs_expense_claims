@@ -26,6 +26,8 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   ExpenseClaimItem.associate = function (models) {
+    ExpenseClaimItem.Receipt = ExpenseClaimItem.hasMany(models.Receipt);
+
     ExpenseClaimItem.ExpenseClaim = ExpenseClaimItem.belongsTo(models.ExpenseClaim);
   };
 

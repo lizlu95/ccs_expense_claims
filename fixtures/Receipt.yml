@@ -1,0 +1,9 @@
+fixtures:
+  - model: Receipt
+    data:
+      id: 1
+      ExpenseClaimItem: 1
+  - model: Receipt
+    data:
+      id: 2
+      ExpenseClaimItem: 1

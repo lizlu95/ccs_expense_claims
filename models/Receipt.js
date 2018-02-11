@@ -1,11 +1,7 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-  var Report = sequelize.define('Report', {
-    employeeId: {
-      type: DataTypes.INTEGER,
-      field: 'employee_id',
-    },
+  var Receipt = sequelize.define('Receipt', {
     type: {
       type: DataTypes.STRING,
     },
@@ -19,12 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     underscored: true,
-    tableName: 'reports',
+    tableName: 'receipts',
   });
 
-  Report.associate = function (models) {
-    Report.Employee = Report.belongsTo(models.Employee);
+  Receipt.associate = function (models) {
+    Receipt.ExpenseClaimItem = Receipt.belongsTo(models.ExpenseClaimItem);
   };
 
-  return Report;
+  return Receipt;
 };
