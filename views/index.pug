@@ -6,31 +6,145 @@ block inner-content
       button.btn.btn-sm.btn-outline-secondary.btn-green(id="newClaim") Create New Claim
     .py-5
       .row
-        .col-md-12
-          ul(class="nav nav-tabs")
-            li(class="nav-item")
+        .col-md-12.col-lg-12
+          ul.nav.nav-tabs
+            li.nav-item
               a(class="nav-link active" href="#all" id="all-tab" data-toggle="tab" aria-controls="home" aria-expanded="true") All
-            li(class="nav-item")
-              a(class="nav-link" href="#pending" id="pending-tab" role="tab" data-toggle="tab") Pending
-            li(class="nav-item")
-              a(class="nav-link" href="#approved" id="approved-tab" role="tab" data-toggle="tab") Approved
-            li(class="nav-item")
-              a(class="nav-link" href="#approved" id="rejected-tab" role="tab" data-toggle="tab") Rejected
-            li(class="nav-item")
-              a(class="nav-link" href="#approved" id="forward-tab" role="tab" data-toggle="tab") Forwarded
+            li.nav-item
+              a(class="nav-link" href="#pending" id="pending-tab" data-toggle="tab") Pending
+            li.nav-item
+              a(class="nav-link" href="#approved" id="approved-tab" data-toggle="tab") Approved
+            li.nav-item
+              a(class="nav-link" href="#rejected" id="rejected-tab" data-toggle="tab") Rejected
+            li.nav-item
+              a(class="nav-link" href="#forwarded" id="forward-tab" data-toggle="tab") Forwarded
 
-          div(class="tab-content")
+          div.tab-content
+            div.tab-pane.show.active(id="all")
+              .table-responsive
+                table(class="table table-striped" border="1" cellpadding="5" width="100%")
+                  thead
+                    tr
+                      th(width="10%") Claim ID
+                      th(width="10%") Date
+                      th(width="20%") Manager
+                      th(width="45%") Description
+                      th(width="20%") Current Status
 
-          .table-responsive
-            table(class="table table-striped" id="resultTable" border="1" cellpadding="5" width="100%")
-              thead
-                tr
-                  th(width="10%") Claim ID
-                  th(width="10%") Date
-                  th(width="20%") Manager
-                  th(width="45%") Description
-                  th(width="20%") Current Status
-              tbody(id="row")
+                  tbody(id="allTbody")
+                    tr
+                      td 1234
+                      td 2018/01/01
+                      td James Chen
+                      td N/A
+                      td Pending
+                    tr
+                      td 1234
+                      td 2018/01/01
+                      td Fion Yuen
+                      td N/A
+                      td Pending
+
+            div.tab-pane(id="pending")
+              .table-responsive
+                table(class="table table-striped" border="1" cellpadding="5" width="100%")
+                  thead
+                    tr
+                      th(width="10%") Claim ID
+                      th(width="10%") Date
+                      th(width="20%") Manager
+                      th(width="45%") Description
+                      th(width="20%") Current Status
+
+                  tbody(id="pendingtbody")
+                    tr
+                      td 1242
+                      td 2018/01/01
+                      td James Chen
+                      td N/A
+                      td Pending
+                    tr
+                      td 1234
+                      td 2018/01/01
+                      td Fion Yuen
+                      td N/A
+                      td Pending
+
+            div.tab-pane(id="approved")
+              .table-responsive
+                table(class="table table-striped" border="1" cellpadding="5" width="100%")
+                  thead
+                    tr
+                      th(width="10%") Claim ID
+                      th(width="10%") Date
+                      th(width="20%") Manager
+                      th(width="45%") Description
+                      th(width="20%") Current Status
+
+                  tbody(id="approvedtbody")
+                    tr
+                      td 1242
+                      td 2018/01/01
+                      td James Chen
+                      td N/A
+                      td Approved
+                    tr
+                      td 1234
+                      td 2018/01/01
+                      td Fion Yuen
+                      td N/A
+                      td Approved
+
+
+            div.tab-pane(id="rejected")
+              .table-responsive
+                table(class="table table-striped" border="1" cellpadding="5" width="100%")
+                  thead
+                    tr
+                      th(width="10%") Claim ID
+                      th(width="10%") Date
+                      th(width="20%") Manager
+                      th(width="45%") Description
+                      th(width="20%") Current Status
+
+                  tbody(id="rejectedtbody")
+                    tr
+                      td 1242
+                      td 2018/01/01
+                      td James Chen
+                      td N/A
+                      td Rejected
+                    tr
+                      td 1234
+                      td 2018/01/01
+                      td Fion Yuen
+                      td N/A
+                      td Rejected
+
+            div.tab-pane(id="forwarded")
+              .table-responsive
+                table(class="table table-striped" border="1" cellpadding="5" width="100%")
+                  thead
+                    tr
+                      th(width="10%") Claim ID
+                      th(width="10%") Date
+                      th(width="20%") Manager
+                      th(width="45%") Description
+                      th(width="20%") Current Status
+
+                  tbody(id="forwardedtbody")
+                    tr
+                      td 1242
+                      td 2018/01/01
+                      td James Chen
+                      td N/A
+                      td Forwarded
+                    tr
+                      td 1234
+                      td 2018/01/01
+                      td Fion Yuen
+                      td N/A
+                      td Forwared
 
 
     script.
