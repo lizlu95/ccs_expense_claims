@@ -22,4 +22,4 @@ test:
   artifacts:
     paths:
       - node_modules/
-  coverage: /Statements.*?(\d+(?:\.\d+)?)%/
+  coverage: ^Statements\s*:\s*([^%]+)
