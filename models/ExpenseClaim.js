@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
     ExpenseClaim.CostCentre = ExpenseClaim.belongsTo(models.CostCentre);
 
     // used for Sequelize#create purposes via associations
-    ExpenseClaim.EmployeesExpenseClaims = ExpenseClaim.hasMany(models.EmployeeExpenseClaim);
+    ExpenseClaim.EmployeeExpenseClaims = ExpenseClaim.hasMany(models.EmployeeExpenseClaim);
 
     ExpenseClaim.Employees = ExpenseClaim.belongsToMany(models.Employee, {
       through: 'employees_expense_claims',
