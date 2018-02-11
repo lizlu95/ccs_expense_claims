@@ -12,6 +12,11 @@ const ExpenseClaim = models.ExpenseClaim;
 const ExpenseClaimItem = models.ExpenseClaimItem;
 const CostCentre = models.CostCentre;
 
+/* GET /claims */
+router.get('', function (req, res, next) {
+  res.render('claims/list');
+});
+
 /* GET /claims/new */
 router.get('/new', function (req, res, next) {
   res.locals.title = 'Expense Claim';
