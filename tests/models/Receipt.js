@@ -23,7 +23,7 @@ describe('receipt tests', function () {
     manager.destroy(done);
   });
 
-  it('report with expense claim item has an expense claim item', function (done) {
+  it('report with expense claim items has many expense claim items', function (done) {
     Receipt.findById(1).then((receipt) => {
       receipt.getExpenseClaimItems().then((expenseClaimItems) => {
         assert.isNotEmpty(expenseClaimItems);
