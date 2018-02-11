@@ -5,6 +5,7 @@ const _ = require('underscore');
 const moment = require('moment');
 const sequelize = require('../models/index').sequelize;
 const Op = require('sequelize').Op;
+const multipartMiddleware = require('connect-multiparty')();
 
 const models = require('../models/index');
 const ExpenseClaim = models.ExpenseClaim;
@@ -34,7 +35,8 @@ router.get('/:id', function (req, res, next) {
 });
 
 /* POST /claims */
-router.post('', function (req, res, next) {
+router.post('', multipartMiddleware, function (req, res, next) {
+  debugger;
   async.waterfall([
     function (callback) {
       CostCentre.findOne({
@@ -52,6 +54,7 @@ router.post('', function (req, res, next) {
       });
     },
     function (costCentreId, callback) {
+      debugger;
       var expenseClaimItems = _.map(req.body.items, function (expenseClaimItem) {
         return {
           employeeId: req.user.id,
