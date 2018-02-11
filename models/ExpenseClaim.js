@@ -2,10 +2,6 @@
 
 module.exports = (sequelize, DataTypes) => {
   var ExpenseClaim = sequelize.define('ExpenseClaim', {
-    id: {
-      primaryKey: true,
-      type: DataTypes.INTEGER,
-    },
     status: {
       type: DataTypes.STRING,
     },
@@ -23,13 +19,20 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   ExpenseClaim.associate = function (models) {
-    models.ExpenseClaim.hasMany(models.ExpenseClaimItem);
+    ExpenseClaim.ExpenseClaimItems = ExpenseClaim.hasMany(models.ExpenseClaimItem);
 
-    models.ExpenseClaim.belongsTo(models.CostCentre);
+    ExpenseClaim.CostCentre = ExpenseClaim.belongsTo(models.CostCentre);
 
-    models.ExpenseClaim.belongsToMany(models.Employee, {
+    // used for Sequelize#create purposes via associations
+    ExpenseClaim.EmployeesExpenseClaims = ExpenseClaim.hasMany(models.EmployeeExpenseClaim);
+
+    ExpenseClaim.Employees = ExpenseClaim.belongsToMany(models.Employee, {
       through: 'employees_expense_claims',
     });
+  };
+
+  ExpenseClaim.STATUS = {
+    DEFAULT: 'pending',
   };
 
   return ExpenseClaim;

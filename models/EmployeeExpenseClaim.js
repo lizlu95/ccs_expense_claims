@@ -2,10 +2,6 @@
 
 module.exports = (sequelize, DataTypes) => {
   var EmployeeExpenseClaim = sequelize.define('EmployeeExpenseClaim', {
-    id: {
-      primaryKey: true,
-      type: DataTypes.INTEGER,
-    },
     employeeId: {
       type: DataTypes.INTEGER,
       field: 'employee_id',
@@ -36,11 +32,11 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   EmployeeExpenseClaim.associate = function (models) {
-    models.EmployeeExpenseClaim.belongsTo(models.Employee, {
+    EmployeeExpenseClaim.Employee = EmployeeExpenseClaim.belongsTo(models.Employee, {
       foreign_key: 'employee_id',
     });
 
-    models.EmployeeExpenseClaim.belongsTo(models.ExpenseClaim, {
+    EmployeeExpenseClaim.ExpenseClaim = EmployeeExpenseClaim.belongsTo(models.ExpenseClaim, {
       foreign_key: 'expense_claim_id',
     });
   };

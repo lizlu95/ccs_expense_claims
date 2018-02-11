@@ -9,7 +9,16 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const uuidv4 = require('uuid/v4');
 const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const sassMiddleware = require('node-sass-middleware');
+const vueOptions = {
+  rootPath: path.join(__dirname, '/views'),
+  layout: {
+    start: '<div id="expense-claim-app">',
+    end: '</div>'
+  }
+};
+const expressVueMiddleware = require('express-vue').init(vueOptions);
 
 // routes
 const index = require('./routes/index');
@@ -34,12 +43,19 @@ app.use(sassMiddleware({
   dest: path.join(__dirname, 'public'),
   outputStyle: 'compressed',
 }));
+app.use(expressVueMiddleware);
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({ secret: uuidv4() }));
+app.use(session({
+  secret: uuidv4(),
+  resave: true,
+  saveUninitialized: true,
+}));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -51,7 +67,9 @@ passport.use(new LocalStrategy({
     // TODO stored procedure
     Employee.findOne({
       where: {
-        email: email,
+        email: {
+          [Op.eq]: email,
+        }
       }
     }).then((employee) => {
       if (!employee) {

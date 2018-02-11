@@ -24,11 +24,7 @@ helper.authenticate = function (agent, callback) {
     .expect(302)
     .expect('Location', '/')
     .end(function (err, res) {
-      if (err) {
-        assert.fail(null, err, 'User authentication failed!');
-      } else {
-        callback(null, agent);
-      }
+      callback(err, agent);
     });
 };
 
@@ -47,16 +43,19 @@ helper.withAuthenticate = function (steps, done) {
         step(agent, callback);
       }, function(err, results) {
         if (err) {
-          assert.fail(null, err);
+          done(err);
         } else {
           callback(null);
         }
       });
     },
-    function (callback) {
+  ], function (err, result) {
+    if (err) {
+      done(err);
+    } else {
       done();
-    },
-  ]);
+    }
+  });
 };
 
 module.exports = helper;

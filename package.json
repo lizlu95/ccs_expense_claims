@@ -4,18 +4,23 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "start": "node index.js",
-    "test": "NODE_ENV=test mocha --exit --recursive tests"
+    "test": "NODE_ENV=test nyc --reporter=text-summary mocha --exit --recursive tests",
+    "coverage": "nyc report --reporter=text-summary"
   },
   "dependencies": {
     "async": "^2.6.0",
     "body-parser": "~1.18.2",
+    "connect-multiparty": "^2.1.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.15.5",
     "express-session": "^1.15.6",
+    "express-vue": "^4.0.14",
+    "moment": "^2.20.1",
     "morgan": "~1.9.0",
     "mysql2": "^1.5.1",
     "node-sass-middleware": "^0.11.0",
+    "nyc": "^11.4.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pug": "2.0.0-beta11",

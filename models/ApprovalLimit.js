@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
   });
 
   ApprovalLimit.associate = function (models) {
-    models.ApprovalLimit.belongsTo(models.Employee);
+    ApprovalLimit.Employee = ApprovalLimit.belongsTo(models.Employee);
 
-    models.ApprovalLimit.belongsTo(models.CostCentre);
+    ApprovalLimit.CostCentre = ApprovalLimit.belongsTo(models.CostCentre);
   };
 
   return ApprovalLimit;

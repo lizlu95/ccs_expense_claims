@@ -4,16 +4,16 @@ const models = require('../models/index');
 
 module.exports = (sequelize, DataTypes) => {
   var CostCentre = sequelize.define('CostCentre', {
-    name: DataTypes.STRING
+    number: DataTypes.STRING,
   }, {
     underscored: true,
     tableName: 'cost_centres',
   });
 
   CostCentre.associate = function (models) {
-    models.CostCentre.hasMany(models.ExpenseClaim);
+    CostCentre.ExpenseClaims = CostCentre.hasMany(models.ExpenseClaim);
 
-    models.CostCentre.hasMany(models.ApprovalLimit);
+    CostCentre.ApprovalLimits = CostCentre.hasMany(models.ApprovalLimit);
   };
 
   return CostCentre;
