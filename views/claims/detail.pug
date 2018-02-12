@@ -8,11 +8,11 @@ block inner-content
         .col-md-12.col-lg-12
           .row
             .col-md-4 Claim ID
-              input#id.form-control(type="text" value="123456" readonly=true)
+              input#id.form-control(type="text" value=id readonly=true)
             .col-md-4.mb-4 Cost Centre
-              input.form-control(type="text" value="0754" readonly=true)
+              input.form-control(type="text" value=costCentreNumber readonly=true)
             .col-md-4 Claim Status
-              input.form-control(type="text" value="Pending" readonly=true)
+              input.form-control(type="text" value=status readonly=true)
           br
           h4 Claim Items
           .row
@@ -28,17 +28,11 @@ block inner-content
                     th(width="10%") Amount $
 
                 tbody(id="claimItems")
-                  tr
-                    td 1
-                    td 2018/01/01
-                    td AUTO GAS (Community or Facilities employees only)
-                    td N/A
-                    td 633710
-                    td 50.00
-                  tr
-                    td 2
-                    td 2018/01/15
-                    td MILEAGE (kilometres traveled using personal vehicle)
-                    th 500
-                    td 633400
-                    td 270.00
+                  each item in items
+                    tr
+                      td=item.id
+                      td=item.createdAt
+                      td AUTO GAS (Community or Facilities employees only)
+                      td=item.numKm
+                      td=item.gl
+                      td=item.total

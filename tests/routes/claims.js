@@ -82,7 +82,7 @@ describe('home page', function () {
             agent
               .post(CLAIMS_LIST_ROUTE)
               .attach('items[0][receipt]', 'fixtures/images/flowers.jpg')
-              .field('costCentreNumber', 0754)
+              .field('costCentreNumber', '0754')
               .field('bankAccount', '')
               .field('items[0][date]', '2000-01-01')
               .field('items[0][gl]', 2)

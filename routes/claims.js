@@ -2,6 +2,7 @@ const async = require('async');
 const express = require('express');
 const router = express.Router();
 const _ = require('underscore');
+const s = require('underscore.string');
 const moment = require('moment');
 const sequelize = require('../models/index').sequelize;
 const Op = require('sequelize').Op;
@@ -34,17 +35,45 @@ router.get('/:id', function (req, res, next) {
       ExpenseClaim.findById(expenseClaimId).then((expenseClaim) => {
         if (expenseClaim) {
           res.locals.id = expenseClaimId;
-          res.locals.status = expenseClaim.status;
+          res.locals.status = s(expenseClaim.status).capitalize().value();
 
-          res.render('claims/detail');
+          callback(null, expenseClaim);
         } else {
-          next();
+          callback('Expense claim not found!');
+        }
+      });
+    },
+    function (expenseClaim, callback) {
+      expenseClaim.getExpenseClaimItems().then((expenseClaimItems) => {
+        if (expenseClaimItems) {
+          res.locals.items = expenseClaimItems;
+
+          callback(null, expenseClaim);
+        } else {
+          callback('Expense claim items not found!');
+        }
+      });
+    },
+    function (expenseClaim, callback) {
+      CostCentre.findById(expenseClaim.costCentreId).then((costCentre) => {
+        if (costCentre) {
+          res.locals.costCentreNumber = costCentre.number;
+
+          callback(null);
+        } else {
+          callback('Invalid cost centre!');
         }
       });
     },
     function (callback) {
+      callback(null);
     },
-  ], function (err, result) {
+  ], function (err) {
+    if (err) {
+      next(err);
+    } else {
+      res.render('claims/detail');
+    }
   });
 });
 
