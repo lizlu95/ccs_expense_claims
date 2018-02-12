@@ -98,50 +98,55 @@ router.post('', multipartMiddleware, function (req, res, next) {
         return model;
       });
 
-      var employeesExpenseClaims = [
-        {
-          employeeId: employeeId,
-          isOwner: true,
-          isActive: true,
-        },
-        {
-          employeeId: managerId,
-          isOwner: false,
-          isActive: true,
-        },
-      ];
+      if (expenseClaimItems.length < 1) {
+        callback('No items provided for expense claim!');
+      } else {
+        var employeesExpenseClaims = [
+          {
+            employeeId: employeeId,
+            isOwner: true,
+            isActive: true,
+          },
+          {
+            employeeId: managerId,
+            isOwner: false,
+            isActive: true,
+          },
+        ];
 
-      var expenseClaim = {
-        status: ExpenseClaim.STATUS.DEFAULT,
-        bankAccount: req.body.bankAccount,
-        costCentreId: costCentre.id,
-        ExpenseClaimItems: expenseClaimItems,
-        EmployeeExpenseClaims: employeesExpenseClaims,
-      };
+        var expenseClaim = {
+          status: ExpenseClaim.STATUS.DEFAULT,
+          bankAccount: req.body.bankAccount,
+          costCentreId: costCentre.id,
+          ExpenseClaimItems: expenseClaimItems,
+          EmployeeExpenseClaims: employeesExpenseClaims,
+        };
 
-      sequelize.transaction(function (t) {
-        return ExpenseClaim.create(expenseClaim, {
-          include: [{
-            association: ExpenseClaim.ExpenseClaimItems,
-            include: [
-              ExpenseClaimItem.Receipt,
-            ],
-          }, {
-            association: ExpenseClaim.EmployeeExpenseClaims,
-          }],
-          transaction: t,
-        }).then(function (expenseClaim) {
-          callback(null, expenseClaim);
-        }).catch(function( err) {
-          // TODO handle errors here.. is this how you pass to err handler?
-          callback(err);
+        sequelize.transaction(function (t) {
+          return ExpenseClaim.create(expenseClaim, {
+            include: [{
+              association: ExpenseClaim.ExpenseClaimItems,
+              include: [
+                ExpenseClaimItem.Receipt,
+              ],
+            }, {
+              association: ExpenseClaim.EmployeeExpenseClaims,
+            }],
+            transaction: t,
+          }).then(function (expenseClaim) {
+            callback(null, expenseClaim);
+          }).catch(function( err) {
+            // TODO handle errors here.. is this how you pass to err handler?
+            callback(err);
+          });
         });
-      });
+      }
     },
   ], function (err, expenseClaim) {
     if (err) {
-      // TODO handle errors
-      next(err);
+      res.status = 409;
+
+      res.render('error');
     } else {
       res.redirect('/claims/' + expenseClaim.id);
     }

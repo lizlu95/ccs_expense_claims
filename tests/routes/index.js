@@ -28,12 +28,13 @@ describe('home page', function () {
       });
   });
 
-  it('/ should 200 when user is authenticated', function (done) {
+  it('/ should take user to claims list page when user is authenticated', function (done) {
     helper.withAuthenticate([
       function(agent, callback) {
         agent
           .get('/')
-          .expect(200)
+          .expect(302)
+          .expect('Location', '/claims')
           .end(function (err, res) {
             callback(null, err);
           });

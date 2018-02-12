@@ -10,6 +10,7 @@ const models = require('../../models/index');
 const ExpenseClaim = models.ExpenseClaim;
 
 const CLAIMS_NEW_ROUTE = '/claims/new';
+const CLAIMS_LIST_ROUTE = '/claims';
 
 const CLAIMS_ROUTES = [
   CLAIMS_NEW_ROUTE,
@@ -63,91 +64,40 @@ describe('home page', function () {
   it('/claims POST with valid data creates a new expense claim', function (done) {
     helper.withAuthenticate([
       function (agent, callback) {
-        agent
-          .post('/claims')
-          .send({
-            managerId: 2,
-            costCentreId: 2,
-            bankAccount: '',
-            items: [
-              {
-                date: '2000-01-01',
-                gl: 2,
-                numKm: 100,
-                receipt: {
-                  path: '',
-                },
-                description: 'My First Expense Item',
-                amount: 2,
-              },
-              {
-                date: '2000-02-02',
-                gl: 2,
-                numKm: 100,
-                receipt: {
-                  path: '',
-                },
-                description: 'My Second Expense Item',
-                amount: 2,
-              },
-            ],
-          })
-          .expect(302)
-          .expect('Location', '/\/claims\/.*/')
-          .end(function (err, res) {
-            if (err) {
-              callback(err);
-            } else {
-              // expense claim will be the most recently created
-              // NOTE assumes test is run in a single-threaded environment
-
-              // TODO get latest created ExpenseClaim instance id
-              agent
-                .get('/claims/' + 1)
-                .expect(200)
-                .end(function (err, res) {
-                  callback(err);
-                });
-            }
-          });
-      },
-    ], done);
-  });
-
-  // TODO
-  it('/claims POST with in-valid data does not create new expense claim', function (done) {
-    helper.withAuthenticate([
-      function (agent, callback) {
-        agent
-          .post(CLAIMS_NEW_ROUTE)
-          .expect(400) // TODO ensure this is correct
-          .end(function (err, res) {
-            if (err) {
-              callback(err);
-            } else {
-              // NOTE assumes test is run in a single-threaded environment
-              async.waterfall([
-                function (callback) {
-                  ExpenseClaim.findOne({
-                    order: [ [ 'createdAt', 'DESC' ] ],
-                  }).then((expenseClaim) => {
-                    if (expenseClaim) {
-                      callback(null, expenseClaim);
-                    } else {
-                      callback('Failed to find latest expense claim.');
-                    }
-                  });
-                }, function (expenseClaim, callback) {
-                  agent
-                    .get('/claims/' + id)
-                    .expect(200)
-                    .end(function (err, res) {
-                      callback(err);
-                    });
-                }
-              ]);
-            }
-          });
+        // NOTE assumes test is run in a single-threaded environment
+        async.waterfall([
+          function (callback) {
+            ExpenseClaim.findAll({
+              limit: 1,
+              order: [ [ 'id', 'DESC' ] ],
+            }).then(function (expenseClaims) {
+              if (expenseClaims) {
+                callback(null, expenseClaims[0].id);
+              } else {
+                callback(err);
+              }
+            });
+          },
+          function (lastExpenseClaimId, callback) {
+            agent
+              .post(CLAIMS_LIST_ROUTE)
+              .attach('items[0][receipt]', 'fixtures/images/flowers.jpg')
+              .field('costCentreNumber', 0754)
+              .field('bankAccount', '')
+              .field('items[0][date]', '2000-01-01')
+              .field('items[0][gl]', 2)
+              .field('items[0][numKm]', 100)
+              .field('items[0][description]', 'My First Expense Item')
+              .field('items[0][total]', 200)
+              .expect(302)
+              .expect('Location', '/claims/' + (lastExpenseClaimId + 1))
+              .end(function (err, res) {
+                callback(err);
+              });
+          },
+        ], function (err) {
+          callback(err);
+        });
       },
     ], done);
   });
