@@ -42,6 +42,10 @@ A web application to track internal expense claims for Coast Capital Savings Cre
 
     ```$ npm run db:migrate```
 
+6. Seed your development environment.
+
+    ```$ npm run db:seed```
+
 6. Start server.
 
     ```npm start```
