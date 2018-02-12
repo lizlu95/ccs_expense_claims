@@ -1,38 +1,47 @@
 extends ../dashboard
 
 block inner-content
-  h1= "Expense Claim"
-  .container
-    .py-5
-      .row
-        .col-md-12.col-lg-12
-          .row
-            .col-md-4 Claim ID
-              input#id.form-control(type="text" value=id readonly=true)
-            .col-md-4.mb-4 Cost Centre
-              input.form-control(type="text" value=costCentreNumber readonly=true)
-            .col-md-4 Claim Status
-              input.form-control(type="text" value=status readonly=true)
-          br
-          h4 Claim Items
-          .row
-            .table-responsive
-              table(class="table table-striped" border="1" cellpadding="5" width="100%")
-                thead
-                  tr
-                    th(width="3%") #
-                    th(width="10%") Date
-                    th(width="57%") Expense Category
-                    th(width="10%") No. KM
-                    th(width="10%") GL
-                    th(width="10%") Amount $
-
-                tbody(id="claimItems")
-                  each item in items
-                    tr
-                      td=item.id
-                      td=item.createdAt
-                      td AUTO GAS (Community or Facilities employees only)
-                      td=item.numKm
-                      td=item.gl
-                      td=item.total
+  .row.mb-3
+    .col-12.text-center
+      h1 Claim #{id}
+  .row.mb-1
+    .col-12
+      h4 Information
+  .row.mb-3
+    .col-12
+      .progress(style='height:35px;')
+        .progress-bar.progress-bar-striped.progress-bar-animated(role='progressbar' style='width: 25%;' aria-valuenow='Pending' aria-valuemin='0' aria-valuemax='100') Pending
+  .row.mb-4
+    .col-md-4
+      label(for='employee-id') Submitter
+      input#name.form-control(type='text' value='Meilin Guo' readonly=true)
+    .col-md-4
+      label(for='approver-id') Approver
+      input#name.form-control(type='text' value='Liz Liu' readonly=true)
+    .col-md-4
+      label(for='id') Cost Centre
+      input#name.form-control(type='text' value=costCentreNumber readonly=true)
+  .row.mb-1
+    .col-12
+      h4 Items
+  .row
+    .col-12
+      .table-responsive
+        table(class='table table-striped table-hover' cellpadding='5')
+          thead
+            tr
+              th #
+              th Date
+              th Expense Category
+              th # Km Travelled
+              th GL
+              th Total
+          tbody(id='claimItems')
+            each item in items
+              tr
+                td=item.id
+                td=item.createdAt
+                td AUTO GAS (Community or Facilities employees only)
+                td=item.numKm
+                td=item.gl
+                td=item.total
