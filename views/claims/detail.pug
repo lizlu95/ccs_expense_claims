@@ -1,5 +1,44 @@
 extends ../dashboard
 
 block inner-content
-  h1= title
-  p Viewing Expense Claim #{id}
+  h1= "Expense Claim"
+  .container
+    .py-5
+      .row
+        .col-md-12.col-lg-12
+          .row
+            .col-md-4 Claim ID
+              input#id.form-control(type="text" value="123456" readonly=true)
+            .col-md-4.mb-4 Cost Centre
+              input.form-control(type="text" value="0754" readonly=true)
+            .col-md-4 Claim Status
+              input.form-control(type="text" value="Pending" readonly=true)
+          br
+          h4 Claim Items
+          .row
+            .table-responsive
+              table(class="table table-striped" border="1" cellpadding="5" width="100%")
+                thead
+                  tr
+                    th(width="3%") #
+                    th(width="10%") Date
+                    th(width="57%") Expense Category
+                    th(width="10%") No. KM
+                    th(width="10%") GL
+                    th(width="10%") Amount $
+
+                tbody(id="claimItems")
+                  tr
+                    td 1
+                    td 2018/01/01
+                    td AUTO GAS (Community or Facilities employees only)
+                    td N/A
+                    td 633710
+                    td 50.00
+                  tr
+                    td 2
+                    td 2018/01/15
+                    td MILEAGE (kilometres traveled using personal vehicle)
+                    th 500
+                    td 633400
+                    td 270.00
