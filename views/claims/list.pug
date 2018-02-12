@@ -14,15 +14,15 @@ block inner-content
     .col-md-12.col-lg-12
       ul.nav.nav-tabs
         li.nav-item
-          a(class="nav-link active" href="#all" id="all-tab" data-toggle="tab" aria-controls="home" aria-expanded="true") All
+          a(class="nav-link active" href="#submitted-all" id="all-tab" data-toggle="tab" aria-controls="home" aria-expanded="true") All
         li.nav-item
-          a(class="nav-link" href="#pending" id="pending-tab" data-toggle="tab") Pending
+          a(class="nav-link" href="#submitted-pending" id="pending-tab" data-toggle="tab") Pending
         li.nav-item
-          a(class="nav-link" href="#approved" id="approved-tab" data-toggle="tab") Approved
+          a(class="nav-link" href="#submitted-approved" id="approved-tab" data-toggle="tab") Approved
         li.nav-item
-          a(class="nav-link" href="#rejected" id="rejected-tab" data-toggle="tab") Rejected
+          a(class="nav-link" href="#submitted-rejected" id="rejected-tab" data-toggle="tab") Rejected
       div.tab-content
-        div.tab-pane.show.active(id="all")
+        div.tab-pane.show.active(id="submitted-all")
           .table-responsive
             table(class="table table-striped table-hover" cellpadding="5")
               thead
@@ -32,7 +32,7 @@ block inner-content
                   th Manager
                   th Description
                   th Current Status
-              tbody(id="allTbody")
+              tbody
                 tr
                   td 1234
                   td 2018/01/01
@@ -45,9 +45,9 @@ block inner-content
                   td Fion Yuen
                   td N/A
                   td Pending
-        div.tab-pane(id="pending")
+        div.tab-pane(id="submitted-pending")
           .table-responsive
-            table(class="table table-striped" cellpadding="5")
+            table(class="table table-striped table-hover" cellpadding="5")
               thead
                 tr
                   th Claim ID
@@ -55,7 +55,7 @@ block inner-content
                   th Manager
                   th Description
                   th Current Status
-              tbody(id="pendingtbody")
+              tbody
                 tr
                   td 1242
                   td 2018/01/01
@@ -68,9 +68,9 @@ block inner-content
                   td Fion Yuen
                   td N/A
                   td Pending
-        div.tab-pane(id="approved")
+        div.tab-pane(id="submitted-approved")
           .table-responsive
-            table(class="table table-striped" cellpadding="5")
+            table(class="table table-striped table-hover" cellpadding="5")
               thead
                 tr
                   th Claim ID
@@ -78,8 +78,7 @@ block inner-content
                   th Manager
                   th Description
                   th Current Status
-
-              tbody(id="approvedtbody")
+              tbody
                 tr
                   td 1242
                   td 2018/01/01
@@ -92,9 +91,9 @@ block inner-content
                   td Fion Yuen
                   td N/A
                   td Approved
-        div.tab-pane(id="rejected")
+        div.tab-pane(id="submitted-rejected")
           .table-responsive
-            table(class="table table-striped" cellpadding="5")
+            table(class="table table-striped table-hover" cellpadding="5")
               thead
                 tr
                   th Claim ID
@@ -102,8 +101,7 @@ block inner-content
                   th Manager
                   th Description
                   th Current Status
-
-              tbody(id="rejectedtbody")
+              tbody
                 tr
                   td 1242
                   td 2018/01/01
@@ -116,24 +114,26 @@ block inner-content
                   td Fion Yuen
                   td N/A
                   td Rejected
-          .row.mb-3
-  .col-12.text-center
-    h2 Submitted
+  .row.mb-3
+    .col-12.text-center
+      h2 Managed
   .row.mb-3
     .col-md-12.col-lg-12
       ul.nav.nav-tabs
         li.nav-item
-          a(class="nav-link active" href="#all" id="all-tab" data-toggle="tab" aria-controls="home" aria-expanded="true") All
+          a(class="nav-link active" href="#managed-all" id="all-tab" data-toggle="tab" aria-controls="home" aria-expanded="true") All
         li.nav-item
-          a(class="nav-link" href="#pending" id="pending-tab" data-toggle="tab") Pending
+          a(class="nav-link" href="#managed-pending" id="pending-tab" data-toggle="tab") Pending
         li.nav-item
-          a(class="nav-link" href="#approved" id="approved-tab" data-toggle="tab") Approved
+          a(class="nav-link" href="#managed-approved" id="approved-tab" data-toggle="tab") Approved
         li.nav-item
-          a(class="nav-link" href="#rejected" id="rejected-tab" data-toggle="tab") Rejected
+          a(class="nav-link" href="#managed-rejected" id="rejected-tab" data-toggle="tab") Rejected
+        li.nav-item
+          a(class="nav-link" href="#managed-forwarded" id="forwarded-tab" data-toggle="tab") Forwarded
       div.tab-content
-        div.tab-pane.show.active(id="all")
-          .table-responsive
-            table(class="table table-striped" cellpadding="5")
+        div.tab-pane.show.active(id="managed-all")
+          .table-responsive.table-hover
+            table(class="table table-striped table-hover" cellpadding="5")
               thead
                 tr
                   th Claim ID
@@ -141,7 +141,7 @@ block inner-content
                   th Manager
                   th Description
                   th Current Status
-              tbody(id="allTbody")
+              tbody
                 tr
                   td 1234
                   td 2018/01/01
@@ -154,9 +154,9 @@ block inner-content
                   td Fion Yuen
                   td N/A
                   td Pending
-        div.tab-pane(id="pending")
+        div.tab-pane(id="managed-pending")
           .table-responsive
-            table(class="table table-striped" cellpadding="5")
+            table(class="table table-striped table-hover" cellpadding="5")
               thead
                 tr
                   th Claim ID
@@ -164,7 +164,7 @@ block inner-content
                   th Manager
                   th Description
                   th Current Status
-              tbody(id="pendingtbody")
+              tbody
                 tr
                   td 1242
                   td 2018/01/01
@@ -177,9 +177,9 @@ block inner-content
                   td Fion Yuen
                   td N/A
                   td Pending
-        div.tab-pane(id="approved")
+        div.tab-pane(id="managed-approved")
           .table-responsive
-            table(class="table table-striped" cellpadding="5")
+            table(class="table table-striped table-hover" cellpadding="5")
               thead
                 tr
                   th Claim ID
@@ -187,8 +187,7 @@ block inner-content
                   th Manager
                   th Description
                   th Current Status
-
-              tbody(id="approvedtbody")
+              tbody
                 tr
                   td 1242
                   td 2018/01/01
@@ -201,9 +200,9 @@ block inner-content
                   td Fion Yuen
                   td N/A
                   td Approved
-        div.tab-pane(id="rejected")
+        div.tab-pane(id="managed-rejected")
           .table-responsive
-            table(class="table table-striped" cellpadding="5")
+            table(class="table table-striped table-hover" cellpadding="5")
               thead
                 tr
                   th Claim ID
@@ -211,8 +210,7 @@ block inner-content
                   th Manager
                   th Description
                   th Current Status
-
-              tbody(id="rejectedtbody")
+              tbody
                 tr
                   td 1242
                   td 2018/01/01
@@ -225,4 +223,28 @@ block inner-content
                   td Fion Yuen
                   td N/A
                   td Rejected
+        div.tab-pane(id="managed-forwarded")
+          .table-responsive
+            table(class="table table-striped table-hover" cellpadding="5")
+              thead
+                tr
+                  th Claim ID
+                  th Date
+                  th Manager
+                  th Description
+                  th Current Status
+              tbody
+                tr
+                  td 1242
+                  td 2018/01/01
+                  td James Chen
+                  td N/A
+                  td Forwarded
+                tr
+                  td 1234
+                  td 2018/01/01
+                  td Fion Yuen
+                  td N/A
+                  td Forwarded
+
 
