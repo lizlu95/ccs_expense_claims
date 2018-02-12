@@ -36,7 +36,7 @@ A web application to track internal expense claims for Coast Capital Savings Cre
 
 5. Install required dependencies.
 
-    ```npm install```
+    ```$ npm install```
 
 5. Run migrations.
 
@@ -48,7 +48,7 @@ A web application to track internal expense claims for Coast Capital Savings Cre
 
 6. Start server.
 
-    ```npm start```
+    ```$ npm start```
 
 7. Access server via browser on PORT or 3000.
 
