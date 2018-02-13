@@ -14,7 +14,7 @@ block inner-content
             .col-md-4 Claim Status
               input.form-control(type="text" value="Pending" readonly=true)
           br
-          h4 Claim Items
+          h3 Claim Items
           .row
             .table-responsive
               table(class="table table-striped" border="1" cellpadding="5" width="100%")
@@ -42,3 +42,25 @@ block inner-content
                     th 500
                     td 633400
                     td 270.00
+          .row.justify-content-end
+            h4 Total
+            .col-md-2
+              input.form-control(type="text" value="320.00" readonly=true)
+
+          br
+          br
+          .row
+            .col-md-2
+              h6 Manage ID
+              input.form-control(type="text" value="2" readonly=true)
+            .col-md-9
+              h6 Comment
+              input.form-control(type="text" value="N/A" readonly=true)
+          br
+          .row
+            .col-md-2
+              h6 Submitted Date
+              input.form-control(type="text" value="2018/02/01" readonly=true)
+            .col-md-2
+              h6 Approved Date
+              input.form-control(type="text" value="N/A" readonly=true)
