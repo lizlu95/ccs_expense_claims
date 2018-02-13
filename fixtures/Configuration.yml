@@ -1,0 +1,13 @@
+fixtures:
+  - model: Configuration
+    data:
+      name: 'max_per_diem_amount'
+      value: 1
+  - model: Configuration
+    data:
+      name: 'per_mileage_value'
+      value: 2
+  - model: Configuration
+    data:
+      name: 'max_per_meal_amount'
+      value: 3
