@@ -30,7 +30,7 @@ const destroy = function (done) {
 };
 
 function sanityCheck() {
-  if (process.env.NODE_ENV == 'test' || process.env.NODE_ENV == 'development') {
+  if (process.env.NODE_ENV != 'test' && process.env.NODE_ENV != 'development') {
     console.log('Please only run test suites with NODE_ENV=test or NODE_ENV=development to preserve database!');
 
     process.exit();
