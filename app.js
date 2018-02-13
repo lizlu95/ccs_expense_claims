@@ -26,6 +26,7 @@ const login = require('./routes/authenticate/login');
 const logout = require('./routes/authenticate/logout');
 const claims = require('./routes/claims');
 const reports = require('./routes/admin/reports');
+const configuration = require('./routes/configuration');// Steven
 
 const app = module.exports = express();
 
@@ -112,6 +113,9 @@ app.use('/', index);
 app.use('/logout', logout);
 app.use('/claims', claims);
 app.use('/reports', reports);
+
+// configuration Steven
+app.use('/system/configuration', configuration);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
