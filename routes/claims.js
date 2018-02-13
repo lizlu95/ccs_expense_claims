@@ -2,6 +2,7 @@ const async = require('async');
 const express = require('express');
 const router = express.Router();
 const _ = require('underscore');
+const s = require('underscore.string');
 const moment = require('moment');
 const sequelize = require('../models/index').sequelize;
 const Op = require('sequelize').Op;
@@ -21,7 +22,7 @@ router.get('', function (req, res, next) {
 router.get('/new', function (req, res, next) {
   res.locals.title = 'Expense Claim';
 
-  res.render('claims/new', { title: 'Expense Claim' });
+  res.render('claims/new');
 });
 
 /* GET /claims/:id */
@@ -34,17 +35,50 @@ router.get('/:id', function (req, res, next) {
       ExpenseClaim.findById(expenseClaimId).then((expenseClaim) => {
         if (expenseClaim) {
           res.locals.id = expenseClaimId;
-          res.locals.status = expenseClaim.status;
+          res.locals.status = s(expenseClaim.status).capitalize().value();
 
-          res.render('claims/detail');
+          callback(null, expenseClaim);
         } else {
-          next();
+          callback('Expense claim not found!');
+        }
+      });
+    },
+    function (expenseClaim, callback) {
+      expenseClaim.getExpenseClaimItems().then((expenseClaimItems) => {
+        if (expenseClaimItems) {
+          res.locals.items = expenseClaimItems;
+
+          callback(null, expenseClaim);
+        } else {
+          callback('Expense claim items not found!');
+        }
+      });
+    },
+    function (expenseClaim, callback) {
+      CostCentre.findById(expenseClaim.costCentreId).then((costCentre) => {
+        if (costCentre) {
+          res.locals.costCentreNumber = costCentre.number;
+
+          callback(null);
+        } else {
+          callback('Invalid cost centre!');
         }
       });
     },
     function (callback) {
+      callback(null);
     },
-  ], function (err, result) {
+  ], function (err) {
+    if (err) {
+      err = {
+        message: 'Failed to find expense claim!',
+        status: 404,
+      };
+
+      next(err);
+    } else {
+      res.render('claims/detail');
+    }
   });
 });
 
@@ -56,7 +90,7 @@ router.post('', multipartMiddleware, function (req, res, next) {
       CostCentre.findOne({
         where: {
           number: {
-            [Op.eq]: req.body.costCentreNumber,
+            [Op.eq]: req.body.costCentreNumber.toString(),
           }
         }
       }).then((costCentre) => {
@@ -98,49 +132,57 @@ router.post('', multipartMiddleware, function (req, res, next) {
         return model;
       });
 
-      var employeesExpenseClaims = [
-        {
-          employeeId: employeeId,
-          isOwner: true,
-          isActive: true,
-        },
-        {
-          employeeId: managerId,
-          isOwner: false,
-          isActive: true,
-        },
-      ];
+      if (expenseClaimItems.length < 1) {
+        callback('No items provided for expense claim!');
+      } else {
+        var employeesExpenseClaims = [
+          {
+            employeeId: employeeId,
+            isOwner: true,
+            isActive: true,
+          },
+          {
+            employeeId: managerId,
+            isOwner: false,
+            isActive: true,
+          },
+        ];
 
-      var expenseClaim = {
-        status: ExpenseClaim.STATUS.DEFAULT,
-        bankAccount: req.body.bankAccount,
-        costCentreId: costCentre.id,
-        ExpenseClaimItems: expenseClaimItems,
-        EmployeeExpenseClaims: employeesExpenseClaims,
-      };
+        var expenseClaim = {
+          status: ExpenseClaim.STATUS.DEFAULT,
+          bankAccount: req.body.bankAccount,
+          costCentreId: costCentre.id,
+          ExpenseClaimItems: expenseClaimItems,
+          EmployeeExpenseClaims: employeesExpenseClaims,
+        };
 
-      sequelize.transaction(function (t) {
-        return ExpenseClaim.create(expenseClaim, {
-          include: [{
-            association: ExpenseClaim.ExpenseClaimItems,
-            include: [
-              ExpenseClaimItem.Receipt,
-            ],
-          }, {
-            association: ExpenseClaim.EmployeeExpenseClaims,
-          }],
-          transaction: t,
-        }).then(function (expenseClaim) {
-          callback(null, expenseClaim);
-        }).catch(function( err) {
-          // TODO handle errors here.. is this how you pass to err handler?
-          callback(err);
+        sequelize.transaction(function (t) {
+          return ExpenseClaim.create(expenseClaim, {
+            include: [{
+              association: ExpenseClaim.ExpenseClaimItems,
+              include: [
+                ExpenseClaimItem.Receipt,
+              ],
+            }, {
+              association: ExpenseClaim.EmployeeExpenseClaims,
+            }],
+            transaction: t,
+          }).then(function (expenseClaim) {
+            callback(null, expenseClaim);
+          }).catch(function( err) {
+            // TODO handle errors here.. is this how you pass to err handler?
+            callback(err);
+          });
         });
-      });
+      }
     },
   ], function (err, expenseClaim) {
     if (err) {
-      // TODO handle errors
+      err = {
+        message: 'Failed to create expense claim!',
+        status: 409,
+      };
+
       next(err);
     } else {
       res.redirect('/claims/' + expenseClaim.id);

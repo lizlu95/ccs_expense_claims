@@ -32,7 +32,7 @@ describe('logout page', function () {
     helper.withAuthenticate([
       function (agent, callback) {
         agent
-          .get('/')
+          .get('/claims')
           .expect(200)
           .end(function (err, res) {
             if (err) {

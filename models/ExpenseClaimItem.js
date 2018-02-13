@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
       field: 'expense_claim_id',
     },
     name: DataTypes.STRING,
-    amount: DataTypes.INTEGER,
+    total: DataTypes.INTEGER,
     receiptId: {
       type: DataTypes.INTEGER,
       field: 'receipt_id',

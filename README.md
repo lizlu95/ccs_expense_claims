@@ -36,18 +36,19 @@ A web application to track internal expense claims for Coast Capital Savings Cre
 
 5. Install required dependencies.
 
-    ```npm install```
+    ```$ npm install```
 
 5. Run migrations.
 
-    ```
-    $ node_modules/.bin/sequelize db:migrate
-    $ NODE_ENV=test node_modules/.bin/sequelize db:migrate
-    ```
+    ```$ npm run db:migrate```
+
+6. Seed your development environment.
+
+    ```$ npm run db:seed```
 
 6. Start server.
 
-    ```npm start```
+    ```$ npm start```
 
 7. Access server via browser on PORT or 3000.
 
