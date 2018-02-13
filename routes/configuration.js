@@ -26,7 +26,7 @@ router.get('/', function (req, res, next) {
 router.post('/', function (req, res, next) {
   updateValues(req).then(function (nothing) {
     res.redirect('/system/configuration');
-  })
+  });
 
 });
 // Configurations.update() return a promise, should wrap in Promise.all
@@ -40,7 +40,7 @@ updateValues = function (req) {
         where: {
           name: 'max_per_diem_amount'
         }
-      }))
+      }));
     }
     if (req.body.newMileage) {
       pArr.push(Configurations.update({
@@ -49,7 +49,7 @@ updateValues = function (req) {
         where: {
           name: 'per_mileage_value'
         }
-      }))
+      }));
     }
     if (req.body.newMeal) {
       pArr.push(Configurations.update({
@@ -58,7 +58,7 @@ updateValues = function (req) {
         where: {
           name: 'max_per_meal_amount'
         }
-      }))
+      }));
     }
     Promise.all(pArr).then(function (nothing) {
       fulfill(nothing);
@@ -66,7 +66,7 @@ updateValues = function (req) {
       /* TODO when input value is not value, such as too big or negative
          show the error message or display sth.
          (node:2160) UnhandledPromiseRejectionWarning: SequelizeDatabaseError: Out of range value for column 'value' at row 1 */
-    })
+    });
   })
 };
 
