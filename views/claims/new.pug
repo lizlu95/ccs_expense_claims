@@ -100,9 +100,9 @@ block inner-content
               | Please enter the # of kilometers travelled.
             .valid-feedback
               | Looks good!
-            //.col-md-12#upload
-            //  label(class='custom-file-label' for='receipt') Choose file..
-            //  input#receipt.form-control(name='items[0][receipt]' class='custom-file-input' value='' type='file' required='')
+          .col-md-12#upload(style="display:none;")
+              label(class='custom-file-label' for='receipt') Choose file..
+              input#receipt.form-control(name='items[0][receipt]' class='custom-file-input' value='' type='file')
           .col-md-5
             label(for='total') Total
             input#total.form-control(name='items[0][total]' type='number' value='' readonly=true)

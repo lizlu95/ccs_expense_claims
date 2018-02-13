@@ -70,6 +70,11 @@ router.get('/:id', function (req, res, next) {
     },
   ], function (err) {
     if (err) {
+      err = {
+        message: 'Failed to find expense claim!',
+        status: 404,
+      };
+
       next(err);
     } else {
       res.render('claims/detail');
@@ -85,7 +90,7 @@ router.post('', multipartMiddleware, function (req, res, next) {
       CostCentre.findOne({
         where: {
           number: {
-            [Op.eq]: req.body.costCentreNumber,
+            [Op.eq]: req.body.costCentreNumber.toString(),
           }
         }
       }).then((costCentre) => {
@@ -173,9 +178,12 @@ router.post('', multipartMiddleware, function (req, res, next) {
     },
   ], function (err, expenseClaim) {
     if (err) {
-      res.status = 409;
+      err = {
+        message: 'Failed to create expense claim!',
+        status: 409,
+      };
 
-      res.render('error');
+      next(err);
     } else {
       res.redirect('/claims/' + expenseClaim.id);
     }
