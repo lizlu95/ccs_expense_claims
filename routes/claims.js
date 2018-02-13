@@ -22,7 +22,7 @@ router.get('', function (req, res, next) {
 router.get('/new', function (req, res, next) {
   res.locals.title = 'Expense Claim';
 
-  res.render('claims/new', { title: 'Expense Claim' });
+  res.render('claims/new');
 });
 
 /* GET /claims/:id */
