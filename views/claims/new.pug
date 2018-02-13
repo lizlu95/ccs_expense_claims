@@ -5,7 +5,7 @@ block inner-content
     .col-12.text-center
       h1 New Claim
   .row.mb-3
-    form.row.needs-validation(enctype='multipart/form-data' novalidate='', action='/claims', method='POST')
+    form.row.needs-validation(enctype='multipart/form-data' novalidate action='/claims' method='POST')
       .col-md-8
         .row.mb-1
           .col-12
@@ -20,14 +20,20 @@ block inner-content
         .row.mb-4
           .col-md-6
             label(for='cost-centre') Cost Centre
-            select#cost-centre.custom-select(name='costCentreNumber' required='')
+            select#cost-centre.custom-select(name='costCentreNumber' required)
               option(value='') Choose...
               option 0754
-              .invalid-feedback
-                Please select a valid cost centre.
+            .invalid-feedback
+              | Please select a valid cost centre.
+            .valid-feedback
+              | Looks good!
           .col-md-6
               label(for='bank-account') Bank Account #
-              input#bank-account.form-control(name='bankAccount' placeholder='Leave blank for payroll..' type='text' required='' maxlength='14' minlength='14')
+              input#bank-account.form-control(name='bankAccount' placeholder='Leave blank for payroll..' type='text' maxlength='14' minlength='14')
+              .invalid-feedback
+                | Please enter a 14 digit bank account.
+              .valid-feedback
+                | Looks good!
         .row.mb-1
           .col-12
             h4 Items
@@ -36,10 +42,14 @@ block inner-content
             span.badge.badge-success.badge-pill.badge-lg 1
           .col-md-4
             label(for='date') Date
-            input#date.form-control(name='items[0][date]' type='date' value='' required='')
+            input#date.form-control(name='items[0][date]' type='date' value='' required)
+            .invalid-feedback
+              | Please enter a valid date.
+            .valid-feedback
+              | Looks good!
           .col-md-4
             label(for='expense-category') Expense Category
-            select#expense-category.custom-select(required='')
+            select#expense-category.custom-select(required)
               option Choose...
               option(value= 'gas') AUTO GAS (Community or Facilities employees only)
               option(value= 'repairs') AUTO REPAIRS (Community or Facilities employees only)
@@ -60,22 +70,36 @@ block inner-content
               option(value= 'tel') TELEPHONE (Telephone, cell, pager, internet stick)
               option(value= 'travel') TRAVEL (Hotel, ferry, taxi, parking, mileage)
             .invalid-feedback
-              | Please select an expense category
+              | Please select an expense category.
+            .valid-feedback
+              | Looks good!
           .col-md-3
             label(for='gl') GL
-            select#gl.custom-select(name='items[0][gl]' required='')
+            select#gl.custom-select(name='items[0][gl]' required)
               option Choose...
               option(value='1') 633710
+            .invalid-feedback
+              | Please select a valid GL.
+            .valid-feedback
+              | Looks good!
         .row.mb-3
           .col-md-12
             label(for='description') Description
-            input#description.form-control(name='[0][description]' type='text' value='' size='70' required='')
+            input#description.form-control(name='[0][description]' type='text' value='' size='70' required)
+            .invalid-feedback
+              | Please enter a description.
+            .valid-feedback
+              | Looks good!
         .row.mb-5
           .col-md-7
             .d-flex.justify-content-between.align-items-center
               label(for='num-km') # Km Travelled
               span.badge.badge-secondary.badge-sm#num-km-info(data-toggle="tooltip" data-placement="top" title="" data-original-title="$0.54 < 5000Km, $0.48 > 5000Km") ?
-            input#num-km.form-control(name='items[0][numKm]' type='number' placeholder='$0.54<5000KM, $0.48>5000KM' value='' required='')
+            input#num-km.form-control(name='items[0][numKm]' type='number' value='' required)
+            .invalid-feedback
+              | Please enter the # of kilometers travelled.
+            .valid-feedback
+              | Looks good!
             //.col-md-12#upload
             //  label(class='custom-file-label' for='receipt') Choose file..
             //  input#receipt.form-control(name='items[0][receipt]' class='custom-file-input' value='' type='file' required='')
@@ -94,17 +118,17 @@ block inner-content
         .row
           .col-12.mb-3
             label(for='previous-total-mileage') Previous Total Mileage
-            input#previous-total-mileage.form-control(type='number' value='' required='')
+            input#previous-total-mileage.form-control(type='number' value='104')
         .row
           .col-12.mb-3
             label(for='carry-mileage') Carry Forward Mileage
-            input#carry-mileage.form-control(type='number' value='' readonly=true)
+            input#carry-mileage.form-control(type='number' value='104' readonly=true)
         .row
           .col-12
             hr
             .mb-3
               label(for='total') Total
-              input#total.form-control(type='number' value='' readonly=true)
+              input#total.form-control(type='number' value='100' readonly=true)
         .row
           .col-12
             hr
@@ -113,3 +137,21 @@ block inner-content
 block scripts
   script.
     $('#num-km-info').tooltip();
+
+  script.
+    (function() {
+      'use strict';
+
+      window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
