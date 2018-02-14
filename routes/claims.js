@@ -114,20 +114,24 @@ router.post('', multipartMiddleware, function (req, res, next) {
         var model = {
           employeeId: employeeId,
           date: item.date,
-          gl: item.gl,
-          numKm: item.numKm,
+          glId: item.glId,
+          numKm: item.numKm || null,
           description: item.description,
-          total: item.total,
+          total: parseInt(item.total) || 0,
         };
 
         // TODO receipt path
-        if (!_.isEmpty(item.receipt.path)) {
+        if (item.receipt.size !== 0) {
+          // save temporary file
+
           _.extend(model, {
             Receipt: {
               path: item.receipt.path,
             },
           });
         };
+
+        // remove temporary file
 
         return model;
       });
@@ -168,9 +172,10 @@ router.post('', multipartMiddleware, function (req, res, next) {
             }],
             transaction: t,
           }).then(function (expenseClaim) {
+            debugger;
             callback(null, expenseClaim);
-          }).catch(function( err) {
-            // TODO handle errors here.. is this how you pass to err handler?
+          }).catch(function(err) {
+            debugger;
             callback(err);
           });
         });
