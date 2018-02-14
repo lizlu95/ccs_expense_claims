@@ -67,7 +67,7 @@ updateValues = function (req) {
          show the error message or display sth.
          (node:2160) UnhandledPromiseRejectionWarning: SequelizeDatabaseError: Out of range value for column 'value' at row 1 */
     });
-  })
+  });
 };
 
 module.exports = router;
