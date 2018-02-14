@@ -39,4 +39,14 @@ describe('expense claim tests', function () {
       });
     });
   });
+
+  it('expense claim item with GL belongs to one GL', function (done) {
+    ExpenseClaimItem.findById(1).then((expenseClaimItem) => {
+      expenseClaimItem.getGL().then((gl) => {
+        assert.isNotNull(gl);
+
+        done();
+      });
+    });
+  });
 });

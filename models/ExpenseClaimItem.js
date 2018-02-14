@@ -39,7 +39,9 @@ module.exports = (sequelize, DataTypes) => {
 
     ExpenseClaimItem.ExpenseClaim = ExpenseClaimItem.belongsTo(models.ExpenseClaim);
 
-    ExpenseClaimItem.GL = ExpenseClaimItem.belongsTo(models.GL);
+    ExpenseClaimItem.GL = ExpenseClaimItem.belongsTo(models.GL, {
+      foreignKey: 'gl_id',
+    });
   };
 
   return ExpenseClaimItem;
