@@ -2,14 +2,16 @@ fixtures:
   - model: ExpenseClaimItem
     data:
       id: 1
-      name: Test One
-      amount: 1
+      description: Test One
+      total: 1
       receiptId: 1
       ExpenseClaim: 1
+      glId: 1
   - model: ExpenseClaimItem
     data:
       id: 2
-      name: Test Two
-      amount: 2
+      description: Test Two
+      total: 2
       receiptId: 1
       ExpenseClaim: 1
+      glId: 1

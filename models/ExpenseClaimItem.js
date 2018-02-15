@@ -6,11 +6,20 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       field: 'expense_claim_id',
     },
-    name: DataTypes.STRING,
+    date: DataTypes.DATE,
+    description: DataTypes.STRING,
     total: DataTypes.INTEGER,
+    numKm: {
+      type: DataTypes.INTEGER,
+      field: 'num_km',
+    },
     receiptId: {
       type: DataTypes.INTEGER,
       field: 'receipt_id',
+    },
+    glId: {
+      type: DataTypes.INTEGER,
+      field: 'gl_id',
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -29,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
     ExpenseClaimItem.Receipt = ExpenseClaimItem.belongsTo(models.Receipt);
 
     ExpenseClaimItem.ExpenseClaim = ExpenseClaimItem.belongsTo(models.ExpenseClaim);
+
+    ExpenseClaimItem.GL = ExpenseClaimItem.belongsTo(models.GL, {
+      foreignKey: 'gl_id',
+    });
   };
 
   return ExpenseClaimItem;

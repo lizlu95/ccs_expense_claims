@@ -22,7 +22,7 @@ router.get('', function (req, res, next) {
 router.get('/new', function (req, res, next) {
   res.locals.title = 'Expense Claim';
 
-  res.render('claims/new', { title: 'Expense Claim' });
+  res.render('claims/new');
 });
 
 /* GET /claims/:id */
@@ -70,6 +70,11 @@ router.get('/:id', function (req, res, next) {
     },
   ], function (err) {
     if (err) {
+      err = {
+        message: 'Failed to find expense claim!',
+        status: 404,
+      };
+
       next(err);
     } else {
       res.render('claims/detail');
@@ -85,7 +90,7 @@ router.post('', multipartMiddleware, function (req, res, next) {
       CostCentre.findOne({
         where: {
           number: {
-            [Op.eq]: req.body.costCentreNumber,
+            [Op.eq]: req.body.costCentreNumber.toString(),
           }
         }
       }).then((costCentre) => {
@@ -109,20 +114,24 @@ router.post('', multipartMiddleware, function (req, res, next) {
         var model = {
           employeeId: employeeId,
           date: item.date,
-          gl: item.gl,
-          numKm: item.numKm,
+          glId: item.glId,
+          numKm: item.numKm || null,
           description: item.description,
-          total: item.total,
+          total: parseInt(item.total) || 0,
         };
 
         // TODO receipt path
-        if (!_.isEmpty(item.receipt.path)) {
+        if (item.receipt.size !== 0) {
+          // save temporary file
+
           _.extend(model, {
             Receipt: {
               path: item.receipt.path,
             },
           });
         };
+
+        // remove temporary file
 
         return model;
       });
@@ -163,9 +172,10 @@ router.post('', multipartMiddleware, function (req, res, next) {
             }],
             transaction: t,
           }).then(function (expenseClaim) {
+            debugger;
             callback(null, expenseClaim);
-          }).catch(function( err) {
-            // TODO handle errors here.. is this how you pass to err handler?
+          }).catch(function(err) {
+            debugger;
             callback(err);
           });
         });
@@ -173,9 +183,12 @@ router.post('', multipartMiddleware, function (req, res, next) {
     },
   ], function (err, expenseClaim) {
     if (err) {
-      res.status = 409;
+      err = {
+        message: 'Failed to create expense claim!',
+        status: 409,
+      };
 
-      res.render('error');
+      next(err);
     } else {
       res.redirect('/claims/' + expenseClaim.id);
     }

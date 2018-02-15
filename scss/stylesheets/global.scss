@@ -24,6 +24,16 @@ a {
   align-items: center;
 }
 
+.btn-success {
+  background-color: $brand-green;
+  border-color: $brand-green;
+
+  &:hover {
+    background-color: $brand-green-dark;
+    border-color: $brand-green-dark;
+  }
+}
+
 .badge-lg {
   font-size: 125%;
 }
