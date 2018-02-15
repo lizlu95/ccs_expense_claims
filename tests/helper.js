@@ -31,6 +31,7 @@ helper.authenticate = function (agent, callback) {
 // @param steps  array of steps to execute that accept agent param
 //               where agent can be used to make authenticated requests
 // @param done   callback to call after all steps are completed
+//               NOTE pass err to callback in anoyne of steps to fail/err
 helper.withAuthenticate = function (steps, done) {
   var agent = request.agent(app);
 
