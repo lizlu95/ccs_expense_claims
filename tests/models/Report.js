@@ -3,7 +3,7 @@ const assert = chai.assert;
 const expect = chai.expect;
 const app = require('../../app');
 const request = require('supertest');
-const manager = require('../../fixtures/manager');
+const manager = require('../../seeds/manager');
 const _ = require('underscore');
 
 const models = require('../../models/index');

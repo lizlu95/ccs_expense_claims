@@ -5,7 +5,7 @@ const async = require('async');
 const app = require('../app');
 const assert = require('chai').assert;
 
-const employeeFixtures = YAML.load('fixtures/Employee.yml')['fixtures'];
+const employeeFixtures = YAML.load('fixtures/test/Employee.yml')['fixtures'];
 const employeeOne = employeeFixtures[0]['data'];
 const employeeTwo = employeeFixtures[1]['data'];
 

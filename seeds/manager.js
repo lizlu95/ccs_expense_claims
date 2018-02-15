@@ -3,10 +3,13 @@ const sequelizeFixtures = require('sequelize-fixtures');
 const models = require('../models/index');
 const _ = require('underscore');
 
-const load = function (done) {
-  sanityCheck();
+const env = process.env.NODE_ENV || 'development';
 
-  sequelizeFixtures.loadFile('fixtures/*.yml', models, {
+const load = function (done) {
+  verifyEnvironment();
+
+  var fixturesPath = 'fixtures/' + env + '/*.yml';
+  sequelizeFixtures.loadFile(fixturesPath, models, {
       log: function () {},
     }).then(function () {
       if (done) {
@@ -16,11 +19,13 @@ const load = function (done) {
 };
 
 const destroy = function (done) {
-  sanityCheck();
+  verifyEnvironment();
 
   _.each(models, function (model) {
     if (!(model instanceof Sequelize) && model !== Sequelize) {
-      model.destroy({ truncate: true });
+      model.destroy({
+        truncate: true,
+      });
     }
   });
 
@@ -29,11 +34,14 @@ const destroy = function (done) {
   }
 };
 
-function sanityCheck() {
-  if (process.env.NODE_ENV != 'test' && process.env.NODE_ENV != 'development') {
-    console.log('Please only run test suites with NODE_ENV=test or NODE_ENV=development to preserve database!');
-
-    process.exit();
+function verifyEnvironment() {
+  if (env === 'production') {
+    // only seed production data to a fresh database
+    if (true) {
+      process.exit();
+    }
+  } else {
+    // test and development environment can re-seed data
   }
 }
 

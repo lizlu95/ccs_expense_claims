@@ -3,7 +3,7 @@ const app = require('../../app');
 const request = require('supertest');
 const async = require('async');
 const helper = require('./../helper');
-const manager = require('../../fixtures/manager');
+const manager = require('../../seeds/manager');
 
 describe('home page', function () {
   beforeEach(function (done) {
