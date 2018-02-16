@@ -5,9 +5,11 @@ const router = express.Router();
 const models = require('../../models/index');
 const Report = models.Report;
 
-// GET /reports
+/* GET /reports */
 router.get('', function (req, res, next) {
-    res.render('admin/statReport');
+  res.locals.title = 'Reports';
+
+  res.render('admin/statReport');
 });
 
 module.exports = router;

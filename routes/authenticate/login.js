@@ -7,7 +7,9 @@ router.get('/', function(req, res, next) {
   if (req.user) {
     res.redirect('/');
   } else {
-    res.render('authenticate/login', { title: 'Login' });
+    res.locals.title = 'Log In';
+
+    res.render('authenticate/login');
   }
 });
 

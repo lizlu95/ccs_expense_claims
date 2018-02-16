@@ -15,12 +15,14 @@ const CostCentre = models.CostCentre;
 
 /* GET /claims */
 router.get('', function (req, res, next) {
+  res.locals.title = 'Claims';
+
   res.render('claims/list');
 });
 
 /* GET /claims/new */
 router.get('/new', function (req, res, next) {
-  res.locals.title = 'Expense Claim';
+  res.locals.title = 'New Claim';
 
   res.render('claims/new');
 });
@@ -28,6 +30,8 @@ router.get('/new', function (req, res, next) {
 /* GET /claims/:id */
 router.get('/:id', function (req, res, next) {
   var expenseClaimId = req.params.id;
+
+  res.locals.title = 'Claim ' + expenseClaimId;
 
   // TODO
   async.waterfall([
