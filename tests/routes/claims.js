@@ -262,13 +262,7 @@ describe('home page', function () {
               .attach('items[0][receipt]', 'fixtures/files/flowers.jpg')
               .field('costCentreNumber', '0754')
               .field('bankAccount', '')
-              .field('items[0][date]', '2000-01-01')
-              .field('items[0][gl]', 2)
-              .field('items[0][numKm]', 100)
-              .field('items[0][description]', 'My First Expense Item')
-              .field('items[0][total]', 200)
-              .expect(302)
-              .expect('Location', '/claims/' + (lastExpenseClaimId + 1))
+              .expect(409)
               .end(function (err, res) {
                 callback(err);
               });
