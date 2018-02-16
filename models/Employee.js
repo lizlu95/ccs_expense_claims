@@ -9,10 +9,6 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     name: DataTypes.STRING,
-    isAdmin: {
-      type: DataTypes.BOOLEAN,
-      field: 'is_admin',
-    },
     createdAt: {
       type: DataTypes.DATE,
       field: 'created_at',
