@@ -2,7 +2,7 @@ const assert = require('chai').assert;
 const app = require('../../../app');
 const request = require('supertest');
 const helper = require('../../helper');
-const manager = require('../../../fixtures/manager');
+const manager = require('../../../seeds/manager');
 const async = require('async');
 
 describe('login page', function () {

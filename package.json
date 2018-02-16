@@ -4,9 +4,9 @@
   "license": "BSD-3-Clause",
   "scripts": {
     "start": "node index.js",
-    "db:migrate": "NODE_ENV=test sequelize db:migrate && sequelize db:migrate",
-    "db:migrate:undo": "NODE_ENV=test sequelize db:migrate:undo && sequelize db:migrate:undo",
-    "db:seed": "NODE_ENV=development node fixtures/seed.js",
+    "db:migrate": "sequelize db:migrate",
+    "db:migrate:undo": "sequelize db:migrate:undo",
+    "db:seed": "node seeds/seed.js",
     "test": "NODE_ENV=test nyc --reporter=text-summary mocha --exit --recursive tests",
     "coverage": "nyc report --reporter=text-summary"
   },

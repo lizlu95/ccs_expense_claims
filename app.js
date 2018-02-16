@@ -31,8 +31,8 @@ const configuration = require('./routes/configuration');// Steven
 const app = module.exports = express();
 
 // models
-const models = require('./models/index');
-const Employee = models.Employee;
+const database = require('./models/index');
+const Employee = database.Employee;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

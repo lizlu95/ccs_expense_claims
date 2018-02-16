@@ -3,7 +3,7 @@ const app = require('../../../app');
 const async = require('async');
 const request = require('supertest');
 const helper = require('../../helper');
-const manager = require('../../../fixtures/manager');
+const manager = require('../../../seeds/manager');
 
 describe('logout page', function () {
   beforeEach(function (done) {
