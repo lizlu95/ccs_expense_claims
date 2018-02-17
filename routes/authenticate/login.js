@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('passport');
+const _ = require('underscore');
 
 // GET /login
 router.get('/', function(req, res, next) {
@@ -8,6 +9,10 @@ router.get('/', function(req, res, next) {
     res.redirect('/');
   } else {
     res.locals.title = 'Log In';
+    var error = req.flash('error');
+    if (!_.isEmpty(error)) {
+      res.locals.error = error;
+    }
 
     res.render('authenticate/login');
   }
@@ -17,6 +22,7 @@ router.get('/', function(req, res, next) {
 router.post('/', passport.authenticate('local', {
   successRedirect: '/',
   failureRedirect: '/login',
+  failureFlash: true,
 }));
 
 module.exports = router;

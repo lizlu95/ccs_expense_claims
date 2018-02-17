@@ -19,6 +19,7 @@ const vueOptions = {
   }
 };
 const expressVueMiddleware = require('express-vue').init(vueOptions);
+const flash = require('connect-flash');
 
 // routes
 const index = require('./routes/index');
@@ -58,6 +59,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
