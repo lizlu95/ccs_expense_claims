@@ -16,10 +16,10 @@ module.exports = {
     dialect: 'mysql',
   },
   production: {
-    host: 'us-cdbr-iron-east-05.cleardb.net',
-    username: 'bf377c32f0e3c3',
-    password: 'e2e5a002',
-    database: 'heroku_e0ab878773516e7',
+    host: process.env.ECA_DATABASE_HOST_PRODUCTION || 'localhost',
+    username: process.env.ECA_DATABASE_USERNAME_PRODUCTION || 'username',
+    password: process.env.ECA_DATABASE_PASSWORD_PRODUCTION || 'password',
+    database: process.env.ECA_DATABASE_NAME_PRODUCTION || 'database_production',
     dialect: 'mysql',
   },
 };
