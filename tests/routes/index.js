@@ -29,7 +29,9 @@ describe('home page', function () {
   });
 
   it('/ should take user to claims list page when user is authenticated', function (done) {
-    helper.withAuthenticate([
+    var agent = request.agent(app);
+
+    helper.withAuthenticate(agent, [
       function(agent, callback) {
         agent
           .get('/')

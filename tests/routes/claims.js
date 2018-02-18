@@ -46,7 +46,9 @@ describe('home page', function () {
   });
 
   it('/claims GET routes should 200 when user is authenticated', function (done) {
-    helper.withAuthenticate([
+    var agent = request.agent(app);
+
+    helper.withAuthenticate(agent, [
       function (agent, callback) {
         async.eachSeries(CLAIMS_ROUTES, function (claimRoute, callback) {
           agent
@@ -63,7 +65,9 @@ describe('home page', function () {
   });
 
   it('/claims POST with valid data creates a new expense claim and redirects to new expense claim', function (done) {
-    helper.withAuthenticate([
+    var agent = request.agent(app);
+
+    helper.withAuthenticate(agent, [
       function (agent, callback) {
         // NOTE assumes test is run in a single-threaded environment
         async.waterfall([
@@ -240,7 +244,9 @@ describe('home page', function () {
   });
 
   it('/claims POST with invalid data creates a new expense claim and redirects to new expense claim', function (done) {
-    helper.withAuthenticate([
+    var agent = request.agent(app);
+
+    helper.withAuthenticate(agent, [
       function (agent, callback) {
         // NOTE assumes test is run in a single-threaded environment
         async.waterfall([

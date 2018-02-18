@@ -29,7 +29,9 @@ describe('logout page', function () {
   });
 
   it('/logout should log user out when authenticated', function (done) {
-    helper.withAuthenticate([
+    var agent = request.agent(app);
+
+    helper.withAuthenticate(agent, [
       function (agent, callback) {
         agent
           .get('/claims')

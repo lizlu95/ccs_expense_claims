@@ -16,6 +16,8 @@ const helper = {};
  * @param callback  use with waterfall to pass any err to next callback
  */
 helper.authenticate = function (agent, callback) {
+  var agentClass = agent.constructor.name;
+  if (agentClass === 'TestAgent') {
   agent
     .post('/login')
     .type('form')
@@ -28,17 +30,26 @@ helper.authenticate = function (agent, callback) {
     .end(function (err, res) {
       callback(err, agent);
     });
+  } else if (agentClass === 'Browser') {
+    agent.visit('http://localhost:9000/login', () => {
+      agent
+        .fill('email', employeeOne.email)
+        .fill('password', employeeTwo.password)
+        .pressButton('Log In', () => {
+          callback(null, agent);
+        });
+    });
+  }
 };
 
 /*
+ * @param agent  agent to authenticate
  * @param steps  array of steps to execute that accept agent param
  *               where agent can be used to make authenticated requests
  * @param done   callback to call after all steps are completed
  *               NOTE pass err to callback in anoyne of steps to fail/err
  */
-helper.withAuthenticate = function (steps, done) {
-  var agent = request.agent(app);
-
+helper.withAuthenticate = function (agent, steps, done) {
   async.waterfall([
     function (callback) {
       helper.authenticate(agent, callback);

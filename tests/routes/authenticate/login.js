@@ -28,7 +28,9 @@ describe('login page', function () {
   });
 
   it('/login should redirect to homepage when authenticated', function (done) {
-    helper.withAuthenticate([
+    var agent = request.agent(app);
+
+    helper.withAuthenticate(agent, [
       function (agent, callback) {
         agent
           .get('/login')
