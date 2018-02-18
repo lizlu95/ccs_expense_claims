@@ -46,14 +46,14 @@ block inner-content
                 span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
               .col-md-4
                 label(for='date') Date
-                input#date.form-control(name='items[0][date]' type='date' value='' required)
+                input.date.form-control(name='items[0][date]' type='date' value='' required)
                 .invalid-feedback
                   | Please enter a valid date.
                 .valid-feedback
                   | Looks good!
               .col-md-4
                 label(for='expense-category') Expense Category
-                select#expense-category.custom-select(required)
+                select.expense-category.custom-select(required)
                   option Choose...
                   option(value= 'gas') AUTO GAS (Community or Facilities employees only)
                   option(value= 'repairs') AUTO REPAIRS (Community or Facilities employees only)
@@ -98,18 +98,18 @@ block inner-content
               .col-md-7
                 .d-flex.justify-content-between.align-items-center
                   label(for='num-km') # Km Travelled
-                  span.badge.badge-secondary.badge-sm#num-km-info(data-toggle="tooltip" data-placement="top" title="" data-original-title="$0.54 < 5000Km, $0.48 > 5000Km") ?
-                input#num-km.form-control(name='items[0][numKm]' type='number' value='' required)
+                  span.badge.badge-secondary.badge-sm.num-km-info(data-toggle="tooltip" data-placement="top" title="" data-original-title="$0.54 < 5000Km, $0.48 > 5000Km") ?
+                input.num-km.form-control(name='items[0][numKm]' type='number' value='' required)
                 .invalid-feedback
                   | Please enter the # of kilometers travelled.
                 .valid-feedback
                   | Looks good!
-              .col-md-12#upload(style="display:none;")
+              .col-md-12.upload(style="display:none;")
                   label(class='custom-file-label' for='receipt') Choose file..
-                  input#receipt.form-control(name='items[0][receipt]' class='custom-file-input' value='' type='file')
+                  input.receipt.form-control(name='items[0][receipt]' class='custom-file-input' value='' type='file')
               .col-md-5
                 label(for='total') Total
-                input#total.form-control(name='items[0][total]' type='number' value='' readonly=true)
+                input.total.form-control(name='items[0][total]' type='number' value='' readonly=true)
       .row
         .col-12
           button.btn.btn-warning.btn-block.btn-lg(type="button" v-on:click="items.push({})") Add Item
@@ -136,9 +136,6 @@ block inner-content
           button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
 
 block scripts
-  script.
-    $('#num-km-info').tooltip();
-
   script.
     (function() {
       'use strict';
@@ -171,5 +168,16 @@ block scripts
           description: null,
           total: null,
         }],
+      },
+      methods: {
+        addTooltips: function () {
+          $(this.$el).find('.num-km-info').tooltip();
+        },
+      },
+      mounted: function () {
+        this.addTooltips();
+      },
+      updated: function () {
+       this.addTooltips();
       },
     });

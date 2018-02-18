@@ -25,6 +25,8 @@ describe('new claims page', () => {
           browser.assert.evaluate('expenseClaimApp.items[0].description === null');
           browser.assert.evaluate('expenseClaimApp.items[0].total === null');
 
+          browser.assert.evaluate('$(".num-km-info").data("bs.tooltip") !== undefined');
+
           callback(null);
         });
       },
