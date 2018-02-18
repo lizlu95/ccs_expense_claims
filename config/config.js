@@ -2,7 +2,7 @@
 
 const config = {};
 
-const database = require('./database')
+const database = require('./database');
 
 config.database = database;
 
