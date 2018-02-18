@@ -6,9 +6,9 @@ block inner-content
       h1 New Claim
   .row.mb-3
     form.row.needs-validation(enctype='multipart/form-data' novalidate action='/claims' method='POST')
-      .col-md-8
+      .col-md-12
         .row.mb-1
-          .col-12
+          .col-12.text-center
             h4 Information
         .row.mb-3
           .col-md-6
@@ -35,7 +35,7 @@ block inner-content
               .valid-feedback
                 | Looks good!
         .row.mb-1
-          .col-12
+          .col-12.text-center
             h4 Items
         .row.mb-3
           .col-md-1
@@ -109,9 +109,8 @@ block inner-content
         .row
           .col-12
             button.btn.btn-success.btn-block.btn-lg(type="button") Add Item
-      .col-md-4
-        .row.mb-1
-          .col-12
+        .row.mb-1.mt-5
+          .col-12.text-center
             .d-flex.justify-content-between.align-items-center.mb-3
               h4.mb-0 Summary
               span.badge.badge-success.badge-pill.badge-lg 1
@@ -155,3 +154,6 @@ block scripts
         });
       }, false);
     })();
+
+  script.
+    new
