@@ -39,7 +39,7 @@ block inner-content
             h2 Items
         .row.mb-3
           .col-md-1
-            span.badge.badge-primary.badge-pill.badge-lg 1
+            span.badge.badge-warning.badge-pill.badge-lg 1
           .col-md-4
             label(for='date') Date
             input#date.form-control(name='items[0][date]' type='date' value='' required)
@@ -108,7 +108,7 @@ block inner-content
             input#total.form-control(name='items[0][total]' type='number' value='' readonly=true)
         .row
           .col-12
-            button.btn.btn-primary.btn-block.btn-lg(type="button") Add Item
+            button.btn.btn-warning.btn-block.btn-lg(type="button") Add Item
         .row.mb-1.mt-5
           .col-12.text-center
             .d-flex.justify-content-between.align-items-center.mb-3
