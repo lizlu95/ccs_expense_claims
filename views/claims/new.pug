@@ -8,8 +8,8 @@ block inner-content
     form.row.needs-validation(enctype='multipart/form-data' novalidate action='/claims' method='POST')
       .col-md-12
         .row.mb-1
-          .col-12.text-center
-            h4 Information
+          .col-12
+            h2 Information
         .row.mb-3
           .col-md-6
             label(for='employee-name') Name
@@ -35,8 +35,8 @@ block inner-content
               .valid-feedback
                 | Looks good!
         .row.mb-1
-          .col-12.text-center
-            h4 Items
+          .col-12
+            h2 Items
         .row.mb-3
           .col-md-1
             span.badge.badge-success.badge-pill.badge-lg 1
@@ -112,7 +112,7 @@ block inner-content
         .row.mb-1.mt-5
           .col-12.text-center
             .d-flex.justify-content-between.align-items-center.mb-3
-              h4.mb-0 Summary
+              h2.mb-0 Summary
               span.badge.badge-success.badge-pill.badge-lg 1
         .row
           .col-12.mb-3
@@ -128,9 +128,8 @@ block inner-content
             .mb-3
               label(for='total') Total
               input#total.form-control(type='number' value='100' readonly=true)
-        .row
+        .row.mt-4
           .col-12
-            hr
             button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
 
 block scripts
