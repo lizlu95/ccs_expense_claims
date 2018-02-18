@@ -54,7 +54,7 @@ const destroy = function (done) {
 };
 
 function eachModel(fn, callback) {
-  async.eachSeries(database.models, (model, callback) => {
+  async.eachSeries(database, (model, callback) => {
     if (!(model instanceof Sequelize) && model !== Sequelize) {
       fn(model, callback);
     } else {
