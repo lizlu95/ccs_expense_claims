@@ -40,7 +40,7 @@ block inner-content
           h2 Items
       .row
         .col-12
-          div(v-for="(item, index) in items")
+          div.item(v-for="(item, index) in items")
             .row
               .col-md-1
                 span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
@@ -77,7 +77,7 @@ block inner-content
                   | Please select an expense category.
                 .valid-feedback
                   | Looks good!
-              .col-md-3
+              .col-md-2
                 label(for='gl') GL
                 select#gl.custom-select(name='items[0][glId]' required)
                   option Choose...
@@ -86,6 +86,8 @@ block inner-content
                   | Please select a valid GL.
                 .valid-feedback
                   | Looks good!
+              .col-md-1.text-right
+                span#remove-item.btn.badge.badge-danger.badge-pill.badge-lg(v-if="index !== 0" @click="items.splice(index, 1)") -
             .row.mb-3
               .col-md-12
                 label(for='description') Description
@@ -112,7 +114,7 @@ block inner-content
                 input.total.form-control(name='items[0][total]' type='number' value='' readonly=true)
       .row
         .col-12
-          button.btn.btn-warning.btn-block.btn-lg(type="button" v-on:click="items.push({})") Add Item
+          button#add-item.btn.btn-warning.btn-block.btn-lg(type="button" @click="items.push({ date: null })") Add Item
   .row.mb-1.mb-5
     .col-12.text-center
       .d-flex.justify-content-between.align-items-center.mb-3
