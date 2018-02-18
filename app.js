@@ -11,14 +11,6 @@ const uuidv4 = require('uuid/v4');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const sassMiddleware = require('node-sass-middleware');
-const vueOptions = {
-  rootPath: path.join(__dirname, '/views'),
-  layout: {
-    start: '<div id="expense-claim-app">',
-    end: '</div>'
-  }
-};
-const expressVueMiddleware = require('express-vue').init(vueOptions);
 const flash = require('connect-flash');
 
 // routes
@@ -46,7 +38,6 @@ app.use(sassMiddleware({
   dest: path.join(__dirname, 'public'),
   outputStyle: 'compressed',
 }));
-app.use(expressVueMiddleware);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
