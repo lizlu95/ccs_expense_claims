@@ -31,7 +31,7 @@ helper.authenticate = function (agent, callback) {
       callback(err, agent);
     });
   } else if (agentClass === 'Browser') {
-    agent.visit('http://localhost:9000/login', () => {
+    agent.visit('/login', () => {
       agent
         .fill('email', employeeOne.email)
         .fill('password', employeeTwo.password)
