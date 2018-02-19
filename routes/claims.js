@@ -37,28 +37,10 @@ router.get('/new', function (req, res, next) {
     function (callback) {
       Employee.build({
         id: req.user.id,
-      }).getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
-        var submittedExpenseClaimIds = _.map(submittedExpenseClaims, (submittedExpenseClaim) => {
-          return submittedExpenseClaim.id;
-        });
+      }).getPreviousMileage().then((previousMileage) => {
+        res.locals.previousMileage = previousMileage;
 
-        // count mileage from all claims within current calendar year
-        ExpenseClaimItem.findAll({
-          where: {
-            expenseClaimId: {
-              [Op.in]: submittedExpenseClaimIds,
-            },
-            createdAt: {
-              [Op.between]: [moment().startOf('year').toDate(), moment().toDate()],
-            },
-          },
-        }).then((expenseClaimItems) => {
-          res.locals.previousMileage = _.reduce(expenseClaimItems, (acc, expenseClaimItem) => {
-            return acc + (expenseClaimItem.numKm || 0);
-          }, 0);
-
-          callback(null);
-        });
+        callback(null);
       });
     },
     function (callback) {
