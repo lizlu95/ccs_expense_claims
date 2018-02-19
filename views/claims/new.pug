@@ -101,7 +101,7 @@ block inner-content
                   input.total.form-control(name='items[0][total]' type='number' :value='item.total' readonly=true)
         .row
           .col-12
-            button#add-item.btn.btn-warning.btn-block.btn-lg(type='button' @click='items.push({ date: "" })') Add Item
+            button#add-item.btn.btn-warning.btn-block.btn-lg(type='button' @click='items.push({ date: "", total: 0 })') Add Item
     .row.mb-1.mb-5
       .col-12.text-center
         .d-flex.justify-content-between.align-items-center.mb-3
@@ -119,7 +119,7 @@ block inner-content
             hr
             div
               label(for='total') Total
-              input#total.form-control(type='number' value='100' readonly=true)
+              input#total.form-control(type='number' :value='itemsTotal' readonly=true)
         .row
           .col-12
             button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
@@ -168,5 +168,10 @@ block scripts
       },
       updated: function () {
        this.addTooltips();
+      },
+      computed: {
+        itemsTotal: function () {
+          return this.items.reduce((acc, item) => acc + item.total, 0);
+        },
       },
     });
