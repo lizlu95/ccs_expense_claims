@@ -82,7 +82,7 @@ block inner-content
                 .col-md-2
                   label(for='gl') GL
                   select#gl.custom-select(name='items[0][glId]' required)
-                    option Choose...
+                    option(value='') Choose..
                     option(value=2302) 633710
                   .invalid-feedback
                     | Please select a valid GL.
