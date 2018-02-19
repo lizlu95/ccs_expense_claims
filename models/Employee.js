@@ -1,5 +1,6 @@
 'use strict';
 const Op = require('sequelize').Op;
+const _ = require('underscore');
 
 module.exports = (sequelize, DataTypes) => {
   var Employee = sequelize.define('Employee', {
@@ -45,37 +46,29 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Employee.prototype.getSubmittedExpenseClaims = function () {
-      return models.ExpenseClaim.findAll({
-        include: [{
-          model: models.EmployeeExpenseClaim,
-          where: {
-            employeeId: {
-              [Op.eq]: this.id,
-            },
-          },
-          isOwner: {
-            [Op.eq]: true,
-          },
-        }],
-      });
+      return getExpenseClaimsByJoinTable(models, this.id, true);
     };
 
     Employee.prototype.getManagedExpenseClaims = function () {
-      return models.ExpenseClaim.findAll({
-        include: [{
-          model: models.EmployeeExpenseClaim,
-          where: {
-            employeeId: {
-              [Op.eq]: this.id,
-            },
-          },
-          isOwner: {
-            [Op.eq]: false,
-          },
-        }],
-      });
+      return getExpenseClaimsByJoinTable(models, this.id, false);
     };
   };
 
   return Employee;
 };
+
+function getExpenseClaimsByJoinTable(models, id, isOwner) {
+  return models.ExpenseClaim.findAll({
+    include: [{
+      model: models.EmployeeExpenseClaim,
+      where: {
+        employeeId: {
+          [Op.eq]: id,
+        },
+      },
+      isOwner: {
+        [Op.eq]: isOwner,
+      },
+    }],
+  });
+}
