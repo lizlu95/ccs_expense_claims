@@ -9,6 +9,7 @@ const Op = require('sequelize').Op;
 const multipartMiddleware = require('connect-multiparty')();
 
 const models = require('../models/index');
+const Employee = models.Employee;
 const ExpenseClaim = models.ExpenseClaim;
 const ExpenseClaimItem = models.ExpenseClaimItem;
 const EmployeeExpenseClaim = models.EmployeeExpenseClaim;
@@ -34,18 +35,11 @@ router.get('/new', function (req, res, next) {
       callback(null);
     },
     function (callback) {
-      EmployeeExpenseClaim.findAll({
-        where: {
-          employeeId: {
-            [Op.eq]: req.user.id,
-          },
-          isOwner: {
-            [Op.eq]: true,
-          },
-        },
-      }).then((employeeExpenseClaims) => {
-        var submittedExpenseClaimIds = _.map(employeeExpenseClaims, (employeeExpenseClaim) => {
-          return employeeExpenseClaim.expenseClaimId;
+      Employee.build({
+        id: req.user.id,
+      }).getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+        var submittedExpenseClaimIds = _.map(submittedExpenseClaims, (submittedExpenseClaim) => {
+          return submittedExpenseClaim.id;
         });
 
         // count mileage from all claims within current calendar year
