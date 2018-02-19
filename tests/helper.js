@@ -34,8 +34,9 @@ helper.authenticate = function (agent, callback) {
     agent.visit('/login', () => {
       agent
         .fill('email', employeeOne.email)
-        .fill('password', employeeTwo.password)
+        .fill('password', employeeOne.password)
         .pressButton('Log In', () => {
+          console.log(agent.evaluate('document.title'))
           callback(null, agent);
         });
     });

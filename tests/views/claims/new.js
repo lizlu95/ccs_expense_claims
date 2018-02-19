@@ -1,8 +1,9 @@
 const Browser = require('zombie');
 const assert = require('chai').assert;
-const helper = require('../helper');
-require('../../index');
+const helper = require('../../helper');
+require('../../../index');
 const async = require('async');
+const manager = require('../../../seeds/manager');
 
 const CLAIMS_NEW_ROUTE = '/claims/new';
 
@@ -12,7 +13,13 @@ browser.silent = true;
 
 describe('new claims page', () => {
   before((done) => {
-    helper.authenticate(browser, done);
+    manager.load(() => {
+      helper.authenticate(browser, done);
+    });
+  });
+
+  after(function (done) {
+    manager.destroy(done);
   });
 
   it('expenseClaimApp component created with initial information and no items', (done) => {
