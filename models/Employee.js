@@ -1,6 +1,7 @@
 'use strict';
 const Op = require('sequelize').Op;
 const _ = require('underscore');
+const moment = require('moment');
 
 module.exports = (sequelize, DataTypes) => {
   var Employee = sequelize.define('Employee', {
@@ -51,6 +52,32 @@ module.exports = (sequelize, DataTypes) => {
 
     Employee.prototype.getManagedExpenseClaims = function () {
       return getExpenseClaimsByJoinTable(models, this.id, false);
+    };
+
+    Employee.prototype.getPreviousMileage = function () {
+      return this.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+        var submittedExpenseClaimIds = _.map(submittedExpenseClaims, (submittedExpenseClaim) => {
+          return submittedExpenseClaim.id;
+        });
+
+        // count mileage from all claims within current calendar year
+        return models.ExpenseClaimItem.findAll({
+          where: {
+            expenseClaimId: {
+              [Op.in]: submittedExpenseClaimIds,
+            },
+            createdAt: {
+              [Op.between]: [moment().startOf('year').toDate(), moment().toDate()],
+            },
+          },
+        }).then((expenseClaimItems) => {
+          var employeePreviousMileage = _.reduce(expenseClaimItems, (acc, expenseClaimItem) => {
+            return acc + (expenseClaimItem.numKm || 0);
+          }, 0);
+
+          return employeePreviousMileage;
+        });
+      });
     };
   };
 
