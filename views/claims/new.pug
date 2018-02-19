@@ -4,7 +4,7 @@ block inner-content
   .row.mb-5
     .col-12.text-center
       h1 New Claim
-  form.needs-validation(enctype='multipart/form-data' novalidate action='/claims' method='POST')
+  div.needs-validation(enctype='multipart/form-data' novalidate action='/claims' method='POST')
     .row.mb-5
       .col-12
         .row.mb-1
@@ -55,35 +55,20 @@ block inner-content
                     | Looks good!
                 .col-md-4
                   label(for='expense-category') Expense Category
-                  select.expense-category.custom-select(required)
-                    option Choose...
-                    option(value= 'gas') AUTO GAS (Community or Facilities employees only)
-                    option(value= 'repairs') AUTO REPAIRS (Community or Facilities employees only)
-                    option(value= 'books') BOOKS & SUBSCRIPTIONS (Newspaper, magazine, website subscription)
-                    option(value= 'conference') CONFERENCE FEE (Registration, travel, & hotel relating to conference)
-                    option(value= 'customer') DELIGHT THE CUSTOMER (For customer benefit only)
-                    option(value= 'fun') FUND FOR FUN
-                    option(value= 'golf') GOLF (For business development and relationship building, NO FOOD)
-                    option(value= 'hotel') HOTEL (Room only, NO FOOD)
-                    option(value= 'staff') MEALS & ENTERTAINMENT STAFF (Food, beverage)
-                    option(value= 'promo') MEALS & ENTERTAINMENT PROMO(Food,beverage when entertaining clients)
-                    option(value= 'meeting') MEETINGS (Room/equipment rental for business meetings, NO FOOD)
-                    option(value= 'mileage') MILEAGE (kilometres traveled using personal vehicle)
-                    option(value= 'other') OTHER (Miscellaneous expenses)
-                    option(value= 'parking') PARKING (Hourly, daily, monthly parking cost)
-                    option(value= 'dues') PERSONAL/PROF DUES, MBERSHP
-                    option(value= 'prizes') PRIZES
-                    option(value= 'tel') TELEPHONE (Telephone, cell, pager, internet stick)
-                    option(value= 'travel') TRAVEL (Hotel, ferry, taxi, parking, mileage)
+                  select.expense-category.custom-select(v-model='item.glNumber' required)
+                    option(value='') Choose..
+                    each gl in gls
+                      option(value=gl.number)= gl.description
                   .invalid-feedback
                     | Please select an expense category.
                   .valid-feedback
                     | Looks good!
                 .col-md-2
                   label(for='gl') GL
-                  select#gl.custom-select(name='items[0][glId]' required)
+                  select#gl.custom-select(name='items[0][glNumber]' v-model='item.glNumber' required)
                     option(value='') Choose..
-                    option(value=2302) 633710
+                    each gl in gls
+                      option(value=gl.number)= gl.number
                   .invalid-feedback
                     | Please select a valid GL.
                   .valid-feedback
@@ -116,7 +101,7 @@ block inner-content
                   input.total.form-control(name='items[0][total]' type='number' value='' readonly=true)
         .row
           .col-12
-            button#add-item.btn.btn-warning.btn-block.btn-lg(type="button" @click="items.push({ date: null })") Add Item
+            button#add-item.btn.btn-warning.btn-block.btn-lg(type="button" @click="items.push({ date: '' })") Add Item
     .row.mb-1.mb-5
       .col-12.text-center
         .d-flex.justify-content-between.align-items-center.mb-3
@@ -162,15 +147,15 @@ block scripts
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
       data: {
-        costCentreNumber: null,
-        bankAccount: null,
+        costCentreNumber: '',
+        bankAccount: '',
         items: [{
-          date: null,
-          glId: null,
-          numKm: null,
-          receipt: null,
-          description: null,
-          total: null,
+          date: '',
+          glNumber: '',
+          numKm: '',
+          receipt: '',
+          description: '',
+          total: '',
         }],
       },
       methods: {

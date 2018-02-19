@@ -94,7 +94,7 @@ describe('home page', function () {
             var items = [
               {
                 date: '2000-01-01',
-                glId: 1,
+                glNumber: '2302',
                 receipt: {
                   path: 'fixtures/files/flowers.jpg',
                   size: 100,
@@ -105,7 +105,7 @@ describe('home page', function () {
               },
               {
                 date: '2001-02-30',
-                glId: 1,
+                glNumber: '2303',
                 receipt: {
                   path: 'fixtures/files/empty.txt',
                   size: 0,
@@ -121,13 +121,13 @@ describe('home page', function () {
               .field('bankAccount', bankAccount)
               .attach('items[0][receipt]', items[0].receipt.path)
               .field('items[0][date]', items[0].date)
-              .field('items[0][glId]', items[0].glId)
+              .field('items[0][glNumber]', items[0].glNumber)
               .field('items[0][numKm]', items[0].numKm)
               .field('items[0][description]', items[0].description)
               .field('items[0][total]', items[0].total)
               .attach('items[1][receipt]', items[1].receipt.path)
               .field('items[1][date]', items[1].date)
-              .field('items[1][glId]', items[1].glId)
+              .field('items[1][glNumber]', items[1].glNumber)
               .field('items[1][numKm]', items[1].numKm)
               .field('items[1][description]', items[1].description)
               .field('items[1][total]', items[1].total)
@@ -183,15 +183,13 @@ describe('home page', function () {
                     expenseClaim.getExpenseClaimItems().then((expenseClaimItems) => {
                       var receiptExpenseClaimItem = _.find(expenseClaimItems, (expenseClaimItem) => {
                         var receiptItem = items[0];
-                        return receiptItem.glId === expenseClaimItem.glId &&
-                          receiptItem.numKm === expenseClaimItem.numKm &&
+                        return receiptItem.numKm === expenseClaimItem.numKm &&
                           receiptItem.description === expenseClaimItem.description &&
                           receiptItem.total === expenseClaimItem.total;
                       });
                       var kmExpenseClaimItem = _.find(expenseClaimItems, (expenseClaimItem) => {
                         var kmItem = items[1];
-                        return kmItem.glId === expenseClaimItem.glId &&
-                          kmItem.numKm === expenseClaimItem.numKm &&
+                        return kmItem.numKm === expenseClaimItem.numKm &&
                           kmItem.description === expenseClaimItem.description &&
                           kmItem.total === expenseClaimItem.total;
                       });

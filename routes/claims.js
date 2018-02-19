@@ -44,7 +44,10 @@ router.get('/new', function (req, res, next) {
     function (callback) {
       GL.findAll().then((gls) => {
         res.locals.gls = _.map(gls, (gl) => {
-          return gl.number;
+          return {
+            number: gl.number,
+            description: gl.description,
+          };
         });
 
         callback(null);
@@ -138,6 +141,25 @@ router.post('', multipartMiddleware, function (req, res, next) {
       });
     },
     function (costCentre, callback) {
+      var glNumbers = _.map(req.body.items, function (item, index) {
+        return item.glNumber;
+      });
+
+      GL.findAll({
+        where: {
+          number: {
+            [Op.in]: glNumbers,
+          }
+        }
+      }).then((gls) => {
+        if (!_.isEmpty(gls)) {
+          callback(null, gls, costCentre);
+        } else {
+          callback('Failed to find one or more GLs!');
+        }
+      });
+    },
+    function (gls, costCentre, callback) {
       var items = _.map(req.body.items, function (item, index) {
         return _.extend(item, req.files.items[index]);
       });
@@ -147,10 +169,17 @@ router.post('', multipartMiddleware, function (req, res, next) {
       var managerId = req.user.managerId || req.user.id;
 
       var expenseClaimItems = _.map(items, function (item) {
+        var gl = _.find(gls, function (gl) {
+          return gl.number === parseInt(item.glNumber);
+        });
+        var glId = null;
+        if (gl) {
+          glId = gl.dataValues.id;
+        }
         var model = {
           employeeId: employeeId,
           date: item.date,
-          glId: item.glId,
+          glId: glId,
           numKm: item.numKm || null,
           description: item.description,
           total: parseInt(item.total) || 0,
