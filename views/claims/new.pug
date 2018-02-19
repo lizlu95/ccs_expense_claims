@@ -78,7 +78,7 @@ block inner-content
               .row.mb-3
                 .col-md-12
                   label(for='description') Description
-                  input#description.form-control(name='[0][description]' type='text' value='' size='70' required)
+                  input#description.form-control(name='[0][description]' type='text' value='' v-model="item.description" size='70' required)
                   .invalid-feedback
                     | Please enter a description.
                   .valid-feedback
