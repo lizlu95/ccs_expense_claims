@@ -4,138 +4,140 @@ block inner-content
   .row.mb-5
     .col-12.text-center
       h1 New Claim
-  .row.mb-5
-    form.needs-validation.col-12(enctype='multipart/form-data' novalidate action='/claims' method='POST')
-      .row.mb-1
-        .col-12
-          h2 Information
-      .row.mb-3
-        .col-md-6
-          label(for='employee-name') Name
-          input#employee-name.form-control(type='text' value='Liz Lu' readonly=true)
-        .col-md-6
-          label(for='employee-id') Employee ID
-          input#employee-id.form-control(type='number' value='12345678' readonly=true)
-      .row
-        .col-md-6
-          label(for='cost-centre') Cost Centre
-          select#cost-centre.custom-select(name='costCentreNumber' required)
-            each costCentre in costCentres
-              option(value= costCentre)= costCentre
-          .invalid-feedback
-            | Please select a valid cost centre.
-          .valid-feedback
-            | Looks good!
-        .col-md-6
-            label(for='bank-account') Bank Account #
-            input#bank-account.form-control(name='bankAccount' placeholder='Leave blank for payroll..' type='text' maxlength='14' minlength='14')
+  form.needs-validation(enctype='multipart/form-data' novalidate action='/claims' method='POST')
+    .row.mb-5
+      .col-12
+        .row.mb-1
+          .col-12
+            h2 Information
+        .row.mb-3
+          .col-md-6
+            label(for='employee-name') Name
+            input#employee-name.form-control(type='text' value='Liz Lu' readonly=true)
+          .col-md-6
+            label(for='employee-id') Employee ID
+            input#employee-id.form-control(type='number' value='12345678' readonly=true)
+        .row
+          .col-md-6
+            label(for='cost-centre') Cost Centre
+            select#cost-centre.custom-select(name='costCentreNumber' required)
+              option(value='') Choose..
+              each costCentre in costCentres
+                option(value= costCentre)= costCentre
             .invalid-feedback
-              | Please enter a 14 digit bank account.
+              | Please select a valid cost centre.
             .valid-feedback
               | Looks good!
-  .row.mb-5
-    .col-12
-      .row.mb-1
-        .col-12
-          h2 Items
-      .row
-        .col-12
-          div.item(v-for="(item, index) in items")
-            .row
-              .col-md-1
-                span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
-              .col-md-4
-                label(for='date') Date
-                input.date.form-control(name='items[0][date]' type='date' value='' required)
-                .invalid-feedback
-                  | Please enter a valid date.
-                .valid-feedback
-                  | Looks good!
-              .col-md-4
-                label(for='expense-category') Expense Category
-                select.expense-category.custom-select(required)
-                  option Choose...
-                  option(value= 'gas') AUTO GAS (Community or Facilities employees only)
-                  option(value= 'repairs') AUTO REPAIRS (Community or Facilities employees only)
-                  option(value= 'books') BOOKS & SUBSCRIPTIONS (Newspaper, magazine, website subscription)
-                  option(value= 'conference') CONFERENCE FEE (Registration, travel, & hotel relating to conference)
-                  option(value= 'customer') DELIGHT THE CUSTOMER (For customer benefit only)
-                  option(value= 'fun') FUND FOR FUN
-                  option(value= 'golf') GOLF (For business development and relationship building, NO FOOD)
-                  option(value= 'hotel') HOTEL (Room only, NO FOOD)
-                  option(value= 'staff') MEALS & ENTERTAINMENT STAFF (Food, beverage)
-                  option(value= 'promo') MEALS & ENTERTAINMENT PROMO(Food,beverage when entertaining clients)
-                  option(value= 'meeting') MEETINGS (Room/equipment rental for business meetings, NO FOOD)
-                  option(value= 'mileage') MILEAGE (kilometres traveled using personal vehicle)
-                  option(value= 'other') OTHER (Miscellaneous expenses)
-                  option(value= 'parking') PARKING (Hourly, daily, monthly parking cost)
-                  option(value= 'dues') PERSONAL/PROF DUES, MBERSHP
-                  option(value= 'prizes') PRIZES
-                  option(value= 'tel') TELEPHONE (Telephone, cell, pager, internet stick)
-                  option(value= 'travel') TRAVEL (Hotel, ferry, taxi, parking, mileage)
-                .invalid-feedback
-                  | Please select an expense category.
-                .valid-feedback
-                  | Looks good!
-              .col-md-2
-                label(for='gl') GL
-                select#gl.custom-select(name='items[0][glId]' required)
-                  option Choose...
-                  option(value=2302) 633710
-                .invalid-feedback
-                  | Please select a valid GL.
-                .valid-feedback
-                  | Looks good!
-              .col-md-1.text-right
-                span#remove-item.btn.badge.badge-danger.badge-pill.badge-lg(v-if="index !== 0" @click="items.splice(index, 1)") -
-            .row.mb-3
-              .col-md-12
-                label(for='description') Description
-                input#description.form-control(name='[0][description]' type='text' value='' size='70' required)
-                .invalid-feedback
-                  | Please enter a description.
-                .valid-feedback
-                  | Looks good!
-            .row.mb-5
-              .col-md-7
-                .d-flex.justify-content-between.align-items-center
-                  label(for='num-km') # Km Travelled
-                  span.badge.badge-secondary.badge-sm.num-km-info(data-toggle="tooltip" data-placement="top" title="" data-original-title="$0.54 < 5000Km, $0.48 > 5000Km") ?
-                input.num-km.form-control(name='items[0][numKm]' type='number' value='' required)
-                .invalid-feedback
-                  | Please enter the # of kilometers travelled.
-                .valid-feedback
-                  | Looks good!
-              .col-md-12.upload(style="display:none;")
-                  label(class='custom-file-label' for='receipt') Choose file..
-                  input.receipt.form-control(name='items[0][receipt]' class='custom-file-input' value='' type='file')
-              .col-md-5
-                label(for='total') Total
-                input.total.form-control(name='items[0][total]' type='number' value='' readonly=true)
-      .row
-        .col-12
-          button#add-item.btn.btn-warning.btn-block.btn-lg(type="button" @click="items.push({ date: null })") Add Item
-  .row.mb-1.mb-5
-    .col-12.text-center
-      .d-flex.justify-content-between.align-items-center.mb-3
-        h2.mb-0 Summary
-        span.badge.badge-success.badge-pill.badge-lg {{ items.length }}
-      .row.mb-3
-        .col-md-6
-          label(for='previous-total-mileage') Previous Total Mileage
-          input#previous-total-mileage.form-control(type='number' value='104' readonly=true)
-        .col-md-6
-          label(for='carry-mileage') Carry Forward Mileage
-          input#carry-mileage.form-control(type='number' value='104' readonly=true)
-      .row.mb-5
-        .col-12
-          hr
-          div
-            label(for='total') Total
-            input#total.form-control(type='number' value='100' readonly=true)
-      .row
-        .col-12
-          button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
+          .col-md-6
+              label(for='bank-account') Bank Account #
+              input#bank-account.form-control(name='bankAccount' placeholder='Leave blank for payroll..' type='text' maxlength='14' minlength='14')
+              .invalid-feedback
+                | Please enter a 14 digit bank account.
+              .valid-feedback
+                | Looks good!
+    .row.mb-5
+      .col-12
+        .row.mb-1
+          .col-12
+            h2 Items
+        .row
+          .col-12
+            div.item(v-for="(item, index) in items")
+              .row
+                .col-md-1
+                  span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
+                .col-md-4
+                  label(for='date') Date
+                  input.date.form-control(name='items[0][date]' type='date' value='' required)
+                  .invalid-feedback
+                    | Please enter a valid date.
+                  .valid-feedback
+                    | Looks good!
+                .col-md-4
+                  label(for='expense-category') Expense Category
+                  select.expense-category.custom-select(required)
+                    option Choose...
+                    option(value= 'gas') AUTO GAS (Community or Facilities employees only)
+                    option(value= 'repairs') AUTO REPAIRS (Community or Facilities employees only)
+                    option(value= 'books') BOOKS & SUBSCRIPTIONS (Newspaper, magazine, website subscription)
+                    option(value= 'conference') CONFERENCE FEE (Registration, travel, & hotel relating to conference)
+                    option(value= 'customer') DELIGHT THE CUSTOMER (For customer benefit only)
+                    option(value= 'fun') FUND FOR FUN
+                    option(value= 'golf') GOLF (For business development and relationship building, NO FOOD)
+                    option(value= 'hotel') HOTEL (Room only, NO FOOD)
+                    option(value= 'staff') MEALS & ENTERTAINMENT STAFF (Food, beverage)
+                    option(value= 'promo') MEALS & ENTERTAINMENT PROMO(Food,beverage when entertaining clients)
+                    option(value= 'meeting') MEETINGS (Room/equipment rental for business meetings, NO FOOD)
+                    option(value= 'mileage') MILEAGE (kilometres traveled using personal vehicle)
+                    option(value= 'other') OTHER (Miscellaneous expenses)
+                    option(value= 'parking') PARKING (Hourly, daily, monthly parking cost)
+                    option(value= 'dues') PERSONAL/PROF DUES, MBERSHP
+                    option(value= 'prizes') PRIZES
+                    option(value= 'tel') TELEPHONE (Telephone, cell, pager, internet stick)
+                    option(value= 'travel') TRAVEL (Hotel, ferry, taxi, parking, mileage)
+                  .invalid-feedback
+                    | Please select an expense category.
+                  .valid-feedback
+                    | Looks good!
+                .col-md-2
+                  label(for='gl') GL
+                  select#gl.custom-select(name='items[0][glId]' required)
+                    option Choose...
+                    option(value=2302) 633710
+                  .invalid-feedback
+                    | Please select a valid GL.
+                  .valid-feedback
+                    | Looks good!
+                .col-md-1.text-right
+                  span#remove-item.btn.badge.badge-danger.badge-pill.badge-lg(v-if="index !== 0" @click="items.splice(index, 1)") -
+              .row.mb-3
+                .col-md-12
+                  label(for='description') Description
+                  input#description.form-control(name='[0][description]' type='text' value='' size='70' required)
+                  .invalid-feedback
+                    | Please enter a description.
+                  .valid-feedback
+                    | Looks good!
+              .row.mb-5
+                .col-md-7
+                  .d-flex.justify-content-between.align-items-center
+                    label(for='num-km') # Km Travelled
+                    span.badge.badge-secondary.badge-sm.num-km-info(data-toggle="tooltip" data-placement="top" title="" data-original-title="$0.54 < 5000Km, $0.48 > 5000Km") ?
+                  input.num-km.form-control(name='items[0][numKm]' type='number' value='' required)
+                  .invalid-feedback
+                    | Please enter the # of kilometers travelled.
+                  .valid-feedback
+                    | Looks good!
+                .col-md-12.upload(style="display:none;")
+                    label(class='custom-file-label' for='receipt') Choose file..
+                    input.receipt.form-control(name='items[0][receipt]' class='custom-file-input' value='' type='file')
+                .col-md-5
+                  label(for='total') Total
+                  input.total.form-control(name='items[0][total]' type='number' value='' readonly=true)
+        .row
+          .col-12
+            button#add-item.btn.btn-warning.btn-block.btn-lg(type="button" @click="items.push({ date: null })") Add Item
+    .row.mb-1.mb-5
+      .col-12.text-center
+        .d-flex.justify-content-between.align-items-center.mb-3
+          h2.mb-0 Summary
+          span.badge.badge-success.badge-pill.badge-lg {{ items.length }}
+        .row.mb-3
+          .col-md-6
+            label(for='previous-total-mileage') Previous Total Mileage
+            input#previous-total-mileage.form-control(type='number' value='104' readonly=true)
+          .col-md-6
+            label(for='carry-mileage') Carry Forward Mileage
+            input#carry-mileage.form-control(type='number' value='104' readonly=true)
+        .row.mb-5
+          .col-12
+            hr
+            div
+              label(for='total') Total
+              input#total.form-control(type='number' value='100' readonly=true)
+        .row
+          .col-12
+            button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
 
 block scripts
   script.
