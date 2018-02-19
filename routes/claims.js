@@ -11,6 +11,7 @@ const multipartMiddleware = require('connect-multiparty')();
 const models = require('../models/index');
 const ExpenseClaim = models.ExpenseClaim;
 const ExpenseClaimItem = models.ExpenseClaimItem;
+const EmployeeExpenseClaim = models.EmployeeExpenseClaim;
 const CostCentre = models.CostCentre;
 const GL = models.GL;
 
@@ -31,6 +32,40 @@ router.get('/new', function (req, res, next) {
       res.locals.employeeId = req.user.id;
 
       callback(null);
+    },
+    function (callback) {
+      EmployeeExpenseClaim.findAll({
+        where: {
+          employeeId: {
+            [Op.eq]: req.user.id,
+          },
+          isOwner: {
+            [Op.eq]: true,
+          },
+        },
+      }).then((employeeExpenseClaims) => {
+        var submittedExpenseClaimIds = _.map(employeeExpenseClaims, (employeeExpenseClaim) => {
+          return employeeExpenseClaim.expenseClaimId;
+        });
+
+        // count mileage from all claims within current calendar year
+        ExpenseClaimItem.findAll({
+          where: {
+            expenseClaimId: {
+              [Op.in]: submittedExpenseClaimIds,
+            },
+            createdAt: {
+              [Op.between]: [moment().startOf('year').toDate(), moment().toDate()],
+            },
+          },
+        }).then((expenseClaimItems) => {
+          res.locals.previousMileage = _.reduce(expenseClaimItems, (acc, expenseClaimItem) => {
+            return acc + (expenseClaimItem.numKm || 0);
+          }, 0);
+
+          callback(null);
+        });
+      });
     },
     function (callback) {
       CostCentre.findAll().then((costCentres) => {
