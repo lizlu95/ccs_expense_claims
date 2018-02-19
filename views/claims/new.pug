@@ -4,7 +4,7 @@ block inner-content
   .row.mb-5
     .col-12.text-center
       h1 New Claim
-  div.needs-validation(enctype='multipart/form-data' novalidate action='/claims' method='POST')
+  form.needs-validation(enctype='multipart/form-data' novalidate action='/claims' method='POST')
     .row.mb-5
       .col-12
         .row.mb-1
@@ -101,7 +101,7 @@ block inner-content
                   input.total.form-control(name='items[0][total]' type='number' :value='item.total' readonly=true)
         .row
           .col-12
-            button#add-item.btn.btn-warning.btn-block.btn-lg(type='button' @click='items.push({ date: "", total: 0 })') Add Item
+            div#add-item.btn.btn-warning.btn-block.btn-lg(@click='items.push({ date: "", total: 0 })') Add Item
     .row.mb-1.mb-5
       .col-12.text-center
         .d-flex.justify-content-between.align-items-center.mb-3
