@@ -98,7 +98,7 @@ block inner-content
                     input.receipt.form-control(name='items[0][receipt]' class='custom-file-input' value='' type='file')
                 .col-md-5
                   label(for='total') Total
-                  input.total.form-control(name='items[0][total]' type='number' value='' readonly=true)
+                  input.total.form-control(name='items[0][total]' type='number' :value='item.total' readonly=true)
         .row
           .col-12
             button#add-item.btn.btn-warning.btn-block.btn-lg(type='button' @click='items.push({ date: "" })') Add Item
@@ -152,10 +152,10 @@ block scripts
         items: [{
           date: '',
           glNumber: '',
-          numKm: '',
+          numKm: 0,
           receipt: '',
           description: '',
-          total: '',
+          total: 0,
         }],
       },
       methods: {
