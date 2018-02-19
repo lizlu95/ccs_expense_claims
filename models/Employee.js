@@ -1,4 +1,5 @@
 'use strict';
+const Op = require('sequelize').Op;
 
 module.exports = (sequelize, DataTypes) => {
   var Employee = sequelize.define('Employee', {
@@ -42,6 +43,22 @@ module.exports = (sequelize, DataTypes) => {
     Employee.ExpenseClaims = Employee.belongsToMany(models.ExpenseClaim, {
       through: 'employees_expense_claims',
     });
+
+    Employee.prototype.getSubmittedExpenseClaims = function () {
+      return models.ExpenseClaim.findAll({
+        include: [{
+          model: models.EmployeeExpenseClaim,
+          where: {
+            employeeId: {
+              [Op.eq]: this.id,
+            },
+          },
+          isOwner: {
+            [Op.eq]: true,
+          },
+        }],
+      });
+    };
   };
 
   return Employee;

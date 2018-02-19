@@ -4,6 +4,8 @@ const expect = chai.expect;
 const app = require('../../app');
 const request = require('supertest');
 const manager = require('../../seeds/manager');
+const async = require('async');
+const _ = require('underscore');
 
 const models = require('../../models/index');
 const Employee = models.Employee;
@@ -113,6 +115,27 @@ describe('employee tests', function () {
         assert.isNotEmpty(reports);
 
         done();
+      });
+    });
+  });
+
+  it ('employee with >= 1 submitted expense claims has submitted expense claims', (done) => {
+    var employeeId = 1;
+    Employee.findById(employeeId).then((employee) => {
+      employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+        assert.isNotEmpty(submittedExpenseClaims);
+
+        async.eachSeries(submittedExpenseClaims, (submittedExpenseClaim, callback) => {
+          submittedExpenseClaim.getEmployeeExpenseClaims().then((employeeExpenseClaims) => {
+            assert.exists(_.find(employeeExpenseClaims, (employeeExpenseClaim) => {
+              return employeeExpenseClaim.employeeId === employeeId && employeeExpenseClaim.isOwner;
+            }));
+
+            callback(null);
+          });
+        }, (err) => {
+          done();
+        });
       });
     });
   });
