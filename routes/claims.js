@@ -27,6 +27,12 @@ router.get('/new', function (req, res, next) {
     function (callback) {
       res.locals.title = 'New Claim';
 
+      res.locals.employeeName = req.user.name;
+      res.locals.employeeId = req.user.id;
+
+      callback(null);
+    },
+    function (callback) {
       CostCentre.findAll().then((costCentres) => {
         res.locals.costCentres = _.map(costCentres, (costCentre) => {
           return costCentre.number;
