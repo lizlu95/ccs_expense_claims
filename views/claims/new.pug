@@ -88,7 +88,7 @@ block inner-content
                   .d-flex.justify-content-between.align-items-center
                     label(for='num-km') # Km Travelled
                     span.badge.badge-secondary.badge-sm.num-km-info(data-toggle='tooltip' data-placement='top' title='' data-original-title='$0.54 < 5000Km, $0.48 > 5000Km') ?
-                  input.num-km.form-control(name='items[0][numKm]' type='number' value='' v-model='item.numKm' required)
+                  input.num-km.form-control(name='items[0][numKm]' type='number' value='' v-model.number='item.numKm' required)
                   .invalid-feedback
                     | Please enter the # of kilometers travelled.
                   .valid-feedback
@@ -101,7 +101,7 @@ block inner-content
                   input.total.form-control(name='items[0][total]' type='number' :value='item.total' readonly=true)
         .row
           .col-12
-            div#add-item.btn.btn-warning.btn-block.btn-lg(@click='items.push({ date: "", total: 0 })') Add Item
+            div#add-item.btn.btn-warning.btn-block.btn-lg(@click='addItem()') Add Item
     .row.mb-1.mb-5
       .col-12.text-center
         .d-flex.justify-content-between.align-items-center.mb-3
@@ -110,10 +110,10 @@ block inner-content
         .row.mb-3
           .col-md-6
             label(for='previous-total-mileage') Previous Total Mileage
-            input#previous-total-mileage.form-control(type='number' value=previousMileage readonly=true)
+            input#previous-total-mileage.form-control(type='number' :value='previousMileage' readonly=true)
           .col-md-6
             label(for='carry-mileage') Carry Forward Mileage
-            input#carry-mileage.form-control(type='number' value='104' readonly=true)
+            input#carry-mileage.form-control(type='number' :value='carryForwardMileage' readonly=true)
         .row.mb-4
           .col-12
             hr
@@ -147,6 +147,7 @@ block scripts
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
       data: {
+        previousMileage: parseInt(#{previousMileage}),
         costCentreNumber: '',
         bankAccount: '',
         items: [{
@@ -159,6 +160,16 @@ block scripts
         }],
       },
       methods: {
+        addItem: function () {
+          this.items.push({
+            date: '',
+            glNumber: '',
+            numKm: 0,
+            receipt: '',
+            description: '',
+            total: 0,
+          });
+        },
         addTooltips: function () {
           $(this.$el).find('.num-km-info').tooltip();
         },
@@ -172,6 +183,9 @@ block scripts
       computed: {
         itemsTotal: function () {
           return this.items.reduce((acc, item) => acc + item.total, 0);
+        },
+        carryForwardMileage: function () {
+          return this.previousMileage + this.items.reduce((acc, item) => acc + item.numKm, 0);
         },
       },
     });

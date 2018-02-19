@@ -6,6 +6,9 @@ const async = require('async');
 const manager = require('../../../seeds/manager');
 const _ = require('underscore');
 
+const database = require('../../../models/index');
+const Employee = database.Employee;
+
 const CLAIMS_NEW_ROUTE = '/claims/new';
 
 Browser.site = 'http://localhost:9000';
@@ -112,6 +115,55 @@ describe('new claims page', () => {
             });
 
             browser.assert.evaluate('expenseClaimApp.itemsTotal === ' + expectedItemsTotal.toString());
+          });
+
+          callback(null);
+        },
+      ], () => {
+        done();
+      });
+    });
+  });
+
+  it('expenseClaimApp computes carry forward mileage based on sum of mileage added by expense claim', (done) => {
+    browser.visit('/claims/new', () => {
+      async.waterfall([
+        (callback) => {
+          Employee.build({
+            id: 1,
+          }).getPreviousMileage().then((previousMileage) => {
+            callback(null, previousMileage);
+          });
+        },
+        (previousMileage, callback) => {
+          browser.assert.evaluate('expenseClaimApp.carryForwardMileage === ' + previousMileage.toString());
+
+          callback(null);
+        },
+        (callback) => {
+          var numAddedItems = 2;
+          for (var i = 0; i < numAddedItems; i++) {
+            addExpenseClaimAppItem();
+          }
+
+          browser.wait().then(() => {
+            var totalItems = numAddedItems + 1;
+            browser.assert.evaluate('expenseClaimApp.items.length === ' + totalItems.toString());
+
+            callback(null);
+          });
+        },
+        (callback) => {
+          _.each([[2,3]], (amounts) => {
+            _.each(amounts, (amount, index) => {
+              browser.evaluate('expenseClaimApp.items[' + index.toString() + '].numKm = ' + amount.toString());
+            });
+
+            var expectedItemsTotal = _.reduce(amounts, (acc, total) => {
+              return acc + total;
+            });
+
+            browser.assert.evaluate('expenseClaimApp.carryForwardMileage === ' + expectedItemsTotal.toString());
           });
 
           callback(null);
