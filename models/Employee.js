@@ -65,9 +65,9 @@ function getExpenseClaimsByJoinTable(models, id, isOwner) {
         employeeId: {
           [Op.eq]: id,
         },
-      },
-      isOwner: {
-        [Op.eq]: isOwner,
+        isOwner: {
+          [Op.eq]: isOwner,
+        },
       },
     }],
   });

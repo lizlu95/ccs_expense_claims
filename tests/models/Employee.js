@@ -160,4 +160,34 @@ describe('employee tests', function () {
       });
     });
   });
+
+  it ('employee with >= 1 submitted expense claims but no managed expense claims has no managed expense claims', (done) => {
+    var employeeId = 1;
+    Employee.findById(employeeId).then((employee) => {
+      employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+        assert.isNotEmpty(submittedExpenseClaims);
+
+        employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
+          assert.isEmpty(managedExpenseClaims);
+
+          done();
+        });
+      });
+    });
+  });
+
+  it ('employee with >= 1 managed expense claims but no submitted expense claims has no submitted expense claims', (done) => {
+    var employeeId = 2;
+    Employee.findById(employeeId).then((employee) => {
+      employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
+        assert.isNotEmpty(managedExpenseClaims);
+
+        employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+          assert.isEmpty(submittedExpenseClaims);
+
+          done();
+        });
+      });
+    });
+  });
 });
