@@ -59,6 +59,22 @@ module.exports = (sequelize, DataTypes) => {
         }],
       });
     };
+
+    Employee.prototype.getManagedExpenseClaims = function () {
+      return models.ExpenseClaim.findAll({
+        include: [{
+          model: models.EmployeeExpenseClaim,
+          where: {
+            employeeId: {
+              [Op.eq]: this.id,
+            },
+          },
+          isOwner: {
+            [Op.eq]: false,
+          },
+        }],
+      });
+    };
   };
 
   return Employee;

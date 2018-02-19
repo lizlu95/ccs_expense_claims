@@ -139,4 +139,25 @@ describe('employee tests', function () {
       });
     });
   });
+
+  it ('employee with >= 1 managed expense claims has managed expense claims', (done) => {
+    var employeeId = 2;
+    Employee.findById(employeeId).then((employee) => {
+      employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
+        assert.isNotEmpty(managedExpenseClaims);
+
+        async.eachSeries(managedExpenseClaims, (managedExpenseClaim, callback) => {
+          managedExpenseClaim.getEmployeeExpenseClaims().then((employeeExpenseClaims) => {
+            assert.exists(_.find(employeeExpenseClaims, (employeeExpenseClaim) => {
+              return employeeExpenseClaim.employeeId === employeeId && !employeeExpenseClaim.isOwner;
+            }));
+
+            callback(null);
+          });
+        }, (err) => {
+          done();
+        });
+      });
+    });
+  });
 });
