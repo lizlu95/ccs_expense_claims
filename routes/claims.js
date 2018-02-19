@@ -12,6 +12,7 @@ const models = require('../models/index');
 const ExpenseClaim = models.ExpenseClaim;
 const ExpenseClaimItem = models.ExpenseClaimItem;
 const CostCentre = models.CostCentre;
+const GL = models.GL;
 
 /* GET /claims */
 router.get('', function (req, res, next) {
@@ -22,9 +23,34 @@ router.get('', function (req, res, next) {
 
 /* GET /claims/new */
 router.get('/new', function (req, res, next) {
-  res.locals.title = 'New Claim';
+  async.waterfall([
+    function (callback) {
+      res.locals.title = 'New Claim';
 
-  res.render('claims/new');
+      CostCentre.findAll().then((costCentres) => {
+        res.locals.costCentres = _.map(costCentres, (costCentre) => {
+          return costCentre.number;
+        });
+
+        callback(null);
+      });
+    },
+    function (callback) {
+      GL.findAll().then((gls) => {
+        res.locals.gls = _.map(gls, (gl) => {
+          return gl.number;
+        });
+
+        callback(null);
+      });
+    },
+  ], function (err) {
+    if (err) {
+      next(err);
+    } else {
+      res.render('claims/new');
+    }
+  });
 });
 
 /* GET /claims/:id */

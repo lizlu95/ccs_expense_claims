@@ -20,8 +20,8 @@ block inner-content
         .col-md-6
           label(for='cost-centre') Cost Centre
           select#cost-centre.custom-select(name='costCentreNumber' required)
-            option(value='') Choose...
-            option 0754
+            each costCentre in costCentres
+              option(value= costCentre)= costCentre
           .invalid-feedback
             | Please select a valid cost centre.
           .valid-feedback
