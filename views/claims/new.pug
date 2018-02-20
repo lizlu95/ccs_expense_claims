@@ -142,7 +142,7 @@ block inner-content
 block scripts
   script.
     $(document).ready(function () {
-      $('.custom-file-input').on('change', function () {
+      $(document).on('change', '.custom-file-input', function () {
         $(this).next('.custom-file-label').html($(this).val().split('\\').slice(-1)[0]);
       });
     });
