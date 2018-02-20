@@ -181,6 +181,17 @@ router.post('', multipartMiddleware, function (req, res, next) {
       });
     },
     function (gls, costCentre, callback) {
+      Company.findOne({
+        where: {
+          name: {
+            [Op.eq]: req.body.companyName,
+          },
+        },
+      }).then((company) => {
+        callback(null, company, gls, costCentre);
+      });
+    },
+    function (company, gls, costCentre, callback) {
       var items = _.map(req.body.items, function (item, index) {
         return _.extend(item, req.files.items[index]);
       });
@@ -242,6 +253,7 @@ router.post('', multipartMiddleware, function (req, res, next) {
           status: ExpenseClaim.STATUS.DEFAULT,
           bankAccount: req.body.bankAccount,
           costCentreId: costCentre.id,
+          companyId: company.id,
           ExpenseClaimItems: expenseClaimItems,
           EmployeeExpenseClaims: employeesExpenseClaims,
         };
