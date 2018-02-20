@@ -162,14 +162,14 @@ router.post('', multipartMiddleware, function (req, res, next) {
       });
     },
     function (costCentre, callback) {
-      var glNumbers = _.map(req.body.items, function (item, index) {
-        return item.glNumber;
+      var glDescriptions = _.map(req.body.items, function (item, index) {
+        return item.glDescription;
       });
 
       GL.findAll({
         where: {
-          number: {
-            [Op.in]: glNumbers,
+          description: {
+            [Op.in]: glDescriptions,
           }
         }
       }).then((gls) => {
@@ -202,7 +202,7 @@ router.post('', multipartMiddleware, function (req, res, next) {
 
       var expenseClaimItems = _.map(items, function (item) {
         var gl = _.find(gls, function (gl) {
-          return gl.number === parseInt(item.glNumber);
+          return gl.description === item.glDescription;
         });
         var glId = null;
         if (gl) {

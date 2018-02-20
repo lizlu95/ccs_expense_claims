@@ -65,20 +65,20 @@ block inner-content
                     | Looks good!
                 .col-md-4
                   label(for='expense-category') Expense Category
-                  select.expense-category.custom-select(v-model='item.glNumber' required)
+                  select.expense-category.custom-select(v-model='item.glDescription' required)
                     option(value='') Choose..
                     each gl in gls
-                      option(value=gl.number)= gl.description
+                      option(value=gl.description)= gl.description
                   .invalid-feedback
                     | Please select an expense category.
                   .valid-feedback
                     | Looks good!
                 .col-md-2
                   label(for='gl') GL
-                  select#gl.custom-select(name='items[0][glNumber]' v-model='item.glNumber' required)
+                  select#gl.custom-select(name='items[0][glDescription]' v-model='item.glDescription' required)
                     option(value='') Choose..
                     each gl in gls
-                      option(value=gl.number)= gl.number
+                      option(value=gl.description)= gl.number
                   .invalid-feedback
                     | Please select a valid GL.
                   .valid-feedback
@@ -174,7 +174,7 @@ block scripts
         bankAccount: '',
         items: [{
           date: '',
-          glNumber: '',
+          glDescription: '',
           numKm: 0,
           receipt: '',
           description: '',
@@ -185,7 +185,7 @@ block scripts
         addItem: function () {
           this.items.push({
             date: '',
-            glNumber: '',
+            glDescription: '',
             numKm: 0,
             receipt: '',
             description: '',

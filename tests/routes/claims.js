@@ -109,7 +109,10 @@ describe('home page', function () {
             var items = [
               {
                 date: '2000-01-01',
-                glNumber: '2302',
+                gl: {
+                  number: '663400',
+                  description: 'HOTEL (Room only, NO FOOD)',
+                },
                 receipt: {
                   path: 'fixtures/files/flowers.jpg',
                   size: 100,
@@ -120,7 +123,10 @@ describe('home page', function () {
               },
               {
                 date: '2001-02-30',
-                glNumber: '2303',
+                gl: {
+                  number: '663400',
+                  description: 'MILEAGE (kilometres traveled using personal vehicle)',
+                },
                 receipt: {
                   path: 'fixtures/files/empty.txt',
                   size: 0,
@@ -137,13 +143,13 @@ describe('home page', function () {
               .field('companyName', companyName)
               .attach('items[0][receipt]', items[0].receipt.path)
               .field('items[0][date]', items[0].date)
-              .field('items[0][glNumber]', items[0].glNumber)
+              .field('items[0][glDescription]', items[0].gl.description)
               .field('items[0][numKm]', items[0].numKm)
               .field('items[0][description]', items[0].description)
               .field('items[0][total]', items[0].total)
               .attach('items[1][receipt]', items[1].receipt.path)
               .field('items[1][date]', items[1].date)
-              .field('items[1][glNumber]', items[1].glNumber)
+              .field('items[1][glDescription]', items[1].gl.description)
               .field('items[1][numKm]', items[1].numKm)
               .field('items[1][description]', items[1].description)
               .field('items[1][total]', items[1].total)
