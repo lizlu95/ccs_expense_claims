@@ -28,18 +28,20 @@ describe('new claims page', () => {
 
   it('expenseClaimApp component created with initial information and no items', (done) => {
     browser.visit('/claims/new', () => {
-      browser.assert.evaluate('expenseClaimApp');
-      browser.assert.evaluate('expenseClaimApp.costCentreNumber === ""');
-      browser.assert.evaluate('expenseClaimApp.bankAccount === ""');
-      browser.assert.evaluate('expenseClaimApp.items.length === 1');
-      browser.assert.evaluate('expenseClaimApp.items[0].date === ""');
-      browser.assert.evaluate('expenseClaimApp.items[0].glDescription === ""');
-      browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0');
-      browser.assert.evaluate('expenseClaimApp.items[0].receipt === ""');
-      browser.assert.evaluate('expenseClaimApp.items[0].description === ""');
-      browser.assert.evaluate('expenseClaimApp.items[0].total === 0');
+      browser.assert.evaluate('expenseClaimApp;');
+      browser.assert.evaluate('expenseClaimApp.costCentreNumber === "";');
+      browser.assert.evaluate('expenseClaimApp.bankAccount === "";');
+      browser.assert.evaluate('expenseClaimApp.items.length === 1;');
+      browser.assert.evaluate('expenseClaimApp.items[0].date === "";');
+      browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
+      browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
+      browser.assert.evaluate('expenseClaimApp.items[0].receipt.path === "";');
+      browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
+      browser.assert.evaluate('expenseClaimApp.items[0].description === "";');
+      browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
 
-      browser.assert.evaluate('$(".num-km-info").data("bs.tooltip") !== undefined');
+      // default is non-mileage related amounts so no numKm field at initialization
+      browser.assert.evaluate('$(".num-km-info").data("bs.tooltip") === undefined');
 
       done();
     });
@@ -178,9 +180,6 @@ describe('new claims page', () => {
     browser.visit('/claims/new', () => {
       browser.assert.evaluate('expenseClaimApp.items.length === 1');
 
-      var addItemSelector = '#add-item';
-      var removeItemSelector = '#remove-item';
-
       async.waterfall([
         (callback) => {
           var numAddedItems = 1;
@@ -188,9 +187,117 @@ describe('new claims page', () => {
             addExpenseClaimAppItem();
           }
           browser.wait().then(() => {
-            browser.assert.evaluate('$(".item").last().find(".num-km-info").data("bs.tooltip") !== undefined');
+            // only for items with mileage associated GLs
+            var mileageAssociatedGlDescription = 'MILEAGE (kilometres traveled using personal vehicle)';
+            browser.evaluate('expenseClaimApp.items[1].glDescription = "' + mileageAssociatedGlDescription + '";');
+            browser.assert.evaluate('expenseClaimApp.items[1].glDescription === "' + mileageAssociatedGlDescription + '";');
+
+            browser.wait().then(() => {
+              callback(null);
+            });
+          });
+        },
+        (callback) => {
+          browser.assert.evaluate('$(".item").last().find(".num-km-info").data("bs.tooltip") !== undefined');
+
+          callback(null);
+        }
+      ], () => {
+        done();
+      });
+    });
+  });
+
+  it('expenseClaimApp item total is calculated from one of receipt and numKm but not both', (done) => {
+    var mileageAssociatedGlDescription = 'MILEAGE (kilometres traveled using personal vehicle)';
+    var nonMileageAssociatedGlDescription = 'OTHER (Miscellaneous expenses)';
+    var numKm = 65;
+    var mileageRate = 0.54;
+    var receiptAmount = 93;
+
+    browser.visit('/claims/new', () => {
+      async.waterfall([
+        (callback) => {
+          browser.assert.evaluate('expenseClaimApp.items.length === 1');
+
+          callback(null);
+        },
+        (callback) => {
+          browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
+          browser.assert.evaluate('expenseClaimApp.items[0].receipt.path === "";');
+          browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
+          browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
+          browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
+
+          // force previousMileage to zero
+          browser.evaluate('expenseClaimApp.previousMileage = 0;');
+          browser.assert.evaluate('expenseClaimApp.previousMileage === 0;');
+
+          // change to kilometer based total
+          browser.select('items[0][glDescription]', mileageAssociatedGlDescription);
+          browser.wait().then(() => {
+            browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "' + mileageAssociatedGlDescription + '";');
 
             callback(null);
+          });
+        },
+        (callback) => {
+          // TODO make this dynamic based on configuration values for mileage
+          // change number kilometers should change total value
+          browser.fill('items[0][numKm]', numKm);
+          browser.wait().then(() => {
+            browser.assert.evaluate('expenseClaimApp.items[0].numKm === ' + numKm.toString() + ';');
+
+            browser.assert.evaluate('expenseClaimApp.items[0].total === ' + (mileageRate * numKm).toString() + ';');
+
+            callback(null);
+          });
+        },
+        (callback) => {
+          // change to non-kilometer based total should change total to non-kilometer based total
+          browser.select('items[0][glDescription]', nonMileageAssociatedGlDescription);
+          browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "' + nonMileageAssociatedGlDescription + '";');
+          browser.wait().then(() => {
+            browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
+
+            callback(null);
+          });
+        },
+        (callback) => {
+          // going back to kilometer based total should change total to previously calculated total
+          browser.select('items[0][glDescription]', mileageAssociatedGlDescription);
+          browser.wait().then(() => {
+            browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "' + mileageAssociatedGlDescription + '";');
+            browser.assert.evaluate('expenseClaimApp.items[0].total === ' + (mileageRate * numKm).toString() + ';');
+
+            callback(null);
+          });
+        },
+        (callback) => {
+          // changing to receipt based total should calculate based on receipt amount
+          browser.select('items[0][glDescription]', nonMileageAssociatedGlDescription);
+          browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "' + nonMileageAssociatedGlDescription + '";');
+          browser.wait().then(() => {
+            browser.fill('items[0][receipt][amount]', receiptAmount);
+            browser.wait().then(() => {
+              browser.assert.evaluate('expenseClaimApp.items[0].total === ' + receiptAmount.toString() + ';');
+
+              callback(null);
+            });
+          });
+        },
+        (callback) => {
+          // changing to kilometer based total and then back to non-kilometer based total should restore receipt based total
+          browser.select('items[0][glDescription]', mileageAssociatedGlDescription);
+          browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "' + mileageAssociatedGlDescription + '";');
+          browser.wait().then(() => {
+            browser.select('items[0][glDescription]', nonMileageAssociatedGlDescription);
+            browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "' + nonMileageAssociatedGlDescription + '";');
+            browser.wait().then(() => {
+              browser.assert.evaluate('expenseClaimApp.items[0].total === ' + receiptAmount.toString() + ';');
+
+              callback(null);
+            });
           });
         },
       ], () => {

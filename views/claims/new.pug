@@ -65,7 +65,7 @@ block inner-content
                     | Looks good!
                 .col-md-4
                   label(for='expense-category') Expense Category
-                  select.expense-category.custom-select(v-model='item.glDescription' required)
+                  select#expense-category.custom-select(v-model='item.glDescription' @change='updateItemTotal(item)' required)
                     option(value='') Choose..
                     each gl in gls
                       option(value=gl.description)= gl.description
@@ -75,7 +75,7 @@ block inner-content
                     | Looks good!
                 .col-md-2
                   label(for='gl') GL
-                  select#gl.custom-select(:name="'items[' + index + '][glDescription]'" v-model='item.glDescription' required)
+                  select#gl.custom-select(:name="'items[' + index + '][glDescription]'" v-model='item.glDescription' @change='updateItemTotal(item)' required)
                     option(value='') Choose..
                     each gl in gls
                       option(value=gl.description)= gl.number
@@ -94,23 +94,30 @@ block inner-content
                   .valid-feedback
                     | Looks good!
               .row.mb-4
-                .col-md-7
+                .col-md-7(v-if='isMileageGlDescription(item.glDescription)')
                   .d-flex.justify-content-between.align-items-center
                     label(for='num-km') # Km Travelled
                     span.badge.badge-secondary.badge-sm.num-km-info(data-toggle='tooltip' data-placement='top' title='' data-original-title='$0.54 < 5000Km, $0.48 > 5000Km') ?
-                  input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm')
+                  input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm' @input='updateItemTotal(item)')
                   .invalid-feedback
                     | Please enter the # of kilometers travelled.
                   .valid-feedback
                     | Looks good!
-                .col-md-7.upload.custom-file
-                    label File
-                    input#receipt.form-control.custom-file-input(:name="'items[' + index + '][receipt]'" type='file')
-                    label.custom-file-label(for='receipt') Choose file..
-                    .invalid-feedback
-                      | Please upload a receipt.
-                    .valid-feedback
-                      | Looks good!
+                .col-md-4.upload.custom-file(v-if='!isMileageGlDescription(item.glDescription)')
+                  label File
+                  input#receipt-path.form-control.custom-file-input(:name="'items[' + index + '][receipt][path]'" type='file')
+                  label.custom-file-label(for='receipt-path') Choose file..
+                  .invalid-feedback
+                    | Please upload a receipt.
+                  .valid-feedback
+                    | Looks good!
+                .col-md-3(v-if='!isMileageGlDescription(item.glDescription)')
+                  label(for='receipt-amount') Amount
+                  input#receipt-amount.form-control(:name="'items[' + index + '][receipt][amount]'" v-model.number='item.receipt.amount' @input='updateItemTotal(item)' type='number')
+                  .invalid-feedback
+                    | Please enter a receipt amount.
+                  .valid-feedback
+                    | Looks good!
                 .col-md-5
                   label(for='total') Total
                   input.total.form-control(name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
@@ -176,7 +183,10 @@ block scripts
           date: '',
           glDescription: '',
           numKm: 0,
-          receipt: '',
+          receipt: {
+            path: '',
+            amount: 0,
+          },
           description: '',
           total: 0,
         }],
@@ -187,13 +197,27 @@ block scripts
             date: '',
             glDescription: '',
             numKm: 0,
-            receipt: '',
+            receipt: {
+              path: '',
+              amount: 0,
+            },
             description: '',
             total: 0,
           });
         },
+        updateItemTotal: function (item) {
+          if (this.isMileageGlDescription(item.glDescription)) {
+            item.total = item.numKm * 0.54;
+          } else {
+            item.total = item.receipt.amount;
+          }
+        },
         addTooltip: function ($el) {
           $el.find('.num-km-info').tooltip();
+        },
+        isMileageGlDescription(glDescription) {
+          // TODO make this dynamic from configuration
+          return glDescription === "MILEAGE (kilometres traveled using personal vehicle)";
         },
       },
       mounted: function () {
