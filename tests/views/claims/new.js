@@ -173,6 +173,31 @@ describe('new claims page', () => {
       });
     });
   });
+
+  it('expenseClaimApp item creation adds tooltips', (done) => {
+    browser.visit('/claims/new', () => {
+      browser.assert.evaluate('expenseClaimApp.items.length === 1');
+
+      var addItemSelector = '#add-item';
+      var removeItemSelector = '#remove-item';
+
+      async.waterfall([
+        (callback) => {
+          var numAddedItems = 1;
+          for (var i = 0; i < numAddedItems; i++) {
+            addExpenseClaimAppItem();
+          }
+          browser.wait().then(() => {
+            browser.assert.evaluate('$(".item").last().find(".num-km-info").data("bs.tooltip") !== undefined');
+
+            callback(null);
+          });
+        },
+      ], () => {
+        done();
+      });
+    });
+  });
 });
 
 function addExpenseClaimAppItem() {
