@@ -206,7 +206,7 @@ router.post('', multipartMiddleware, function (req, res, next) {
         });
         var glId = null;
         if (gl) {
-          glId = gl.dataValues.id;
+          glId = gl.id;
         }
         var model = {
           employeeId: employeeId,
