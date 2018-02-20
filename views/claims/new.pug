@@ -192,15 +192,15 @@ block scripts
             total: 0,
           });
         },
-        addTooltips: function () {
-          $(this.$el).find('.num-km-info').tooltip();
+        addTooltip: function ($el) {
+          $el.find('.num-km-info').tooltip();
         },
       },
       mounted: function () {
-        this.addTooltips();
+        this.addTooltip($('.item').last());
       },
       updated: function () {
-       this.addTooltips();
+        this.addTooltip($('.item').last());
       },
       computed: {
         itemsTotal: function () {
