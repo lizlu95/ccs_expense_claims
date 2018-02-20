@@ -15,6 +15,7 @@ const ExpenseClaimItem = models.ExpenseClaimItem;
 const EmployeeExpenseClaim = models.EmployeeExpenseClaim;
 const CostCentre = models.CostCentre;
 const GL = models.GL;
+const Company = models.Company;
 
 /* GET /claims */
 router.get('', function (req, res, next) {
@@ -33,6 +34,15 @@ router.get('/new', function (req, res, next) {
       res.locals.employeeId = req.user.id;
 
       callback(null);
+    },
+    function (callback) {
+      Company.findAll().then((companies) => {
+        res.locals.companyNames = _.map(companies, (company) => {
+          return company.name;
+        });
+
+        callback(null);
+      });
     },
     function (callback) {
       Employee.build({

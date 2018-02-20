@@ -18,7 +18,17 @@ block inner-content
             label(for='employee-id') Employee ID
             input#employee-id.form-control(type='number' value=employeeId readonly=true)
         .row
-          .col-md-6
+          .col-md-4
+            label(for='company-name') Company
+            select#company-name.custom-select(name='companyName' required)
+              option(value='') Choose..
+              each companyName in companyNames
+                option(value= companyName)= companyName
+            .invalid-feedback
+              | Please select a valid company.
+            .valid-feedback
+              | Looks good!
+          .col-md-4
             label(for='cost-centre') Cost Centre
             select#cost-centre.custom-select(name='costCentreNumber' required)
               option(value='') Choose..
@@ -28,7 +38,7 @@ block inner-content
               | Please select a valid cost centre.
             .valid-feedback
               | Looks good!
-          .col-md-6
+          .col-md-4
               label(for='bank-account') Bank Account #
               input#bank-account.form-control(name='bankAccount' placeholder='Leave blank for payroll..' type='text' maxlength='14' minlength='14')
               .invalid-feedback
