@@ -6,10 +6,24 @@ const helper = require('./../helper');
 const manager = require('../../seeds/manager');
 const _ = require('underscore');
 const Op = require('sequelize').Op;
+const YAML = require('yamljs');
 
 const models = require('../../models/index');
 const ExpenseClaim = models.ExpenseClaim;
 const CostCentre = models.CostCentre;
+
+const fixturesDirectory = 'fixtures/test/';
+const fixturesRootKey = 'fixtures';
+const fixturesDataKey = 'data';
+const employeeFixtures = YAML.load(fixturesDirectory + 'Employee.yml')[fixturesRootKey];
+const companyFixtures = YAML.load(fixturesDirectory + 'Company.yml')[fixturesRootKey];
+const costCentreFixtures = YAML.load(fixturesDirectory + 'CostCentre.yml')[fixturesRootKey];
+const employeeOne = employeeFixtures[0][fixturesDataKey];
+const employeeTwo = employeeFixtures[1][fixturesDataKey];
+const companyOne = companyFixtures[0][fixturesDataKey];
+const companyTwo = companyFixtures[1][fixturesDataKey];
+const costCentreOne = costCentreFixtures[0][fixturesDataKey];
+const costCentreTwo = costCentreFixtures[1][fixturesDataKey];
 
 const CLAIMS_NEW_ROUTE = '/claims/new';
 const CLAIMS_LIST_ROUTE = '/claims';
@@ -89,8 +103,9 @@ describe('home page', function () {
             // create an expense claim with two items
             //   - one item with GL associated with Receipt
             //   - one item with GL associated with numKm
-            var costCentreNumber = '0754';
+            var costCentreNumber = costCentreOne['number'];
             var bankAccount = '';
+            var companyName = companyOne['name'];
             var items = [
               {
                 date: '2000-01-01',
@@ -119,6 +134,7 @@ describe('home page', function () {
               .post(CLAIMS_LIST_ROUTE)
               .field('costCentreNumber', costCentreNumber)
               .field('bankAccount', bankAccount)
+              .field('companyName', companyName)
               .attach('items[0][receipt]', items[0].receipt.path)
               .field('items[0][date]', items[0].date)
               .field('items[0][glNumber]', items[0].glNumber)
