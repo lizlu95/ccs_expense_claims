@@ -105,8 +105,8 @@ block inner-content
                     | Looks good!
                 .col-md-7.upload.custom-file
                     label File
-                    label.custom-file-label(for='receipt') Choose file..
                     input#receipt.form-control.custom-file-input(name='items[0][receipt]' type='file')
+                    label.custom-file-label(for='receipt') Choose file..
                     .invalid-feedback
                       | Please upload a receipt.
                     .valid-feedback
@@ -140,6 +140,13 @@ block inner-content
             button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
 
 block scripts
+  script.
+    $(document).ready(function () {
+      $('.custom-file-input').on('change', function () {
+        $(this).next('.custom-file-label').html($(this).val().split('\\').slice(-1)[0]);
+      });
+    });
+
   script.
     (function() {
       'use strict';
