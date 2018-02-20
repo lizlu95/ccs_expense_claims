@@ -185,7 +185,7 @@ block scripts
           return this.items.reduce((acc, item) => acc + item.total, 0);
         },
         carryForwardMileage: function () {
-          return this.previousMileage + this.items.reduce((acc, item) => acc + item.numKm, 0);
+          return this.previousMileage + this.items.reduce((acc, item) => acc + parseInt(item.numKm || 0), 0);
         },
       },
     });
