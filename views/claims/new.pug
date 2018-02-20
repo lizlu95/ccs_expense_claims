@@ -207,7 +207,20 @@ block scripts
         },
         updateItemTotal: function (item) {
           if (this.isMileageGlDescription(item.glDescription)) {
-            item.total = item.numKm * 0.54;
+            var cost = 0;
+            var remainingInitialMileage = 5000 - this.previousMileage;
+            if (remainingInitialMileage > 0) {
+              if (item.numKm <= remainingInitialMileage) {
+                cost = item.numKm * 0.54;
+              } else {
+                cost += remainingInitialMileage * 0.54;
+                cost += (item.numKm - remainingInitialMileage) * 0.48;
+              }
+            } else {
+              cost = item.numKm * 0.48;
+            }
+
+            item.total = cost;
           } else {
             item.total = item.receipt.amount;
           }
