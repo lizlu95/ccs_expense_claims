@@ -58,7 +58,7 @@ block inner-content
                   span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
                 .col-md-4
                   label(for='date') Date
-                  input.date.form-control(name='items[0][date]' type='date' v-model='item.date' value='' required)
+                  input.date.form-control(:name="'items[' + index + '][date]'" type='date' v-model='item.date' value='' required)
                   .invalid-feedback
                     | Please enter a valid date.
                   .valid-feedback
@@ -75,7 +75,7 @@ block inner-content
                     | Looks good!
                 .col-md-2
                   label(for='gl') GL
-                  select#gl.custom-select(name='items[0][glDescription]' v-model='item.glDescription' required)
+                  select#gl.custom-select(:name="'items[' + index + '][glDescription]'" v-model='item.glDescription' required)
                     option(value='') Choose..
                     each gl in gls
                       option(value=gl.description)= gl.number
@@ -88,7 +88,7 @@ block inner-content
               .row.mb-3
                 .col-md-12
                   label(for='description') Description
-                  input#description.form-control(name='[0][description]' type='text' value='' v-model='item.description' size='70' required)
+                  input#description.form-control(:name="'items[' + index + '][description]'" type='text' value='' v-model='item.description' size='70' required)
                   .invalid-feedback
                     | Please enter a description.
                   .valid-feedback
@@ -98,14 +98,14 @@ block inner-content
                   .d-flex.justify-content-between.align-items-center
                     label(for='num-km') # Km Travelled
                     span.badge.badge-secondary.badge-sm.num-km-info(data-toggle='tooltip' data-placement='top' title='' data-original-title='$0.54 < 5000Km, $0.48 > 5000Km') ?
-                  input.num-km.form-control(name='items[0][numKm]' type='number' value='' v-model.number='item.numKm')
+                  input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm')
                   .invalid-feedback
                     | Please enter the # of kilometers travelled.
                   .valid-feedback
                     | Looks good!
                 .col-md-7.upload.custom-file
                     label File
-                    input#receipt.form-control.custom-file-input(name='items[0][receipt]' type='file')
+                    input#receipt.form-control.custom-file-input(:name="'items[' + index + '][receipt]'" type='file')
                     label.custom-file-label(for='receipt') Choose file..
                     .invalid-feedback
                       | Please upload a receipt.
@@ -113,7 +113,7 @@ block inner-content
                       | Looks good!
                 .col-md-5
                   label(for='total') Total
-                  input.total.form-control(name='items[0][total]' type='number' :value='item.total' readonly=true)
+                  input.total.form-control(name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
         .row
           .col-12
             div#add-item.btn.btn-warning.btn-block.btn-lg(@click='addItem()') Add Item
