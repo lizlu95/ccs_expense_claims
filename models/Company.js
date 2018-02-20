@@ -18,5 +18,9 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'companies',
   });
 
+  Company.associate = function (models) {
+    Company.ExpenseClaimItem = Company.hasMany(models.ExpenseClaim);
+  };
+
   return Company;
 };

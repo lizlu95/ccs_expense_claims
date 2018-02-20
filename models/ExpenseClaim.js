@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       field: 'cost_centre_id',
     },
+    companyId: {
+      type: DataTypes.STRING,
+      field: 'company_id',
+    },
     createdAt: {
       type: DataTypes.DATE,
       field: 'created_at',
@@ -33,6 +37,8 @@ module.exports = (sequelize, DataTypes) => {
     ExpenseClaim.Employees = ExpenseClaim.belongsToMany(models.Employee, {
       through: 'employees_expense_claims',
     });
+
+    ExpenseClaim.Company = ExpenseClaim.belongsTo(models.Company);
   };
 
   ExpenseClaim.STATUS = {

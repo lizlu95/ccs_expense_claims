@@ -67,4 +67,14 @@ describe('expense claim tests', function () {
       });
     });
   });
+
+  it('expense claim belongs to company', function (done) {
+    ExpenseClaim.findById(1).then((expenseClaim) => {
+      expenseClaim.getCompany().then((company) => {
+        assert.isNotNull(company);
+
+        done();
+      });
+    });
+  });
 });
