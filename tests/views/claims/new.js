@@ -42,7 +42,7 @@ describe('new claims page', function () {
       browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
 
       // default is non-mileage related amounts so no numKm field at initialization
-      browser.assert.evaluate('$(".num-km-info").data("bs.tooltip") === undefined');
+      browser.assert.evaluate('$(".num-km-info").data("bs.tooltip") !== undefined');
 
       done();
     });
