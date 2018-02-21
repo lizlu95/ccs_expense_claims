@@ -14,22 +14,24 @@ const helper = {};
 /*
  * @param agent     agent used to persist cookies/session
  * @param callback  use with waterfall to pass any err to next callback
+ * @param location  optionally specify expected location after successful login
  */
-helper.authenticate = function (agent, callback) {
+helper.authenticate = function (agent, callback, location) {
   var agentClass = agent.constructor.name;
   if (agentClass === 'TestAgent') {
-  agent
-    .post('/login')
-    .type('form')
-    .send({
-      email: employeeOne.email,
-      password: employeeOne.password,
-    })
-    .expect(302)
-    .expect('Location', '/')
-    .end(function (err, res) {
-      callback(err, agent);
-    });
+    var expectedLocation = location || '/';
+    agent
+      .post('/login')
+      .type('form')
+      .send({
+        email: employeeOne.email,
+        password: employeeOne.password,
+      })
+      .expect(302)
+      .expect('Location', expectedLocation)
+      .end(function (err, res) {
+        callback(err, agent);
+      });
   } else if (agentClass === 'Browser') {
     agent.visit('/login', () => {
       agent
@@ -58,14 +60,10 @@ helper.withAuthenticate = function (agent, steps, done) {
       async.eachSeries(steps, function (step, callback) {
         step(agent, callback);
       }, function(err, results) {
-        if (err) {
-          done(err);
-        } else {
-          callback(null);
-        }
+        callback(err);
       });
     },
-  ], function (err, result) {
+  ], function (err) {
     if (err) {
       done(err);
     } else {
