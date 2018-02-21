@@ -52,6 +52,14 @@ A web application to track internal expense claims for Coast Capital Savings Cre
 
 7. Access server via browser on `PORT` or 3000.
 
+# Environment
+
+The server environment depends on `NODE_ENV` environment variable. Possible values include `test`, `development`, and `proudction`.
+
+# Tests
+
+Run the entire test suite under `/tests` recursively via `npm test` or specify a pattern to grep for within any `describe`/`it` statement via `npm test -- -g 'pattern'`.
+
 # Contributing
 
 1. Fork.
