@@ -37,7 +37,6 @@ describe('new claims page', function () {
       browser.assert.evaluate('expenseClaimApp.items[0].date === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
-      browser.assert.evaluate('expenseClaimApp.items[0].receipt.path === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
       browser.assert.evaluate('expenseClaimApp.items[0].description === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
@@ -226,7 +225,6 @@ describe('new claims page', function () {
         },
         (callback) => {
           browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
-          browser.assert.evaluate('expenseClaimApp.items[0].receipt.path === "";');
           browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
           browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
           browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
@@ -324,7 +322,6 @@ describe('new claims page', function () {
         },
         (callback) => {
           browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
-          browser.assert.evaluate('expenseClaimApp.items[0].receipt.path === "";');
           browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
           browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
           browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
@@ -425,7 +422,6 @@ describe('new claims page', function () {
             },
             (callback) => {
               browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
-              browser.assert.evaluate('expenseClaimApp.items[0].receipt.path === "";');
               browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
               browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
               browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
@@ -469,7 +465,6 @@ describe('new claims page', function () {
             },
             (callback) => {
               browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
-              browser.assert.evaluate('expenseClaimApp.items[0].receipt.path === "";');
               browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
               browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
               browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
@@ -514,7 +509,6 @@ describe('new claims page', function () {
             },
             (callback) => {
               browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
-              browser.assert.evaluate('expenseClaimApp.items[0].receipt.path === "";');
               browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
               browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
               browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');

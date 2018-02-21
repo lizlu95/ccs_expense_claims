@@ -105,8 +105,8 @@ block inner-content
                     | Looks good!
                 .col-md-4.upload.custom-file(v-if='!isMileageGlDescription(item.glDescription)')
                   label File
-                  input#receipt-path.form-control.custom-file-input(:name="'items[' + index + '][receipt][path]'" type='file')
-                  label.custom-file-label(for='receipt-path') Choose file..
+                  input#receipt-file.form-control.custom-file-input(:name="'items[' + index + '][receipt][file]'" type='file')
+                  label.custom-file-label(for='receipt-file') Choose file..
                   .invalid-feedback
                     | Please upload a receipt.
                   .valid-feedback
@@ -184,7 +184,6 @@ block scripts
           glDescription: '',
           numKm: 0,
           receipt: {
-            path: '',
             amount: 0,
           },
           description: '',
@@ -198,7 +197,6 @@ block scripts
             glDescription: '',
             numKm: 0,
             receipt: {
-              path: '',
               amount: 0,
             },
             description: '',

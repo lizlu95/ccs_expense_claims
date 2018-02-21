@@ -218,12 +218,12 @@ router.post('', multipartMiddleware, function (req, res, next) {
         };
 
         // TODO receipt path
-        if (item.receipt.size !== 0) {
+        if (item.receipt.file.size !== 0) {
           // save temporary file
 
           _.extend(model, {
             Receipt: {
-              path: item.receipt.path,
+              path: item.receipt.file.path,
             },
           });
         };
@@ -270,10 +270,8 @@ router.post('', multipartMiddleware, function (req, res, next) {
             }],
             transaction: t,
           }).then(function (expenseClaim) {
-            debugger;
             callback(null, expenseClaim);
           }).catch(function(err) {
-            debugger;
             callback(err);
           });
         });
