@@ -7,6 +7,10 @@ const manager = require('../../seeds/manager');
 const _ = require('underscore');
 const Op = require('sequelize').Op;
 const YAML = require('yamljs');
+const sinon = require('sinon');
+const Promise = require('promise');
+
+const Notifier = require('../../mixins/notifier');
 
 const models = require('../../models/index');
 const ExpenseClaim = models.ExpenseClaim;
@@ -296,6 +300,63 @@ describe('home page', function () {
         ], function (err) {
           callback(err);
         });
+      },
+    ], done);
+  });
+
+  it('/claims/new POST sends notifications to employee and manager', (done) => {
+    var agent = request.agent(app);
+
+    var submitter = employeeOne;
+    var approver = employeeTwo;
+    assert.isTrue(employeeOne.managerId === employeeTwo.id);
+
+    var notifyExpenseClaimSubmittedStub = sinon.stub(Notifier.prototype, 'notifyExpenseClaimSubmitted').returns(Promise.resolve());
+
+    helper.withAuthenticate(agent, [
+      (agent, callback) => {
+        var costCentreNumber = costCentreOne['number'];
+        var bankAccount = '';
+        var companyName = companyOne['name'];
+        var items = [
+          {
+            date: '2000-01-01',
+            gl: {
+              number: '663400',
+              description: 'HOTEL (Room only, NO FOOD)',
+            },
+            receipt: {
+              path: 'fixtures/files/flowers.jpg',
+              size: 100,
+            },
+            numKm: 0,
+            description: 'My First Expense Claim Item',
+            total: 200,
+          },
+        ];
+        agent
+          .post(CLAIMS_LIST_ROUTE)
+          .field('costCentreNumber', costCentreNumber)
+          .field('bankAccount', bankAccount)
+          .field('companyName', companyName)
+          .attach('items[0][receipt][file]', items[0].receipt.path)
+          .field('items[0][date]', items[0].date)
+          .field('items[0][glDescription]', items[0].gl.description)
+          .field('items[0][numKm]', items[0].numKm)
+          .field('items[0][description]', items[0].description)
+          .field('items[0][total]', items[0].total)
+          .expect(302)
+          .expect('Location', /claims\//)
+          .end((err, res) => {
+            if (err) {
+              callback(err);
+            } else {
+              assert.isTrue(notifyExpenseClaimSubmittedStub.calledWithExactly(submitter.id, approver.id));
+              assert.isTrue(notifyExpenseClaimSubmittedStub.calledOnce);
+
+              callback(null);
+            }
+          });
       },
     ], done);
   });

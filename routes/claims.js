@@ -8,6 +8,8 @@ const sequelize = require('../models/index').sequelize;
 const Op = require('sequelize').Op;
 const multipartMiddleware = require('connect-multiparty')();
 
+const Notifier = require('../mixins/notifier');
+
 const models = require('../models/index');
 const Employee = models.Employee;
 const ExpenseClaim = models.ExpenseClaim;
@@ -270,7 +272,16 @@ router.post('', multipartMiddleware, function (req, res, next) {
             }],
             transaction: t,
           }).then(function (expenseClaim) {
-            callback(null, expenseClaim);
+            var notifier = new Notifier();
+
+            notifier.notifyExpenseClaimSubmitted(employeeId, managerId)
+              .then((info) => {
+                callback(null, expenseClaim);
+              })
+              .catch((err) => {
+                // TODO flash message forward based on err
+                callback(null, expenseClaim);
+              });
           }).catch(function(err) {
             callback(err);
           });

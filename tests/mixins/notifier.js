@@ -44,21 +44,20 @@ describe('notifier tests', function () {
   it('notifyExpenseClaimSubmitted should send emails to approver and sender', (done) => {
     var notifier = new Notifier();
 
-    // submitter is employeeOne
-    var submitterTo = employeeOne.name + '<' + employeeOne.email + '>';
+    var submitter = employeeOne;
+    var approver = employeeTwo;
+    assert.isTrue(employeeOne.managerId === employeeTwo.id);
+
+    var submitterTo = submitter.name + '<' + submitter.email + '>';
     var submitterSubject = 'Expense Claim Approval Submitted';
     var submitterMessage = 'Hello, please find your submitted request link below.';
 
-    // approver is employeeTwo
-    var approverTo = employeeTwo.name + '<' + employeeTwo.email + '>';
+    var approverTo = approver.name + '<' + approver.email + '>';
     var approverSubject = 'Expense Claim Approval Requested';
     var approverMessage = 'Hello, please find the attached link below.';
 
     var _notifyStub = sinon.stub().returns(Promise.resolve('info'));
-
-    var _notifyOriginal = Notifier.__get__('_notify');
-
-    Notifier.__set__('_notify', _notifyStub);
+    var _notifyOriginal = Notifier.__set__('_notify', _notifyStub);
 
     var submitterNotifyExpenseClaimSubmittedArgs = [
       submitterTo,
@@ -70,11 +69,11 @@ describe('notifier tests', function () {
       approverSubject,
       approverMessage,
     ];
-    notifier.notifyExpenseClaimSubmitted(employeeOne.id, employeeTwo.id).then(() => {
+    notifier.notifyExpenseClaimSubmitted(submitter.id, approver.id).then(() => {
       _.each([submitterNotifyExpenseClaimSubmittedArgs, approverNotifyExpenseClaimSubmittedArgs], (args) => {
         assert.isTrue(_notifyStub.calledWithExactly.apply(_notifyStub, args));
-        assert.isTrue(_notifyStub.calledTwice);
       });
+      assert.isTrue(_notifyStub.calledTwice);
 
       Notifier.__set__('_notify', _notifyOriginal);
 

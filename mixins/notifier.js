@@ -26,6 +26,7 @@ class Notifier {
   }
 
   notifyExpenseClaimSubmitted(submitterId, approverId, callback) {
+    console.log("NOTIFY")
     var submitterSubject = 'Expense Claim Approval Submitted';
     var submitterMessage = 'Hello, please find your submitted request link below.';
     var approverSubject = 'Expense Claim Approval Requested';
@@ -92,7 +93,7 @@ function _notifyById (employeeId, subject, message, callback) {
         .then((info) => {
           callback(null);
         })
-        .then((err) => {
+        .catch((err) => {
           callback(null, err);
         });
     },
