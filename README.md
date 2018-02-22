@@ -28,6 +28,11 @@ A web application to track internal expense claims for Coast Capital Savings Cre
     $ export ECA_DATABASE_USERNAME_PRODUCTION=username
     $ export ECA_DATABASE_PASSWORD_PRODUCTION=password
     $ export ECA_DATABASE_NAME_PRODUCTION=name
+    $ export ECA_SMTP_HOST=smtp.host.com
+    $ export ECA_SMTP_PORT=465
+    $ export ECA_SMTP_SECURE=true
+    $ export ECA_SMTP_USERNAME=username
+    $ export ECA_SMTP_PASSWORD=password
     ```
 
 4. Navigate to cloned directory.
