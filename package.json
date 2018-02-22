@@ -10,7 +10,7 @@
     "db:seed": "node seeds/seed.js",
     "test": "PORT=9000 NODE_ENV=test nyc --reporter=text-summary mocha --exit --recursive tests",
     "coverage": "nyc report --reporter=text-summary",
-    "heroku-postbuild": "node seeds/seed.js"
+    "heroku-postbuild": "npm run db:migrate; npm run db:seed"
   },
   "dependencies": {
     "async": "^2.6.0",
