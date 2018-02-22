@@ -2,6 +2,7 @@
 
 const nodemailer = require('nodemailer');
 const _ = require('underscore');
+const Promise = require('promise');
 
 const database = require('../models/index');
 const Employee = database.Employee;
@@ -23,7 +24,7 @@ class Notifier {
   notifyCreate(submitterId, approverId, callback) {
     var subject = 'Creation';
     var message = 'Message';
-    _notify.apply(this, Array.prototype.slice.call(arguments, 0, 2).concat([subject, message, callback]));
+    return _notify.apply(this, Array.prototype.slice.call(arguments, 0, 2).concat([subject, message, callback]));
   }
 }
 
@@ -35,11 +36,19 @@ function _notify(submitterId, approverId, subject, message, callback) {
     text: message,
   };
 
-  this.transporter.sendMail(mailOptions, (err, info) => {
-    if (callback) {
-      callback(err, info);
-    }
-  });
+  return new Promise(_.bind(function (resolve, reject) {
+    this.transporter.sendMail(mailOptions, function (err, info) {
+      if (err) {
+        reject.apply(this, arguments);
+      } else {
+        resolve.apply(this, arguments);
+
+        if (callback) {
+          callback.apply(this, arguments);
+        }
+      }
+    });
+  }, this));
 }
 
 module.exports = Notifier;
