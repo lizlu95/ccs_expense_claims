@@ -21,17 +21,18 @@ class Notifier {
     });
   }
 
-  notifyCreate(submitterId, approverId, callback) {
-    var subject = 'Creation';
-    var message = 'Message';
+  notifyCreate(submitterEmail, approverEmail, callback) {
+    var subject = 'Expense Claim Approval Requested';
+    var message = 'Hello, please find the attached link below.';
+
     return _notify.apply(this, Array.prototype.slice.call(arguments, 0, 2).concat([subject, message, callback]));
   }
 }
 
-function _notify(submitterId, approverId, subject, message, callback) {
+function _notify(submitterEmail, approverEmail, subject, message, callback) {
   let mailOptions = {
-    from: '',
-    to: '',
+    from: submitterEmail,
+    to: approverEmail,
     subject: subject,
     text: message,
   };
