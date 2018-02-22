@@ -63,6 +63,7 @@ describe('notifier tests', function () {
     notifier.notifyExpenseClaimSubmitted(submitterEmail, approverEmail).then(() => {
       _.each([submitterNotifyExpenseClaimSubmittedArgs, approverNotifyExpenseClaimSubmittedArgs], (args) => {
         assert.isTrue(_notifyStub.calledWithExactly.apply(_notifyStub, args));
+        assert.isTrue(_notifyStub.calledTwice);
       });
 
       Notifier.__set__('_notify', _notifyOriginal);
