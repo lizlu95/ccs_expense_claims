@@ -8,11 +8,19 @@ const sinon = require('sinon');
 const rewire = require('rewire');
 const _ = require('underscore');
 const Promise = require('promise');
+const YAML = require('yamljs');
 
 const models = require('../../models/index');
 const Employee = models.Employee;
 const ExpenseClaim = models.ExpenseClaim;
 const ExpenseClaimItem = models.ExpenseClaimItem;
+
+const fixturesDirectory = 'fixtures/test/';
+const fixturesRootKey = 'fixtures';
+const fixturesDataKey = 'data';
+const employeeFixtures = YAML.load(fixturesDirectory + 'Employee.yml')[fixturesRootKey];
+const employeeOne = employeeFixtures[0][fixturesDataKey];
+const employeeTwo = employeeFixtures[1][fixturesDataKey];
 
 const Notifier = rewire('../../mixins/notifier');
 
@@ -36,11 +44,13 @@ describe('notifier tests', function () {
   it('notifyExpenseClaimSubmitted should send emails to approver and sender', (done) => {
     var notifier = new Notifier();
 
-    var submitterEmail = 'submitter@submitter.com';
+    // submitter is employeeOne
+    var submitterTo = employeeOne.name + '<' + employeeOne.email + '>';
     var submitterSubject = 'Expense Claim Approval Submitted';
     var submitterMessage = 'Hello, please find your submitted request link below.';
 
-    var approverEmail = 'approver@approver.com';
+    // approver is employeeTwo
+    var approverTo = employeeTwo.name + '<' + employeeTwo.email + '>';
     var approverSubject = 'Expense Claim Approval Requested';
     var approverMessage = 'Hello, please find the attached link below.';
 
@@ -51,16 +61,16 @@ describe('notifier tests', function () {
     Notifier.__set__('_notify', _notifyStub);
 
     var submitterNotifyExpenseClaimSubmittedArgs = [
-      submitterEmail,
+      submitterTo,
       submitterSubject,
       submitterMessage,
     ];
     var approverNotifyExpenseClaimSubmittedArgs = [
-      approverEmail,
+      approverTo,
       approverSubject,
       approverMessage,
     ];
-    notifier.notifyExpenseClaimSubmitted(submitterEmail, approverEmail).then(() => {
+    notifier.notifyExpenseClaimSubmitted(employeeOne.id, employeeTwo.id).then(() => {
       _.each([submitterNotifyExpenseClaimSubmittedArgs, approverNotifyExpenseClaimSubmittedArgs], (args) => {
         assert.isTrue(_notifyStub.calledWithExactly.apply(_notifyStub, args));
         assert.isTrue(_notifyStub.calledTwice);

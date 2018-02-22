@@ -25,7 +25,7 @@ class Notifier {
     });
   }
 
-  notifyExpenseClaimSubmitted(submitterEmail, approverEmail, callback) {
+  notifyExpenseClaimSubmitted(submitterId, approverId, callback) {
     var submitterSubject = 'Expense Claim Approval Submitted';
     var submitterMessage = 'Hello, please find your submitted request link below.';
     var approverSubject = 'Expense Claim Approval Requested';
@@ -34,22 +34,10 @@ class Notifier {
     return new Promise(_.bind((resolve, reject) => {
       async.series({
         submitter: (callback) => {
-          _notify.apply(this, [submitterEmail, submitterSubject, submitterMessage])
-            .then((info) => {
-              callback(null);
-            })
-            .then((err) => {
-              callback(null, err);
-            });
+          _notifyById.apply(this, [submitterId, submitterSubject, submitterMessage, callback]);
         },
         approver: (callback) => {
-          _notify.apply(this, [approverEmail, approverSubject, approverMessage])
-            .then((info) => {
-              callback(null);
-            })
-            .then((err) => {
-              callback(null, err);
-            });
+          _notifyById.apply(this, [approverId, approverSubject, approverMessage, callback]);
         },
       }, (err, errs) => {
         // object of errs for submitter/approver
@@ -64,10 +52,10 @@ class Notifier {
   }
 }
 
-function _notify(email, subject, message, callback) {
+function _notify(to, subject, message, callback) {
   let mailOptions = {
     from: this.fromEmail,
-    to: email,
+    to: to,
     subject: subject,
     text: message,
   };
@@ -86,5 +74,32 @@ function _notify(email, subject, message, callback) {
     });
   }, this));
 }
+
+function _notifyById (employeeId, subject, message, callback) {
+  async.waterfall([
+    (callback) => {
+      Employee.findById(employeeId).then((employee) => {
+        if (employee) {
+          callback(null, employee);
+        } else {
+          callback('Could not find employee.');
+        }
+      });
+    },
+    (employee, callback) => {
+      var to = employee.name + '<' + employee.email + '>';
+      _notify.apply(this, [to, subject, message])
+        .then((info) => {
+          callback(null);
+        })
+        .then((err) => {
+          callback(null, err);
+        });
+    },
+  ], (err) => {
+    // continue chain regardless but pass err forward in series
+    callback(null, err);
+  });
+};
 
 module.exports = Notifier;
