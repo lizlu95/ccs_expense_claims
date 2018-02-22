@@ -26,7 +26,6 @@ class Notifier {
   }
 
   notifyExpenseClaimSubmitted(submitterId, approverId, callback) {
-    console.log("NOTIFY")
     var submitterSubject = 'Expense Claim Approval Submitted';
     var submitterMessage = 'Hello, please find your submitted request link below.';
     var approverSubject = 'Expense Claim Approval Requested';
