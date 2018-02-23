@@ -191,6 +191,8 @@ block scripts
     })();
 
   script.
+    // TODO make this dynamic from configuration
+    var MILEAGE_GL_DESCRIPTION = "MILEAGE (kilometres traveled using personal vehicle)";
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
       data: {
@@ -245,8 +247,7 @@ block scripts
           $el.find('.num-km-info').tooltip();
         },
         isMileageGlDescription(glDescription) {
-          // TODO make this dynamic from configuration
-          return glDescription === "MILEAGE (kilometres traveled using personal vehicle)";
+          return glDescription === MILEAGE_GL_DESCRIPTION;
         },
       },
       mounted: function () {
@@ -260,7 +261,16 @@ block scripts
           return this.items.reduce((acc, item) => acc + item.total, 0);
         },
         carryForwardMileage: function () {
-          return this.previousMileage + this.items.reduce((acc, item) => acc + parseInt(item.numKm || 0), 0);
+          return this.previousMileage + this.items.reduce((acc, item) => {
+            var amount;
+            if (item.glDescription === MILEAGE_GL_DESCRIPTION) {
+              amount = parseInt(item.numKm || 0);
+            } else {
+              amount = 0;
+            }
+
+            return acc + amount;
+          }, 0);
         },
       },
     });

@@ -12,6 +12,7 @@ const Employee = database.Employee;
 const CLAIMS_NEW_ROUTE = '/claims/new';
 
 const MILEAGE_GL_DESCRIPTION = 'MILEAGE (kilometres traveled using personal vehicle)';
+const NON_MILEAGE_GL_DESCRIPTION = 'OTHER (Miscellaneous expenses)';
 
 Browser.site = 'http://localhost:9000';
 var browser = new Browser();
@@ -167,19 +168,29 @@ describe('new claims page', function () {
   });
 
   it('expenseClaimApp computes carry forward mileage based on sum of mileage added by expense claim', (done) => {
+    var previousMileage;
+
     browser.visit('/claims/new', () => {
       async.waterfall([
         (callback) => {
           Employee.build({
             id: 1,
-          }).getPreviousMileage().then((previousMileage) => {
-            callback(null, previousMileage);
+          }).getPreviousMileage().then((employeePreviousMileage) => {
+            previousMileage = employeePreviousMileage;
+
+            callback(null);
           });
         },
-        (previousMileage, callback) => {
-          browser.assert.evaluate('expenseClaimApp.carryForwardMileage === ' + previousMileage.toString());
+        (callback) => {
+          // should take into account previous mileage only when mileage associated GL
+          browser.evaluate('expenseClaimApp.items[0].glDescription = "' + MILEAGE_GL_DESCRIPTION + '";');
+          browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "' + MILEAGE_GL_DESCRIPTION + '";');
 
-          callback(null);
+          browser.wait().then(() => {
+            browser.assert.evaluate('expenseClaimApp.carryForwardMileage === ' + previousMileage.toString());
+
+            callback(null);
+          });
         },
         (callback) => {
           var numAddedItems = 2;
@@ -195,19 +206,38 @@ describe('new claims page', function () {
           });
         },
         (callback) => {
-          _.each([[2,3]], (amounts) => {
-            _.each(amounts, (amount, index) => {
-              browser.evaluate('expenseClaimApp.items[' + index.toString() + '].numKm = ' + amount.toString());
-            });
+          var itemMileageAmounts = [2,3];
 
-            var expectedItemsTotal = _.reduce(amounts, (acc, total) => {
-              return acc + total;
-            });
-
-            browser.assert.evaluate('expenseClaimApp.carryForwardMileage === ' + expectedItemsTotal.toString());
+          _.each(itemMileageAmounts, (amount, index) => {
+            browser.evaluate('expenseClaimApp.items[' + index.toString() + '].glDescription = "' + MILEAGE_GL_DESCRIPTION + '";');
+            browser.assert.evaluate('expenseClaimApp.items[' + index.toString() + '].glDescription === "' + MILEAGE_GL_DESCRIPTION + '";');
+            browser.evaluate('expenseClaimApp.items[' + index.toString() + '].numKm = ' + amount.toString());
           });
 
-          callback(null);
+          var expectedItemsTotal = _.reduce(itemMileageAmounts, (acc, total) => {
+            return acc + total;
+          });
+
+          browser.wait().then(() => {
+            browser.assert.evaluate('expenseClaimApp.carryForwardMileage === ' + expectedItemsTotal.toString());
+
+            callback(null, itemMileageAmounts);
+          });
+        },
+        (itemMileageAmounts, callback) => {
+          // should revert back to previousMileage when changing to non-mileage item
+          _.each(itemMileageAmounts, (amount, index) => {
+            browser.evaluate('expenseClaimApp.items[' + index.toString() + '].glDescription = "' + NON_MILEAGE_GL_DESCRIPTION + '";');
+            browser.assert.evaluate('expenseClaimApp.items[' + index.toString() + '].glDescription === "' + NON_MILEAGE_GL_DESCRIPTION + '";');
+          });
+
+          browser.wait().then(() => {
+            console.log(browser.evaluate('expenseClaimApp.carryForwardMileage'))
+            console.log(browser.evaluate('expenseClaimApp.previousMileage'))
+            browser.assert.evaluate('expenseClaimApp.carryForwardMileage === ' + previousMileage + ';');
+
+            callback(null);
+          });
         },
       ], () => {
         done();
@@ -248,8 +278,8 @@ describe('new claims page', function () {
   });
 
   it('expenseClaimApp item total is calculated from one of receipt and numKm but not both', (done) => {
-    var mileageAssociatedGlDescription = 'MILEAGE (kilometres traveled using personal vehicle)';
-    var nonMileageAssociatedGlDescription = 'OTHER (Miscellaneous expenses)';
+    var mileageAssociatedGlDescription = MILEAGE_GL_DESCRIPTION;
+    var nonMileageAssociatedGlDescription = NON_MILEAGE_GL_DESCRIPTION;
     var numKm = 65;
     var mileageRate = 0.54;
     var receiptAmount = 93;
