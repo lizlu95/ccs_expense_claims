@@ -232,8 +232,6 @@ describe('new claims page', function () {
           });
 
           browser.wait().then(() => {
-            console.log(browser.evaluate('expenseClaimApp.carryForwardMileage'))
-            console.log(browser.evaluate('expenseClaimApp.previousMileage'))
             browser.assert.evaluate('expenseClaimApp.carryForwardMileage === ' + previousMileage + ';');
 
             callback(null);
