@@ -44,7 +44,7 @@ describe('new claims page', function () {
       browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
 
       // default is non-mileage related amounts so no numKm field at initialization
-      browser.assert.evaluate('$(".num-km-info").data("bs.tooltip") !== undefined');
+      browser.assert.evaluate('$(".num-km-info").data("bs.tooltip") === undefined');
 
       done();
     });
@@ -61,11 +61,14 @@ describe('new claims page', function () {
       async.waterfall([
         (callback) => {
           // 3439.3 * 0.54 = 1857.222 (round down)
-          browser.fill('items[0][numKm]', '3439.3');
+          // wait for DOM to render from v-if
           browser.wait().then(() => {
-            browser.assert.evaluate('expenseClaimApp.items[0].total === 1857.22');
+            browser.fill('items[0][numKm]', '3439.3');
+            browser.wait().then(() => {
+              browser.assert.evaluate('expenseClaimApp.items[0].total === 1857.22');
 
-            callback(null);
+              callback(null);
+            });
           });
         },
         (callback) => {
@@ -476,13 +479,16 @@ describe('new claims page', function () {
             (callback) => {
               // TODO make this dynamic based on configuration values for mileage
               // total value should be calculated based on initial tier
-              browser.fill('items[0][numKm]', numKm);
+              // wait for DOM to render from v-if
               browser.wait().then(() => {
-                browser.assert.evaluate('expenseClaimApp.items[0].numKm === ' + numKm.toString() + ';');
+                browser.fill('items[0][numKm]', numKm);
+                browser.wait().then(() => {
+                  browser.assert.evaluate('expenseClaimApp.items[0].numKm === ' + numKm.toString() + ';');
 
-                browser.assert.evaluate('expenseClaimApp.items[0].total === ' + (mileageRateInitial * numKm).toString() + ';');
+                  browser.assert.evaluate('expenseClaimApp.items[0].total === ' + (mileageRateInitial * numKm).toString() + ';');
 
-                callback(null);
+                  callback(null);
+                });
               });
             },
           ], () => {
