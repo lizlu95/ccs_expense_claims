@@ -11,6 +11,8 @@ const Employee = database.Employee;
 
 const CLAIMS_NEW_ROUTE = '/claims/new';
 
+const MILEAGE_GL_DESCRIPTION = 'MILEAGE (kilometres traveled using personal vehicle)';
+
 Browser.site = 'http://localhost:9000';
 var browser = new Browser();
 browser.silent = true;
@@ -45,6 +47,39 @@ describe('new claims page', function () {
       browser.assert.evaluate('$(".num-km-info").data("bs.tooltip") !== undefined');
 
       done();
+    });
+  });
+
+  it('expenseClaimApp item totals are rounded to 2 decimal places', (done) => {
+    browser.visit('/claims/new', () => {
+      browser.evaluate('expenseClaimApp.previousMileage = 0');
+      browser.assert.evaluate('expenseClaimApp.previousMileage === 0');
+      browser.evaluate('expenseClaimApp.items[0].numKm === 0;');
+      browser.evaluate('expenseClaimApp.items[0].glDescription = "' + MILEAGE_GL_DESCRIPTION + '";');
+      browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "' + MILEAGE_GL_DESCRIPTION + '";');
+
+      async.waterfall([
+        (callback) => {
+          // 3439.3 * 0.54 = 1857.222 (round down)
+          browser.fill('items[0][numKm]', '3439.3');
+          browser.wait().then(() => {
+            browser.assert.evaluate('expenseClaimApp.items[0].total === 1857.22');
+
+            callback(null);
+          });
+        },
+        (callback) => {
+          // 3439.2 * 0.54 = 1857.168 (round up)
+          browser.fill('items[0][numKm]', '3439.2');
+          browser.wait().then(() => {
+            browser.assert.evaluate('expenseClaimApp.items[0].total === 1857.17');
+
+            callback(null);
+          });
+        },
+      ], (err) => {
+        done();
+      });
     });
   });
 
@@ -189,7 +224,7 @@ describe('new claims page', function () {
           }
           browser.wait().then(() => {
             // only for items with mileage associated GLs
-            var mileageAssociatedGlDescription = 'MILEAGE (kilometres traveled using personal vehicle)';
+            var mileageAssociatedGlDescription = MILEAGE_GL_DESCRIPTION;
             browser.evaluate('expenseClaimApp.items[1].glDescription = "' + mileageAssociatedGlDescription + '";');
             browser.assert.evaluate('expenseClaimApp.items[1].glDescription === "' + mileageAssociatedGlDescription + '";');
 

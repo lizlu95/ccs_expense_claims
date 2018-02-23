@@ -236,9 +236,9 @@ block scripts
               cost = item.numKm * 0.48;
             }
 
-            item.total = cost;
+            item.total = Math.round(cost * 100)/100;
           } else {
-            item.total = item.receipt.amount;
+            item.total = Math.round(item.receipt.amount * 100)/100;
           }
         },
         addTooltip: function ($el) {
