@@ -3,7 +3,7 @@ extends layout
 block content
   div#expense-claim-app.h-100
     nav.navbar.sticky-top.background-alternate.flex-md-nowrap.p-0
-      a.navbar-brand.background-dark.text-white.col-md-3.mr-0(href='/')
+      a.navbar-brand.background-dark.text-white.col-xl-3.mr-0(href='/')
         .row.align-items-center
           .col-12.my-2
             img#navbar-logo.mx-3(src='/images/logo.png' alt='Coast Capital Savings')
@@ -13,7 +13,7 @@ block content
           a.nav-link.text-white(href='/logout') Sign out
     .container-fluid.h-100
       .row.h-100
-        nav.col-lg-3.bg-light.sidebar
+        nav.col-xl-3.bg-light.sidebar
           .sidebar-sticky.pt-4
             ul.nav.flex-column
               li.nav-item
@@ -87,7 +87,7 @@ block content
                   line(x1='16', y1='17', x2='8', y2='17')
                   polyline(points='10 9 9 9 8 9')
                 | 02-03-2009
-        main.col-lg-9(role='main')
+        main.col-xl-9(role='main')
           .container.my-45
             block inner-content
 
