@@ -98,11 +98,14 @@ block inner-content
                   .d-flex.justify-content-between.align-items-center
                     label(for='num-km') # Km Travelled
                     span.badge.badge-secondary.badge-sm.num-km-info(data-toggle='tooltip' data-placement='top' title='' data-original-title='$0.54 < 5000Km, $0.48 > 5000Km') ?
-                  input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm' min="0" step="0.01" @input='updateItemTotal(item)')
-                  .invalid-feedback
-                    | Please enter the # of kilometers travelled.
-                  .valid-feedback
-                    | Looks good!
+                  .input-group
+                    input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm' min="0" step="0.01" @input='updateItemTotal(item)')
+                    .input-group-append
+                      .input-group-text km
+                    .invalid-feedback
+                      | Please enter the # of kilometers travelled.
+                    .valid-feedback
+                      | Looks good!
                 .col-md-4.upload.custom-file(v-show='!isMileageGlDescription(item.glDescription)')
                   label File
                   input#receipt-file.form-control.custom-file-input(:name="'items[' + index + '][receipt][file]'" type='file')
@@ -138,10 +141,16 @@ block inner-content
         .row.mb-3
           .col-md-6
             label(for='previous-total-mileage') Previous Total Mileage
-            input#previous-total-mileage.form-control(type='number' :value='previousMileage' readonly=true)
+            .input-group
+              input#previous-total-mileage.form-control(type='number' :value='previousMileage' readonly=true)
+              .input-group-append
+                .input-group-text km
           .col-md-6
             label(for='carry-mileage') Carry Forward Mileage
-            input#carry-mileage.form-control(type='number' :value='carryForwardMileage' readonly=true)
+            .input-group
+              input#carry-mileage.form-control(type='number' :value='carryForwardMileage' readonly=true)
+              .input-group-append
+                .input-group-text km
         .row.mb-4
           .col-12
             hr
