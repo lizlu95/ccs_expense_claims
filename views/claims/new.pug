@@ -113,11 +113,14 @@ block inner-content
                     | Looks good!
                 .col-md-3(v-show='!isMileageGlDescription(item.glDescription)')
                   label(for='receipt-amount') Amount
-                  input#receipt-amount.form-control(:name="'items[' + index + '][receipt][amount]'" v-model.number='item.receipt.amount' min="0" step="0.01" @input='updateItemTotal(item)' type='number')
-                  .invalid-feedback
-                    | Please enter a receipt amount > $0.
-                  .valid-feedback
-                    | Looks good!
+                  .input-group
+                    .input-group-prepend
+                      .input-group-text $
+                    input#receipt-amount.form-control(:name="'items[' + index + '][receipt][amount]'" v-model.number='item.receipt.amount' min="0" step="0.01" @input='updateItemTotal(item)' type='number')
+                    .invalid-feedback
+                      | Please enter a receipt amount > $0.
+                    .valid-feedback
+                      | Looks good!
                 .col-md-5
                   label(for='total') Total
                   input.total.form-control(name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
