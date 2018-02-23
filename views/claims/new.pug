@@ -123,7 +123,10 @@ block inner-content
                       | Looks good!
                 .col-md-5
                   label(for='total') Total
-                  input.total.form-control(name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
+                  .input-group
+                    .input-group-prepend
+                      .input-group-text $
+                    input#total.form-control(name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
         .row
           .col-12
             div#add-item.btn.btn-warning.btn-block.btn-lg(@click='addItem()') Add Item
@@ -144,7 +147,10 @@ block inner-content
             hr
             div
               label(for='total') Total
-              input#total.form-control(type='number' :value='itemsTotal' readonly=true)
+              .input-group
+                .input-group-prepend
+                  .input-group-text $
+                input#total.form-control(type='number' :value='itemsTotal' readonly=true)
         .row
           .col-12
             button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
