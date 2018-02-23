@@ -98,7 +98,7 @@ block inner-content
                   .d-flex.justify-content-between.align-items-center
                     label(for='num-km') # Km Travelled
                     span.badge.badge-secondary.badge-sm.num-km-info(data-toggle='tooltip' data-placement='top' title='' data-original-title='$0.54 < 5000Km, $0.48 > 5000Km') ?
-                  input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm' min="0" @input='updateItemTotal(item)')
+                  input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm' min="0" step="0.01" @input='updateItemTotal(item)')
                   .invalid-feedback
                     | Please enter the # of kilometers travelled.
                   .valid-feedback
@@ -113,7 +113,7 @@ block inner-content
                     | Looks good!
                 .col-md-3(v-show='!isMileageGlDescription(item.glDescription)')
                   label(for='receipt-amount') Amount
-                  input#receipt-amount.form-control(:name="'items[' + index + '][receipt][amount]'" v-model.number='item.receipt.amount' min="0" @input='updateItemTotal(item)' type='number')
+                  input#receipt-amount.form-control(:name="'items[' + index + '][receipt][amount]'" v-model.number='item.receipt.amount' min="0" step="0.01" @input='updateItemTotal(item)' type='number')
                   .invalid-feedback
                     | Please enter a receipt amount > $0.
                   .valid-feedback
