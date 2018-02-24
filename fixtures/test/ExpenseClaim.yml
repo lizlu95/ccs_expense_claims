@@ -9,3 +9,8 @@ fixtures:
       id: 2
       CostCentre: 1
       Company: 2
+  - model: ExpenseClaim
+    data:
+      id: 3
+      CostCentre: 1
+      Company: 2

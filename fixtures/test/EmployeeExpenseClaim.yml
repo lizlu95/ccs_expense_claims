@@ -25,7 +25,7 @@ fixtures:
       isActive: 0
   - model: EmployeeExpenseClaim
     data:
-      employeeId: 3
+      employeeId: 4
       expenseClaimId: 2
       isOwner: 0
       isActive: 1

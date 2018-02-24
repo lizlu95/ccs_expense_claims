@@ -19,7 +19,7 @@ describe('expense claim tests', function () {
   });
 
   it('expense claims with no claimer(s)/approver(s) do not have any employees', function (done) {
-    ExpenseClaim.findById(2).then((expenseClaim) => {
+    ExpenseClaim.findById(3).then((expenseClaim) => {
       expenseClaim.getEmployees().then((employees) => {
         assert.isEmpty(employees);
 

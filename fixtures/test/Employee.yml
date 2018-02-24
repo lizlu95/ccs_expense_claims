@@ -20,3 +20,10 @@ fixtures:
       password: password
       name: Three Three
       managerId: 2
+  - model: Employee
+    data:
+      id: 4
+      email: four@four.com
+      password: password
+      name: Four Four
+      managerId: 2
