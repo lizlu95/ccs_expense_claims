@@ -119,7 +119,7 @@ describe('employee tests', function () {
     });
   });
 
-  it ('employee with >= 1 submitted expense claims has submitted expense claims', (done) => {
+  it ('employee with >= 1 submitted expense claims has submitted expense claims with active manager attributes', (done) => {
     var employeeId = 1;
     Employee.findById(employeeId).then((employee) => {
       employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
@@ -128,10 +128,24 @@ describe('employee tests', function () {
         async.eachSeries(submittedExpenseClaims, (submittedExpenseClaim, callback) => {
           submittedExpenseClaim.getEmployeeExpenseClaims().then((employeeExpenseClaims) => {
             assert.exists(_.find(employeeExpenseClaims, (employeeExpenseClaim) => {
-              return employeeExpenseClaim.employeeId === employeeId && employeeExpenseClaim.isOwner;
+              return employeeExpenseClaim.employeeId === employeeId &&
+                employeeExpenseClaim.isOwner &&
+                employeeExpenseClaim.isActive;
             }));
 
-            callback(null);
+            var managerEmployeeExpenseClaim = _.find(employeeExpenseClaims, (employeeExpenseClaim) => {
+              return employeeExpenseClaim.employeeId !== employeeId &&
+                !employeeExpenseClaim.isOwner &&
+                employeeExpenseClaim.isActive;
+            });
+            assert.exists(managerEmployeeExpenseClaim);
+            assert.equal(managerEmployeeExpenseClaim.employeeId, submittedExpenseClaim.activeManager.id);
+
+            Employee.findById(submittedExpenseClaim.activeManager.id).then((manager) => {
+              assert.equal(manager.name, submittedExpenseClaim.activeManager.name);
+
+              callback(null);
+            });
           });
         }, (err) => {
           done();
@@ -140,7 +154,7 @@ describe('employee tests', function () {
     });
   });
 
-  it ('employee with >= 1 managed expense claims has managed expense claims', (done) => {
+  it ('employee with >= 1 managed expense claims has managed expense claims with manager attributes attached to each', (done) => {
     var employeeId = 2;
     Employee.findById(employeeId).then((employee) => {
       employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
@@ -149,10 +163,23 @@ describe('employee tests', function () {
         async.eachSeries(managedExpenseClaims, (managedExpenseClaim, callback) => {
           managedExpenseClaim.getEmployeeExpenseClaims().then((employeeExpenseClaims) => {
             assert.exists(_.find(employeeExpenseClaims, (employeeExpenseClaim) => {
-              return employeeExpenseClaim.employeeId === employeeId && !employeeExpenseClaim.isOwner;
+              return employeeExpenseClaim.employeeId === employeeId &&
+                !employeeExpenseClaim.isOwner;
             }));
 
-            callback(null);
+            var submitterEmployeeExpenseClaim = _.find(employeeExpenseClaims, (employeeExpenseClaim) => {
+              return employeeExpenseClaim.employeeId !== employeeId &&
+                employeeExpenseClaim.isOwner &&
+                employeeExpenseClaim.isActive;
+            });
+            assert.exists(submitterEmployeeExpenseClaim);
+            assert.equal(submitterEmployeeExpenseClaim.employeeId, managedExpenseClaim.submitter.id);
+
+            Employee.findById(managedExpenseClaim.submitter.id).then((submitter) => {
+              assert.equal(submitter.name, managedExpenseClaim.submitter.name);
+
+              callback(null);
+            });
           });
         }, (err) => {
           done();

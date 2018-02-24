@@ -47,11 +47,103 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Employee.prototype.getSubmittedExpenseClaims = function () {
-      return getExpenseClaimsByJoinTable(models, this.id, true);
+      return this.getExpenseClaims({
+        where: {
+          '$EmployeeExpenseClaims.employee_id$': {
+            [Op.eq]: this.id,
+          },
+          '$EmployeeExpenseClaims.is_owner$': {
+            [Op.eq]: 1,
+          }
+        },
+        include: [{
+          model: models.EmployeeExpenseClaim,
+          as: 'EmployeeExpenseClaims',
+          include: [
+            models.Employee,
+          ]
+        }],
+      }).then((expenseClaims) => {
+        var expenseClaimIds = _.map(expenseClaims, (expenseClaim) => {
+          return expenseClaim.id;
+        });
+
+        return models.ExpenseClaim.findAll({
+          where: {
+            id: {
+              [Op.in]: expenseClaimIds,
+            },
+          },
+          include: [{
+            model: models.EmployeeExpenseClaim,
+            include: [
+              models.Employee,
+            ],
+          }],
+        }).then((expenseClaims) => {
+          _.each(expenseClaims, (expenseClaim) => {
+            var managerEmployeeExpenseClaim = _.find(expenseClaim.EmployeeExpenseClaims, (employeeExpenseClaim) => {
+              return employeeExpenseClaim.employeeId !== this.id &&
+                !employeeExpenseClaim.isOwner &&
+                employeeExpenseClaim.isActive;
+            });
+
+            expenseClaim.activeManager = managerEmployeeExpenseClaim.Employee;
+          });
+
+          return expenseClaims;
+        });
+      });
     };
 
     Employee.prototype.getManagedExpenseClaims = function () {
-      return getExpenseClaimsByJoinTable(models, this.id, false);
+      return this.getExpenseClaims({
+        where: {
+          '$EmployeeExpenseClaims.employee_id$': {
+            [Op.eq]: this.id,
+          },
+          '$EmployeeExpenseClaims.is_owner$': {
+            [Op.eq]: 0,
+          }
+        },
+        include: [{
+          model: models.EmployeeExpenseClaim,
+          as: 'EmployeeExpenseClaims',
+          include: [
+            models.Employee,
+          ]
+        }],
+      }).then((expenseClaims) => {
+        var expenseClaimIds = _.map(expenseClaims, (expenseClaim) => {
+          return expenseClaim.id;
+        });
+
+        return models.ExpenseClaim.findAll({
+          where: {
+            id: {
+              [Op.in]: expenseClaimIds,
+            },
+          },
+          include: [{
+            model: models.EmployeeExpenseClaim,
+            include: [
+              models.Employee,
+            ],
+          }],
+        }).then((expenseClaims) => {
+          _.each(expenseClaims, (expenseClaim) => {
+            var submitterEmployeeExpenseClaim = _.find(expenseClaim.EmployeeExpenseClaims, (employeeExpenseClaim) => {
+              return employeeExpenseClaim.employeeId !== this.id &&
+                employeeExpenseClaim.isOwner &&
+                employeeExpenseClaim.isActive;
+            });
+
+            expenseClaim.submitter = submitterEmployeeExpenseClaim.Employee;
+          });
+
+          return expenseClaims;
+        });
+      });
     };
 
     Employee.prototype.getPreviousMileage = function () {
@@ -83,19 +175,3 @@ module.exports = (sequelize, DataTypes) => {
 
   return Employee;
 };
-
-function getExpenseClaimsByJoinTable(models, id, isOwner) {
-  return models.ExpenseClaim.findAll({
-    include: [{
-      model: models.EmployeeExpenseClaim,
-      where: {
-        employeeId: {
-          [Op.eq]: id,
-        },
-        isOwner: {
-          [Op.eq]: isOwner,
-        },
-      },
-    }],
-  });
-}
