@@ -23,7 +23,37 @@ const Company = models.Company;
 router.get('', function (req, res, next) {
   res.locals.title = 'Claims';
 
-  res.render('claims/list');
+  var employee = Employee.build({
+    id: req.user.id,
+  });
+
+  async.waterfall([
+    (callback) => {
+      employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+        res.locals.submittedExpenseClaims = submittedExpenseClaims;
+
+        callback(null);
+      });
+    },
+    (callback) => {
+      employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
+        res.locals.managedExpenseClaims = managedExpenseClaims;
+
+        callback(null);
+      });
+    }
+  ], (err) => {
+    if (err) {
+      err = {
+        message: 'Failed to find expense claims.',
+        status: 404,
+      };
+
+      next(err);
+    } else {
+      res.render('claims/list');
+    }
+  });
 });
 
 /* GET /claims/new */

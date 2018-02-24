@@ -33,18 +33,13 @@ block inner-content
                   th Description
                   th Current Status
               tbody
-                tr
-                  td 1234
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-warning Pending
-                tr
-                  td 1234
-                  td 2018/01/01
-                  td Fion Yuen
-                  td N/A
-                  td.bg-success Approved
+                each submittedExpenseClaim in submittedExpenseClaims
+                  tr
+                    td= submittedExpenseClaim.id
+                    td= submittedExpenseClaim.createdAt
+                    td= submittedExpenseClaim.activeManager.name
+                    td= submittedExpenseClaim.description
+                    td.bg-warning Pending
         div.tab-pane(id='submitted-pending')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
@@ -142,18 +137,13 @@ block inner-content
                   th Description
                   th Current Status
               tbody
-                tr
-                  td 1234
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-warning Pending
-                tr
-                  td 1234
-                  td 2018/01/01
-                  td Fion Yuen
-                  td N/A
-                  td.bg-danger Rejected
+                each managedExpenseClaim in managedExpenseClaims
+                  tr
+                    td= managedExpenseClaim.id
+                    td= managedExpenseClaim.createdAt
+                    td= managedExpenseClaim.submitter.name
+                    td= managedExpenseClaim.description
+                    td.bg-warning Pending
         div.tab-pane(id='managed-pending')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
