@@ -6,7 +6,10 @@ mixin claims(expenseClaims, status)
       tr
         td= expenseClaim.id
         td= expenseClaim.createdAt
-        td= expenseClaim.activeManager.name
+        if expenseClaim.activeManager
+          td= expenseClaim.activeManager.name
+        else
+          td= expenseClaim.submitter.name
         td= expenseClaim.description
         case expenseClaim.status
           when 'pending'
