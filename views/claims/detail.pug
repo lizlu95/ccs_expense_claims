@@ -41,7 +41,7 @@ block inner-content
               tr
                 td=expenseClaimItem.id
                 td=expenseClaimItem.createdAt
-                td AUTO GAS (Community or Facilities employees only)
+                td=expenseClaimItem.GL.description
                 td=expenseClaimItem.numKm
                 td=expenseClaimItem.GL.number
                 td=expenseClaimItem.total
