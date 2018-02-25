@@ -5,7 +5,6 @@ mixin claimsTableHeader(otherTitle)
     th Claim ID
     th Date
     th= otherTitle
-    th Description
     th Current Status
 
 mixin claimsTableBody(expenseClaims, status)
@@ -18,7 +17,6 @@ mixin claimsTableBody(expenseClaims, status)
           td= expenseClaim.activeManager.name
         else
           td= expenseClaim.submitter.name
-        td= expenseClaim.description
         case expenseClaim.status
           when 'pending'
             td.table-warning Pending
