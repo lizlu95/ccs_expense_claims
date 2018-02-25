@@ -21,13 +21,13 @@ mixin claimsTableBody(expenseClaims, status)
         td= expenseClaim.description
         case expenseClaim.status
           when 'pending'
-            td.bg-warning Pending
+            td.table-warning Pending
           when 'approved'
-            td.bg-success Approved
+            td.table-success Approved
           when 'rejected'
-            td.bg-danger Rejected
+            td.table-danger Rejected
           when 'forwarded'
-            td.bg-info Forwarded
+            td.table-info Forwarded
 
 block inner-content
   .row.mb-4
