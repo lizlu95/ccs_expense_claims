@@ -36,6 +36,7 @@ A web application to track internal expense claims for Coast Capital Savings Cre
     $ export ECA_AWS_ACCESS_KEY_ID=id
     $ export ECA_AWS_SECRET_ACCESS_KEY=key
     $ export ECA_AWS_S3_BUCKET_NAME=expense-claim-app
+    $ export ECA_AWS_S3_REGION=us-west-2
     ```
 
 4. Navigate to cloned directory.
