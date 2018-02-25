@@ -42,6 +42,8 @@ block inner-content
           a(class='nav-link' href='#submitted-approved' id='approved-tab' data-toggle='tab') Approved
         li.nav-item
           a(class='nav-link' href='#submitted-rejected' id='rejected-tab' data-toggle='tab') Rejected
+        li.nav-item
+          a(class='nav-link' href='#submitted-forwarded' id='forwarded-tab' data-toggle='tab') Forwarded
       div.tab-content
         div.tab-pane.show.active(id='submitted-all')
           .table-responsive
@@ -91,6 +93,18 @@ block inner-content
                   th Current Status
               tbody
                 +claims(expenseClaims.submitted, 'rejected')
+        div.tab-pane(id='submitted-forwarded')
+          .table-responsive
+            table(class='table table-striped table-hover' cellpadding='5')
+              thead
+                tr
+                  th Claim ID
+                  th Date
+                  th Manager
+                  th Description
+                  th Current Status
+              tbody
+                +claims(expenseClaims.submitted, 'forwarded')
   .row.mb-3
     .col-12.text-center
       h2 Managed
