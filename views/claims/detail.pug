@@ -1,7 +1,7 @@
 extends ../dashboard
 
 mixin progressBar(status)
-  .progress(style='height:40px;')
+  .progress
     case status
       when 'pending'
         .progress-bar.progress-bar-striped.progress-bar-animated(role='progressbar' style='width: 50%;' aria-valuenow='Pending' aria-valuemin='0' aria-valuemax='100') Pending
