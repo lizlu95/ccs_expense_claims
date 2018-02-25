@@ -11,14 +11,15 @@ const s3 = require('../s3');
 
 const Notifier = require('../mixins/notifier');
 
-const models = require('../models/index');
-const Employee = models.Employee;
-const ExpenseClaim = models.ExpenseClaim;
-const ExpenseClaimItem = models.ExpenseClaimItem;
-const EmployeeExpenseClaim = models.EmployeeExpenseClaim;
-const CostCentre = models.CostCentre;
-const GL = models.GL;
-const Company = models.Company;
+const database = require('../models/index');
+const Employee = database.Employee;
+const ExpenseClaim = database.ExpenseClaim;
+const ExpenseClaimItem = database.ExpenseClaimItem;
+const EmployeeExpenseClaim = database.EmployeeExpenseClaim;
+const CostCentre = database.CostCentre;
+const GL = database.GL;
+const Company = database.Company;
+const Receipt = database.Receipt;
 
 /* GET /claims */
 router.get('', function (req, res, next) {
@@ -133,41 +134,50 @@ router.get('/:id', function (req, res, next) {
   // TODO
   async.waterfall([
     function (callback) {
-      ExpenseClaim.findById(expenseClaimId).then((expenseClaim) => {
+      ExpenseClaim.findOne({
+        where: {
+          id: {
+            [Op.eq]: req.params.id,
+          },
+        },
+        include: [
+          {
+            model: EmployeeExpenseClaim,
+            include: [
+              Employee,
+            ],
+          },
+          {
+            model: ExpenseClaimItem,
+            include: [
+              Receipt,
+              GL,
+            ],
+          },
+          CostCentre,
+        ],
+      }).then((expenseClaim) => {
         if (expenseClaim) {
-          res.locals.id = expenseClaimId;
-          res.locals.status = s(expenseClaim.status).capitalize().value();
+          // include submitter and active manager
+          expenseClaim.submitter = _.find(expenseClaim.EmployeeExpenseClaims, (employeeExpenseClaim) => {
+            return employeeExpenseClaim.isOwner &&
+              employeeExpenseClaim.isActive;
+          }).Employee;
+          expenseClaim.activeManager = _.find(expenseClaim.EmployeeExpenseClaims, (employeeExpenseClaim) => {
+            return !employeeExpenseClaim.isOwner &&
+              employeeExpenseClaim.isActive;
+          }).Employee;
+
+          // capitalize status value
+          expenseClaim.status = s(expenseClaim.status).capitalize().value();
+
+          res.locals.expenseClaim = expenseClaim;
 
           callback(null, expenseClaim);
         } else {
           callback('Expense claim not found!');
         }
       });
-    },
-    function (expenseClaim, callback) {
-      expenseClaim.getExpenseClaimItems().then((expenseClaimItems) => {
-        if (expenseClaimItems) {
-          res.locals.items = expenseClaimItems;
-
-          callback(null, expenseClaim);
-        } else {
-          callback('Expense claim items not found!');
-        }
-      });
-    },
-    function (expenseClaim, callback) {
-      CostCentre.findById(expenseClaim.costCentreId).then((costCentre) => {
-        if (costCentre) {
-          res.locals.costCentreNumber = costCentre.number;
-
-          callback(null);
-        } else {
-          callback('Invalid cost centre!');
-        }
-      });
-    },
-    function (callback) {
-      callback(null);
     },
   ], function (err) {
     if (err) {

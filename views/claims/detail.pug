@@ -3,7 +3,7 @@ extends ../dashboard
 block inner-content
   .row.mb-4
     .col-12.text-center
-      h1 Claim #{id}
+      h1 Claim #{expenseClaim.id}
   .row.mb-1
     .col-12
       h4 Information
@@ -14,13 +14,13 @@ block inner-content
   .row.mb-4
     .col-md-4
       label(for='employee-id') Submitter
-      input#name.form-control(type='text' value='Meilin Guo' readonly=true)
+      input#name.form-control(type='text' value=expenseClaim.submitter.name readonly=true)
     .col-md-4
       label(for='approver-id') Approver
-      input#name.form-control(type='text' value='Liz Liu' readonly=true)
+      input#name.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
     .col-md-4
       label(for='id') Cost Centre
-      input#name.form-control(type='text' value=costCentreNumber readonly=true)
+      input#name.form-control(type='text' value=expenseClaim.CostCentre.number readonly=true)
   .row.mb-1
     .col-12
       h4 Items
@@ -36,12 +36,12 @@ block inner-content
               th # Km Travelled
               th GL
               th Total
-          tbody(id='claimItems')
-            each item in items
+          tbody(id='claim-items')
+            each expenseClaimItem in expenseClaim.ExpenseClaimItems
               tr
-                td=item.id
-                td=item.createdAt
+                td=expenseClaimItem.id
+                td=expenseClaimItem.createdAt
                 td AUTO GAS (Community or Facilities employees only)
-                td=item.numKm
-                td=item.gl
-                td=item.total
+                td=expenseClaimItem.numKm
+                td=expenseClaimItem.GL.number
+                td=expenseClaimItem.total
