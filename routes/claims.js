@@ -7,6 +7,7 @@ const moment = require('moment');
 const sequelize = require('../models/index').sequelize;
 const Op = require('sequelize').Op;
 const multipartMiddleware = require('connect-multiparty')();
+const S3 = require('aws-sdk/clients/s3');
 
 const Notifier = require('../mixins/notifier');
 
