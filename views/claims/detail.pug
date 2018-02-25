@@ -12,6 +12,15 @@ mixin progressBar(status)
       when 'forwarded'
         .progress-bar.progress-bar-striped.progress-bar-animated.bg-info(role='progressbar' style='width: 75%;' aria-valuenow='Forwarded' aria-valuemin='0' aria-valuemax='100') Forwarded
 
+mixin expenseClaimLog(employeeExpenseClaim)
+  if employeeExpenseClaim.isOwner
+    span "#{employeeExpenseClaim.Employee.name} submitted the claim."
+  else
+    if !employeeExpenseClaim.isActive
+      span "#{employeeExpenseClaim.Employee.name} forwarded the claim."
+    else
+      span "#{employeeExpenseClaim.Employee.name} was assigned to claim."
+
 block inner-content
   .row.mb-4
     .col-12.text-center
@@ -57,3 +66,10 @@ block inner-content
                 td=expenseClaimItem.numKm
                 td=expenseClaimItem.GL.number
                 td=expenseClaimItem.total
+  .row.mb-3
+    .col-12
+      label History
+      ul
+        each employeeExpenseClaim in expenseClaim.EmployeeExpenseClaims
+          li
+            +expenseClaimLog(employeeExpenseClaim)
