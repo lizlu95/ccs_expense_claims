@@ -1,5 +1,17 @@
 extends ../dashboard
 
+mixin progressBar(status)
+  .progress(style='height:35px;')
+    case status
+      when 'pending'
+        .progress-bar.progress-bar-striped.progress-bar-animated(role='progressbar' style='width: 50%;' aria-valuenow='Pending' aria-valuemin='0' aria-valuemax='100') Pending
+      when 'approved'
+        .progress-bar.progress-bar-striped.progress-bar-animated.bg-success(role='progressbar' style='width: 100%;' aria-valuenow='Approved' aria-valuemin='0' aria-valuemax='100') Approved
+      when 'rejected'
+        .progress-bar.progress-bar-striped.progress-bar-animated.bg-danger(role='progressbar' style='width: 100%;' aria-valuenow='Rejected' aria-valuemin='0' aria-valuemax='100') Rejected
+      when 'forwarded'
+        .progress-bar.progress-bar-striped.progress-bar-animated.bg-info(role='progressbar' style='width: 75%;' aria-valuenow='Forwarded' aria-valuemin='0' aria-valuemax='100') Forwarded
+
 block inner-content
   .row.mb-4
     .col-12.text-center
@@ -9,8 +21,7 @@ block inner-content
       h4 Information
   .row.mb-3
     .col-12
-      .progress(style='height:35px;')
-        .progress-bar.progress-bar-striped.progress-bar-animated(role='progressbar' style='width: 25%;' aria-valuenow='Pending' aria-valuemin='0' aria-valuemax='100') Pending
+      +progressBar(expenseClaim.status)
   .row.mb-4
     .col-md-4
       label(for='employee-id') Submitter

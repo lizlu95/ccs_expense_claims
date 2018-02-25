@@ -168,9 +168,6 @@ router.get('/:id', function (req, res, next) {
               employeeExpenseClaim.isActive;
           }).Employee;
 
-          // capitalize status value
-          expenseClaim.status = s(expenseClaim.status).capitalize().value();
-
           res.locals.expenseClaim = expenseClaim;
 
           callback(null, expenseClaim);
