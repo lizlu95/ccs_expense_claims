@@ -1,6 +1,14 @@
 extends ../dashboard
 
-mixin claims(expenseClaims, status)
+mixin claimsTableHeader(otherTitle)
+  tr
+    th Claim ID
+    th Date
+    th= otherTitle
+    th Description
+    th Current Status
+
+mixin claimsTableBody(expenseClaims, status)
   each expenseClaim in expenseClaims
     if !status || expenseClaim.status === status
       tr
@@ -49,62 +57,37 @@ block inner-content
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Manager')
               tbody
-                +claims(expenseClaims.submitted)
+                +claimsTableBody(expenseClaims.submitted)
         div.tab-pane(id='submitted-pending')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Manager')
               tbody
-                +claims(expenseClaims.submitted, 'pending')
+                +claimsTableBody(expenseClaims.submitted, 'pending')
         div.tab-pane(id='submitted-approved')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Manager')
               tbody
-                +claims(expenseClaims.submitted, 'approved')
+                +claimsTableBody(expenseClaims.submitted, 'approved')
         div.tab-pane(id='submitted-rejected')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Manager')
               tbody
-                +claims(expenseClaims.submitted, 'rejected')
+                +claimsTableBody(expenseClaims.submitted, 'rejected')
         div.tab-pane(id='submitted-forwarded')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Manager')
               tbody
-                +claims(expenseClaims.submitted, 'forwarded')
+                +claimsTableBody(expenseClaims.submitted, 'forwarded')
   .row.mb-3
     .col-12.text-center
       h2 Managed
@@ -126,61 +109,36 @@ block inner-content
           .table-responsive.table-hover
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Submitter
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Submitter')
               tbody
-                +claims(expenseClaims.managed)
+                +claimsTableBody(expenseClaims.managed)
         div.tab-pane(id='managed-pending')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Submitter
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Submitter')
               tbody
-                +claims(expenseClaims.managed, 'pending')
+                +claimsTableBody(expenseClaims.managed, 'pending')
         div.tab-pane(id='managed-approved')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Submitter
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Submitter')
               tbody
-                +claims(expenseClaims.managed, 'approved')
+                +claimsTableBody(expenseClaims.managed, 'approved')
         div.tab-pane(id='managed-rejected')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Submitter
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Submitter')
               tbody
-                +claims(expenseClaims.managed, 'rejected')
+                +claimsTableBody(expenseClaims.managed, 'rejected')
         div.tab-pane(id='managed-forwarded')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Submitter
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Submitter')
               tbody
-                +claims(expenseClaims.managed, 'forwarded')
+                +claimsTableBody(expenseClaims.managed, 'forwarded')
 
 
