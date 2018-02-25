@@ -6,9 +6,9 @@ mixin progressBar(status)
       when 'pending'
         .progress-bar.progress-bar-striped.progress-bar-animated(role='progressbar' style='width: 50%;' aria-valuenow='Pending' aria-valuemin='0' aria-valuemax='100') Pending
       when 'approved'
-        .progress-bar.progress-bar-striped.progress-bar-animated.bg-success(role='progressbar' style='width: 100%;' aria-valuenow='Approved' aria-valuemin='0' aria-valuemax='100') Approved
+        .progress-bar.bg-success(role='progressbar' style='width: 100%;' aria-valuenow='Approved' aria-valuemin='0' aria-valuemax='100') Approved
       when 'rejected'
-        .progress-bar.progress-bar-striped.progress-bar-animated.bg-danger(role='progressbar' style='width: 100%;' aria-valuenow='Rejected' aria-valuemin='0' aria-valuemax='100') Rejected
+        .progress-bar.bg-danger(role='progressbar' style='width: 100%;' aria-valuenow='Rejected' aria-valuemin='0' aria-valuemax='100') Rejected
       when 'forwarded'
         .progress-bar.progress-bar-striped.progress-bar-animated.bg-info(role='progressbar' style='width: 75%;' aria-valuenow='Forwarded' aria-valuemin='0' aria-valuemax='100') Forwarded
 
