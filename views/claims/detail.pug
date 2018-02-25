@@ -23,60 +23,67 @@ mixin expenseClaimLog(employeeExpenseClaim)
 
 block inner-content
   .row.mb-4
-    .col-12.text-center
-      h1 Claim #{expenseClaim.id}
-  .row.mb-1
     .col-12
-      h4 Information
-  .row.mb-3
-    .col-12
-      label Status
-      +progressBar(expenseClaim.status)
+        .col-12.text-center
+          h1 Claim #{expenseClaim.id}
   .row.mb-4
-    .col-md-4
-      label(for='employee-id') Submitter
-      input#name.form-control(type='text' value=expenseClaim.submitter.name readonly=true)
-    .col-md-4
-      label(for='approver-id') Approver
-      input#name.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
-    .col-md-4
-      label(for='id') Cost Centre
-      input#name.form-control(type='text' value=expenseClaim.CostCentre.number readonly=true)
-  .row.mb-1
     .col-12
-      h4 Items
-  .row
+      .row.mb-1
+        .col-12
+          h4 Information
+      .row.mb-3
+        .col-12
+          label Status
+          +progressBar(expenseClaim.status)
+      .row.mb-4
+        .col-md-4
+          label(for='employee-id') Submitter
+          input#name.form-control(type='text' value=expenseClaim.submitter.name readonly=true)
+        .col-md-4
+          label(for='approver-id') Approver
+          input#name.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
+        .col-md-4
+          label(for='id') Cost Centre
+          input#name.form-control(type='text' value=expenseClaim.CostCentre.number readonly=true)
+  .row.mb-4
     .col-12
-      .table-responsive
-        table(class='table table-striped table-hover' cellpadding='5')
-          thead
-            tr
-              th #
-              th Date
-              th Expense Category
-              th # Km Travelled
-              th GL
-              th Total
-          tbody(id='claim-items')
-            each expenseClaimItem in expenseClaim.ExpenseClaimItems
-              tr
-                td=expenseClaimItem.id
-                td=expenseClaimItem.createdAt
-                td=expenseClaimItem.GL.description
-                td=expenseClaimItem.numKm
-                td=expenseClaimItem.GL.number
-                td=expenseClaimItem.total
-  .row.mb-1
+      .row.mb-1
+        .col-12
+          h4 Items
+      .row
+        .col-12
+          .table-responsive
+            table(class='table table-striped table-hover' cellpadding='5')
+              thead
+                tr
+                  th #
+                  th Date
+                  th Expense Category
+                  th # Km Travelled
+                  th GL
+                  th Total
+              tbody(id='claim-items')
+                each expenseClaimItem in expenseClaim.ExpenseClaimItems
+                  tr
+                    td=expenseClaimItem.id
+                    td=expenseClaimItem.createdAt
+                    td=expenseClaimItem.GL.description
+                    td=expenseClaimItem.numKm
+                    td=expenseClaimItem.GL.number
+                    td=expenseClaimItem.total
+  .row.mb-4
     .col-12
-      label History
-  .row.mb-3
-    .col-12
-      .table-responsive
-        table(class='table table-striped table-hover' cellpadding='5')
-          thead
-            tr
-              th Event
-          tbody
-            each employeeExpenseClaim in expenseClaim.EmployeeExpenseClaims
-              tr
-                +expenseClaimLog(employeeExpenseClaim)
+      .row.mb-1
+        .col-12
+          h4 History
+      .row.mb-3
+        .col-12
+          .table-responsive
+            table(class='table table-striped table-hover' cellpadding='5')
+              thead
+                tr
+                  th Event
+              tbody
+                each employeeExpenseClaim in expenseClaim.EmployeeExpenseClaims
+                  tr
+                    +expenseClaimLog(employeeExpenseClaim)
