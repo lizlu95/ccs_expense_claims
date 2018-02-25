@@ -83,7 +83,9 @@ block inner-content
               thead
                 tr
                   th Event
+                  th Date
               tbody
                 each employeeExpenseClaim in expenseClaim.EmployeeExpenseClaims
                   tr
                     +expenseClaimLog(employeeExpenseClaim)
+                    td= employeeExpenseClaim.createdAt
