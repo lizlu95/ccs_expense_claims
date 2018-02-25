@@ -43,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
 
   ExpenseClaim.STATUS = {
     DEFAULT: 'pending',
+    PENDING: 'pending',
+    APPROVED: 'approved',
+    REJECTED: 'rejected',
+    FORWARDED: 'forwarded',
   };
 
   return ExpenseClaim;

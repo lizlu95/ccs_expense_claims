@@ -27,17 +27,25 @@ router.get('', function (req, res, next) {
     id: req.user.id,
   });
 
+  var expenseClaimStatuses = [
+    ExpenseClaim.STATUS.PENDING,
+    ExpenseClaim.STATUS.APPROVED,
+    ExpenseClaim.STATUS.REJECTED,
+    ExpenseClaim.STATUS.FORWARDED,
+  ];
+
+  res.locals.expenseClaims = {};
   async.waterfall([
     (callback) => {
       employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
-        res.locals.submittedExpenseClaims = submittedExpenseClaims;
+        res.locals.expenseClaims.submitted = submittedExpenseClaims;
 
         callback(null);
       });
     },
     (callback) => {
       employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
-        res.locals.managedExpenseClaims = managedExpenseClaims;
+        res.locals.expenseClaims.managed = managedExpenseClaims;
 
         callback(null);
       });

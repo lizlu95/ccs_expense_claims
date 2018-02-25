@@ -1,5 +1,23 @@
 extends ../dashboard
 
+mixin claims(expenseClaims, status)
+  each expenseClaim in expenseClaims
+    if !status || expenseClaim.status === status
+      tr
+        td= expenseClaim.id
+        td= expenseClaim.createdAt
+        td= expenseClaim.activeManager.name
+        td= expenseClaim.description
+        case expenseClaim.status
+          when 'pending'
+            td.bg-warning Pending
+          when 'approved'
+            td.bg-success Approved
+          when 'rejected'
+            td.bg-danger Rejected
+          when 'forwarded'
+            td.bg-info Forwarded
+
 block inner-content
   .row.mb-4
     .col-12.text-center
@@ -33,13 +51,7 @@ block inner-content
                   th Description
                   th Current Status
               tbody
-                each submittedExpenseClaim in submittedExpenseClaims
-                  tr
-                    td= submittedExpenseClaim.id
-                    td= submittedExpenseClaim.createdAt
-                    td= submittedExpenseClaim.activeManager.name
-                    td= submittedExpenseClaim.description
-                    td.bg-warning Pending
+                +claims(expenseClaims.submitted)
         div.tab-pane(id='submitted-pending')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
@@ -51,18 +63,7 @@ block inner-content
                   th Description
                   th Current Status
               tbody
-                tr
-                  td 1242
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-warning Pending
-                tr
-                  td 1234
-                  td 2018/01/01
-                  td Fion Yuen
-                  td N/A
-                  td.bg-warning Pending
+                +claims(expenseClaims.submitted, 'pending')
         div.tab-pane(id='submitted-approved')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
@@ -74,18 +75,7 @@ block inner-content
                   th Description
                   th Current Status
               tbody
-                tr
-                  td 1242
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-success Approved
-                tr
-                  td 1234
-                  td 2018/01/01
-                  td Fion Yuen
-                  td N/A
-                  td.bg-success Approved
+                +claims(expenseClaims.submitted, 'approved')
         div.tab-pane(id='submitted-rejected')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
@@ -97,18 +87,7 @@ block inner-content
                   th Description
                   th Current Status
               tbody
-                tr
-                  td 1242
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-danger Rejected
-                tr
-                  td 1234
-                  td 2018/01/01
-                  td Fion Yuen
-                  td N/A
-                  td.bg-danger Rejected
+                +claims(expenseClaims.submitted, 'rejected')
   .row.mb-3
     .col-12.text-center
       h2 Managed
@@ -137,13 +116,7 @@ block inner-content
                   th Description
                   th Current Status
               tbody
-                each managedExpenseClaim in managedExpenseClaims
-                  tr
-                    td= managedExpenseClaim.id
-                    td= managedExpenseClaim.createdAt
-                    td= managedExpenseClaim.submitter.name
-                    td= managedExpenseClaim.description
-                    td.bg-warning Pending
+                +claims(expenseClaims.managed)
         div.tab-pane(id='managed-pending')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
@@ -155,18 +128,7 @@ block inner-content
                   th Description
                   th Current Status
               tbody
-                tr
-                  td 1242
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-warning Pending
-                tr
-                  td 1234
-                  td 2018/01/01
-                  td Fion Yuen
-                  td N/A
-                  td.bg-warning Pending
+                +claims(expenseClaims.managed, 'pending')
         div.tab-pane(id='managed-approved')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
@@ -178,18 +140,7 @@ block inner-content
                   th Description
                   th Current Status
               tbody
-                tr
-                  td 1242
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-success Approved
-                tr
-                  td 1234
-                  td 2018/01/01
-                  td Fion Yuen
-                  td N/A
-                  td.bg-success Approved
+                +claims(expenseClaims.managed, 'approved')
         div.tab-pane(id='managed-rejected')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
@@ -201,18 +152,7 @@ block inner-content
                   th Description
                   th Current Status
               tbody
-                tr
-                  td 1242
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-danger Rejected
-                tr
-                  td 1234
-                  td 2018/01/01
-                  td Fion Yuen
-                  td N/A
-                  td.bg-danger Rejected
+                +claims(expenseClaims.managed, 'rejected')
         div.tab-pane(id='managed-forwarded')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
@@ -224,17 +164,6 @@ block inner-content
                   th Description
                   th Current Status
               tbody
-                tr
-                  td 1242
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-info Forwarded
-                tr
-                  td 1234
-                  td 2018/01/01
-                  td Fion Yuen
-                  td N/A
-                  td.bg-info Forwarded
+                +claims(expenseClaims.managed, 'forwarded')
 
 
