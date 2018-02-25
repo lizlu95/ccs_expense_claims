@@ -14,12 +14,12 @@ mixin progressBar(status)
 
 mixin expenseClaimLog(employeeExpenseClaim)
   if employeeExpenseClaim.isOwner
-    span "#{employeeExpenseClaim.Employee.name} submitted the claim."
+    td #{employeeExpenseClaim.Employee.name} submitted the claim.
   else
     if !employeeExpenseClaim.isActive
-      span "#{employeeExpenseClaim.Employee.name} forwarded the claim."
+      td #{employeeExpenseClaim.Employee.name} forwarded the claim.
     else
-      span "#{employeeExpenseClaim.Employee.name} was assigned to claim."
+      td #{employeeExpenseClaim.Employee.name} was assigned to claim.
 
 block inner-content
   .row.mb-4
@@ -66,10 +66,17 @@ block inner-content
                 td=expenseClaimItem.numKm
                 td=expenseClaimItem.GL.number
                 td=expenseClaimItem.total
-  .row.mb-3
+  .row.mb-1
     .col-12
       label History
-      ul
-        each employeeExpenseClaim in expenseClaim.EmployeeExpenseClaims
-          li
-            +expenseClaimLog(employeeExpenseClaim)
+  .row.mb-3
+    .col-12
+      .table-responsive
+        table(class='table table-striped table-hover' cellpadding='5')
+          thead
+            tr
+              th Event
+          tbody
+            each employeeExpenseClaim in expenseClaim.EmployeeExpenseClaims
+              tr
+                +expenseClaimLog(employeeExpenseClaim)
