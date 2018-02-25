@@ -104,6 +104,27 @@ app.use(function (req, res, next) {
 });
 
 // login protected routes
+// REST API routes
+
+// non-REST API routes
+app.use(function (req, res, next) {
+  // get recent claims
+  Employee.build({
+    id: req.user.id,
+  }).getExpenseClaims({
+    order: [
+      [
+        'createdAt',
+        'DESC',
+      ],
+    ],
+    limit: 10,
+  }).then((expenseClaims) => {
+    res.locals.recentExpenseClaims = expenseClaims;
+
+    next();
+  });
+});
 app.use('/', index);
 app.use('/logout', logout);
 app.use('/claims', claims);
