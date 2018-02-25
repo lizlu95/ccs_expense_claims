@@ -83,8 +83,7 @@ module.exports = (sequelize, DataTypes) => {
         }).then((expenseClaims) => {
           _.each(expenseClaims, (expenseClaim) => {
             var managerEmployeeExpenseClaim = _.find(expenseClaim.EmployeeExpenseClaims, (employeeExpenseClaim) => {
-              return employeeExpenseClaim.employeeId !== this.id &&
-                !employeeExpenseClaim.isOwner &&
+              return !employeeExpenseClaim.isOwner &&
                 employeeExpenseClaim.isActive;
             });
 
@@ -133,8 +132,7 @@ module.exports = (sequelize, DataTypes) => {
         }).then((expenseClaims) => {
           _.each(expenseClaims, (expenseClaim) => {
             var submitterEmployeeExpenseClaim = _.find(expenseClaim.EmployeeExpenseClaims, (employeeExpenseClaim) => {
-              return employeeExpenseClaim.employeeId !== this.id &&
-                employeeExpenseClaim.isOwner &&
+              return employeeExpenseClaim.isOwner &&
                 employeeExpenseClaim.isActive;
             });
 
