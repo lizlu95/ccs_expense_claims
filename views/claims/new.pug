@@ -262,7 +262,6 @@ block scripts
           return glDescription === MILEAGE_GL_DESCRIPTION;
         },
         validateReceipt: function (item, event) {
-        debugger;
           // necessary due to Vue Vritual DOM removing validity states
           this.$nextTick(function () {
             var $receiptEl = $(event.target).closest('.item').find('#receipt-file').first();
