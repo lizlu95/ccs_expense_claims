@@ -39,8 +39,8 @@ describe('new claims page', function () {
       browser.assert.evaluate('expenseClaimApp.items.length === 1;');
       browser.assert.evaluate('expenseClaimApp.items[0].date === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
-      browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
-      browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
+      browser.assert.evaluate('expenseClaimApp.items[0].numKm === "";');
+      browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].description === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
 
@@ -55,7 +55,7 @@ describe('new claims page', function () {
     browser.visit('/claims/new', () => {
       browser.evaluate('expenseClaimApp.previousMileage = 0');
       browser.assert.evaluate('expenseClaimApp.previousMileage === 0');
-      browser.evaluate('expenseClaimApp.items[0].numKm === 0;');
+      browser.evaluate('expenseClaimApp.items[0].numKm === "";');
       browser.evaluate('expenseClaimApp.items[0].glDescription = "' + MILEAGE_GL_DESCRIPTION + '";');
       browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "' + MILEAGE_GL_DESCRIPTION + '";');
 
@@ -291,8 +291,8 @@ describe('new claims page', function () {
         },
         (callback) => {
           browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
-          browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
-          browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
+          browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === "";');
+          browser.assert.evaluate('expenseClaimApp.items[0].numKm === "";');
           browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
 
           // force previousMileage to zero
@@ -388,8 +388,8 @@ describe('new claims page', function () {
         },
         (callback) => {
           browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
-          browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
-          browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
+          browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === "";');
+          browser.assert.evaluate('expenseClaimApp.items[0].numKm === "";');
           browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
 
           // force previousMileage to zero
@@ -488,8 +488,8 @@ describe('new claims page', function () {
             },
             (callback) => {
               browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
-              browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
-              browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
+              browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === "";');
+              browser.assert.evaluate('expenseClaimApp.items[0].numKm === "";');
               browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
 
               // force previousMileage to zero
@@ -534,8 +534,8 @@ describe('new claims page', function () {
             },
             (callback) => {
               browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
-              browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
-              browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
+              browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === "";');
+              browser.assert.evaluate('expenseClaimApp.items[0].numKm === "";');
               browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
 
               // force previousMileage to value for overflow tier rate
@@ -578,8 +578,8 @@ describe('new claims page', function () {
             },
             (callback) => {
               browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
-              browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === 0;');
-              browser.assert.evaluate('expenseClaimApp.items[0].numKm === 0;');
+              browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === "";');
+              browser.assert.evaluate('expenseClaimApp.items[0].numKm === "";');
               browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
 
               // force previousMileage to value that will result in combination of initial and overflow tier rate

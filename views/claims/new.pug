@@ -99,7 +99,7 @@ block inner-content
                     label(for='num-km') # Km Travelled
                     span.badge.badge-secondary.badge-sm.num-km-info(data-toggle='tooltip' data-placement='top' title='' data-original-title='$0.54 < 5000Km, $0.48 > 5000Km') ?
                   .input-group
-                    input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm' min="0" step="0.01" @input='updateItemTotal(item)')
+                    input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm' min="0" step="0.01" @input='updateItemTotal(item)' required='required')
                     .input-group-append
                       .input-group-text km
                     .invalid-feedback
@@ -122,7 +122,7 @@ block inner-content
                   .input-group
                     .input-group-prepend
                       .input-group-text $
-                    input#receipt-amount.form-control(:name="'items[' + index + '][receipt][amount]'" v-model.number='item.receipt.amount' min="0" step="0.01" @input='updateItemTotal(item)' type='number')
+                    input#receipt-amount.form-control(:name="'items[' + index + '][receipt][amount]'" v-model.number='item.receipt.amount' min="0" step="0.01" @input='updateItemTotal(item)' type='number' required='required')
                     .invalid-feedback
                       | Please enter a receipt amount > $0.
                     .valid-feedback
@@ -205,9 +205,9 @@ block scripts
         items: [{
           date: '',
           glDescription: '',
-          numKm: 0,
+          numKm: '',
           receipt: {
-            amount: 0,
+            amount: '',
             lost: false,
           },
           description: '',
@@ -219,9 +219,9 @@ block scripts
           this.items.push({
             date: '',
             glDescription: '',
-            numKm: 0,
+            numKm: '',
             receipt: {
-              amount: 0,
+              amount: '',
             },
             description: '',
             total: 0,
@@ -248,7 +248,6 @@ block scripts
           }
         },
         addTooltip: function ($el) {
-        debugger;
           $el.find('.num-km-info').tooltip();
         },
         isMileageGlDescription(glDescription) {
