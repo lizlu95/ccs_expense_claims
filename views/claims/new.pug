@@ -53,6 +53,7 @@ block inner-content
         .row
           .col-12
             div.item(v-for='(item, index) in items')
+              hr.my-5(v-show='index !== 0 && items.length > 1')
               .row
                 .col-md-1
                   span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
