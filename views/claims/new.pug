@@ -196,36 +196,30 @@ block scripts
   script.
     // TODO make this dynamic from configuration
     var MILEAGE_GL_DESCRIPTION = "MILEAGE (kilometres traveled using personal vehicle)";
+    var DEFAULT_ITEM = {
+      date: '',
+      glDescription: '',
+      numKm: '',
+      receipt: {
+        amount: '',
+        lost: false,
+      },
+      description: '',
+      total: 0,
+    };
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
       data: {
         previousMileage: parseInt(#{previousMileage}),
         costCentreNumber: '',
         bankAccount: '',
-        items: [{
-          date: '',
-          glDescription: '',
-          numKm: '',
-          receipt: {
-            amount: '',
-            lost: false,
-          },
-          description: '',
-          total: 0,
-        }],
+        items: [
+          DEFAULT_ITEM
+        ],
       },
       methods: {
         addItem: function () {
-          this.items.push({
-            date: '',
-            glDescription: '',
-            numKm: '',
-            receipt: {
-              amount: '',
-            },
-            description: '',
-            total: 0,
-          });
+          this.items.push(DEFAULT_ITEM);
         },
         updateItemTotal: function (item) {
           if (this.isMileageGlDescription(item.glDescription)) {
