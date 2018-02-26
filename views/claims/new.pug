@@ -111,7 +111,7 @@ block inner-content
                   input#receipt-file.form-control.custom-file-input(:name="'items[' + index + '][receipt][file]'" type='file' @change='validateReceipt(item, $event)')
                   label.custom-file-label(for='receipt-file') Choose file..
                   .invalid-feedback
-                    | Please upload a receipt.
+                    | Please upload a receipt < 2MB.
                   .valid-feedback
                     | Looks good!
                 .col-md-1(v-if='!isMileageGlDescription(item.glDescription)')
@@ -266,8 +266,11 @@ block scripts
           this.$nextTick(function () {
             var $receiptEl = $(event.target).closest('.item').find('#receipt-file').first();
             var validityMessage = '';
-            if ($receiptEl[0].files.length === 0 && !item.receipt.lost) {
-              validityMessage = 'No file and receipt not lost.';
+            if (!item.receipt.lost) {
+              var MB_SIZE_IN_B = 1024000;
+              if ($receiptEl[0].files.length === 0 || $receiptEl[0].files[0].size > MB_SIZE_IN_B * 2) {
+                validityMessage = 'No file < 2MB and receipt not lost.';
+              }
             }
             $receiptEl[0].setCustomValidity(validityMessage);
           });
@@ -285,7 +288,7 @@ block scripts
             // wait for DOM changes to propagate
             this.$nextTick(function () {
               var $item = $('.item').last();
-              $item.find('#receipt-file').first()[0].setCustomValidity('No file and receipt not lost.');
+              $item.find('#receipt-file').first()[0].setCustomValidity('No file < 2MB and receipt not lost.');
             });
           },
         },
