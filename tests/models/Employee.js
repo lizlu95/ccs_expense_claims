@@ -3,7 +3,9 @@ const assert = chai.assert;
 const expect = chai.expect;
 const app = require('../../app');
 const request = require('supertest');
-const manager = require('../../fixtures/manager');
+const manager = require('../../seeds/manager');
+const async = require('async');
+const _ = require('underscore');
 
 const models = require('../../models/index');
 const Employee = models.Employee;
@@ -113,6 +115,166 @@ describe('employee tests', function () {
         assert.isNotEmpty(reports);
 
         done();
+      });
+    });
+  });
+
+  it ('employee with >= 1 submitted expense claims has submitted expense claims with active manager attributes', (done) => {
+    var employeeId = 1;
+    Employee.findById(employeeId).then((employee) => {
+      employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+        assert.isNotEmpty(submittedExpenseClaims);
+
+        async.eachSeries(submittedExpenseClaims, (submittedExpenseClaim, callback) => {
+          submittedExpenseClaim.getEmployeeExpenseClaims().then((employeeExpenseClaims) => {
+            assert.exists(_.find(employeeExpenseClaims, (employeeExpenseClaim) => {
+              return employeeExpenseClaim.employeeId === employeeId &&
+                employeeExpenseClaim.isOwner &&
+                employeeExpenseClaim.isActive;
+            }));
+
+            var managerEmployeeExpenseClaim = _.find(employeeExpenseClaims, (employeeExpenseClaim) => {
+              return employeeExpenseClaim.employeeId !== employeeId &&
+                !employeeExpenseClaim.isOwner &&
+                employeeExpenseClaim.isActive;
+            });
+            assert.exists(managerEmployeeExpenseClaim);
+            assert.equal(managerEmployeeExpenseClaim.employeeId, submittedExpenseClaim.activeManager.id);
+
+            Employee.findById(submittedExpenseClaim.activeManager.id).then((manager) => {
+              assert.equal(manager.name, submittedExpenseClaim.activeManager.name);
+
+              callback(null);
+            });
+          });
+        }, (err) => {
+          done();
+        });
+      });
+    });
+  });
+
+  it ('employee with >= 1 managed expense claims has managed expense claims with manager attributes attached to each', (done) => {
+    var employeeId = 2;
+    Employee.findById(employeeId).then((employee) => {
+      employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
+        assert.isNotEmpty(managedExpenseClaims);
+
+        async.eachSeries(managedExpenseClaims, (managedExpenseClaim, callback) => {
+          managedExpenseClaim.getEmployeeExpenseClaims().then((employeeExpenseClaims) => {
+            assert.exists(_.find(employeeExpenseClaims, (employeeExpenseClaim) => {
+              return employeeExpenseClaim.employeeId === employeeId &&
+                !employeeExpenseClaim.isOwner;
+            }));
+
+            var submitterEmployeeExpenseClaim = _.find(employeeExpenseClaims, (employeeExpenseClaim) => {
+              return employeeExpenseClaim.employeeId !== employeeId &&
+                employeeExpenseClaim.isOwner &&
+                employeeExpenseClaim.isActive;
+            });
+            assert.exists(submitterEmployeeExpenseClaim);
+            assert.equal(submitterEmployeeExpenseClaim.employeeId, managedExpenseClaim.submitter.id);
+
+            Employee.findById(managedExpenseClaim.submitter.id).then((submitter) => {
+              assert.equal(submitter.name, managedExpenseClaim.submitter.name);
+
+              callback(null);
+            });
+          });
+        }, (err) => {
+          done();
+        });
+      });
+    });
+  });
+
+  it ('employee with >= 1 submitted expense claims but no managed expense claims has no managed expense claims', (done) => {
+    var employeeId = 1;
+    Employee.findById(employeeId).then((employee) => {
+      employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+        assert.isNotEmpty(submittedExpenseClaims);
+
+        employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
+          assert.isEmpty(managedExpenseClaims);
+
+          done();
+        });
+      });
+    });
+  });
+
+  it ('employee with >= 1 managed expense claims but no submitted expense claims has no submitted expense claims', (done) => {
+    var employeeId = 2;
+    Employee.findById(employeeId).then((employee) => {
+      employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
+        assert.isNotEmpty(managedExpenseClaims);
+
+        employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+          assert.isEmpty(submittedExpenseClaims);
+
+          done();
+        });
+      });
+    });
+  });
+
+  it ('employee with no managed expense claims and no submitted expense claims has 0 previous mileage', (done) => {
+    var employeeId = 3;
+    Employee.findById(employeeId).then((employee) => {
+      employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
+        assert.isEmpty(managedExpenseClaims);
+
+        employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+          assert.isEmpty(submittedExpenseClaims);
+
+          employee.getPreviousMileage().then((previousMileage) => {
+            assert.equal(previousMileage, 0);
+
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  it ('employee with >= 1 managed expense claims but no submitted expense claims has 0 previous mileage', (done) => {
+    var employeeId = 2;
+    Employee.findById(employeeId).then((employee) => {
+      employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
+        assert.isNotEmpty(managedExpenseClaims);
+
+        employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+          assert.isEmpty(submittedExpenseClaims);
+
+          employee.getPreviousMileage().then((previousMileage) => {
+            assert.equal(previousMileage, 0);
+
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  it ('employee with >= 1 submitted expense claims but no managed expense claims has previous mileage equal to the sum of their mileages', (done) => {
+    var employeeId = 1;
+    Employee.findById(employeeId).then((employee) => {
+      employee.getSubmittedExpenseClaims().then((submittedExpenseClaims) => {
+        assert.isNotEmpty(submittedExpenseClaims);
+
+        employee.getManagedExpenseClaims().then((managedExpenseClaims) => {
+          assert.isEmpty(managedExpenseClaims);
+
+          var expectedPreviousMileage = _.reduce(managedExpenseClaims, (acc, managedExpenseClaim) => {
+            return acc + (managedExpenseClaim.numKm || 0);
+          }, 0);
+
+          employee.getPreviousMileage().then((previousMileage) => {
+            assert.equal(expectedPreviousMileage, previousMileage);
+
+            done();
+          });
+        });
       });
     });
   });

@@ -19,7 +19,7 @@ module.exports = {
     host: process.env.ECA_DATABASE_HOST_PRODUCTION || 'localhost',
     username: process.env.ECA_DATABASE_USERNAME_PRODUCTION || 'username',
     password: process.env.ECA_DATABASE_PASSWORD_PRODUCTION || 'password',
-    database: process.env.ECA_DATABASE_NAME_PRODUCTION || 'database_prod',
+    database: process.env.ECA_DATABASE_NAME_PRODUCTION || 'database_production',
     dialect: 'mysql',
   },
 };

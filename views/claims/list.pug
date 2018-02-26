@@ -1,5 +1,32 @@
 extends ../dashboard
 
+mixin claimsTableHeader(otherTitle)
+  tr
+    th Claim ID
+    th Date
+    th= otherTitle
+    th Current Status
+
+mixin claimsTableBody(expenseClaims, status)
+  each expenseClaim in expenseClaims
+    if !status || expenseClaim.status === status
+      tr
+        td= expenseClaim.id
+        td= expenseClaim.createdAt
+        if expenseClaim.activeManager
+          td= expenseClaim.activeManager.name
+        else
+          td= expenseClaim.submitter.name
+        case expenseClaim.status
+          when 'pending'
+            td.table-warning Pending
+          when 'approved'
+            td.table-success Approved
+          when 'rejected'
+            td.table-danger Rejected
+          when 'forwarded'
+            td.table-info Forwarded
+
 block inner-content
   .row.mb-4
     .col-12.text-center
@@ -21,96 +48,44 @@ block inner-content
           a(class='nav-link' href='#submitted-approved' id='approved-tab' data-toggle='tab') Approved
         li.nav-item
           a(class='nav-link' href='#submitted-rejected' id='rejected-tab' data-toggle='tab') Rejected
+        li.nav-item
+          a(class='nav-link' href='#submitted-forwarded' id='forwarded-tab' data-toggle='tab') Forwarded
       div.tab-content
         div.tab-pane.show.active(id='submitted-all')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Manager')
               tbody
-                tr
-                  td 1234567
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-warning Pending
-                tr
-                  td 1234568
-                  td 2018/01/03
-                  td James Chen
-                  td N/A
-                  td.bg-danger Rejected
-                tr
-                  td 1234587
-                  td 2018/01/04
-                  td Fion Yuen
-                  td N/A
-                  td.bg-info Forwarded
-                tr
-                  td 1234590
-                  td 2018/01/05
-                  td James Chen
-                  td N/A
-                  td.bg-success Approved
+                +claimsTableBody(expenseClaims.submitted)
         div.tab-pane(id='submitted-pending')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Manager')
               tbody
-                tr
-                  td 1234567
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-warning Pending
-
+                +claimsTableBody(expenseClaims.submitted, 'pending')
         div.tab-pane(id='submitted-approved')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Manager')
               tbody
-                tr
-                  td 1234590
-                  td 2018/01/05
-                  td James Chen
-                  td N/A
-                  td.bg-success Approved
-
+                +claimsTableBody(expenseClaims.submitted, 'approved')
         div.tab-pane(id='submitted-rejected')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Manager')
               tbody
-                tr
-                  td 1234568
-                  td 2018/01/03
-                  td James Chen
-                  td N/A
-                  td.bg-danger Rejected
-
+                +claimsTableBody(expenseClaims.submitted, 'rejected')
+        div.tab-pane(id='submitted-forwarded')
+          .table-responsive
+            table(class='table table-striped table-hover' cellpadding='5')
+              thead
+                +claimsTableHeader('Manager')
+              tbody
+                +claimsTableBody(expenseClaims.submitted, 'forwarded')
   .row.mb-3
     .col-12.text-center
       h2 Managed
@@ -132,96 +107,36 @@ block inner-content
           .table-responsive.table-hover
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Submitter
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Submitter')
               tbody
-                tr
-                  td 1234580
-                  td 2018/01/01
-                  td Liz Lu
-                  td N/A
-                  td.bg-warning Pending
-                tr
-                  td 1234581
-                  td 2018/01/01
-                  td Liz Lu
-                  td N/A
-                  td.bg-danger Rejected
-                tr
-                  td 1234583
-                  td 2018/01/01
-                  td Steve Yu
-                  td N/A
-                  td.bg-success Approved
+                +claimsTableBody(expenseClaims.managed)
         div.tab-pane(id='managed-pending')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Submitter')
               tbody
-                tr
-                  td 1234580
-                  td 2018/01/01
-                  td Liz Lu
-                  td N/A
-                  td.bg-warning Pending
+                +claimsTableBody(expenseClaims.managed, 'pending')
         div.tab-pane(id='managed-approved')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Submitter')
               tbody
-                tr
-                  td 1234590
-                  td 2018/01/01
-                  td James Chen
-                  td N/A
-                  td.bg-success Approved
-
+                +claimsTableBody(expenseClaims.managed, 'approved')
         div.tab-pane(id='managed-rejected')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Submitter')
               tbody
-                tr
-                  td 1234581
-                  td 2018/01/01
-                  td Liz Lu
-                  td N/A
-                  td.bg-danger Rejected
-
+                +claimsTableBody(expenseClaims.managed, 'rejected')
         div.tab-pane(id='managed-forwarded')
           .table-responsive
             table(class='table table-striped table-hover' cellpadding='5')
               thead
-                tr
-                  th Claim ID
-                  th Date
-                  th Manager
-                  th Description
-                  th Current Status
+                +claimsTableHeader('Submitter')
               tbody
-
-
+                +claimsTableBody(expenseClaims.managed, 'forwarded')
 
 

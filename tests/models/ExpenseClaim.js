@@ -3,7 +3,7 @@ const assert = chai.assert;
 const expect = chai.expect;
 const app = require('../../app');
 const request = require('supertest');
-const manager = require('../../fixtures/manager');
+const manager = require('../../seeds/manager');
 
 const models = require('../../models/index');
 const Employee = models.Employee;
@@ -19,7 +19,7 @@ describe('expense claim tests', function () {
   });
 
   it('expense claims with no claimer(s)/approver(s) do not have any employees', function (done) {
-    ExpenseClaim.findById(2).then((expenseClaim) => {
+    ExpenseClaim.findById(3).then((expenseClaim) => {
       expenseClaim.getEmployees().then((employees) => {
         assert.isEmpty(employees);
 
@@ -62,6 +62,16 @@ describe('expense claim tests', function () {
     ExpenseClaim.findById(1).then((expenseClaim) => {
       expenseClaim.getCostCentre().then((costCentre) => {
         assert.isNotNull(costCentre);
+
+        done();
+      });
+    });
+  });
+
+  it('expense claim belongs to company', function (done) {
+    ExpenseClaim.findById(1).then((expenseClaim) => {
+      expenseClaim.getCompany().then((company) => {
+        assert.isNotNull(company);
 
         done();
       });

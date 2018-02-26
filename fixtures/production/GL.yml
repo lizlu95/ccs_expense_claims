@@ -1,0 +1,73 @@
+fixtures:
+  - model: GL
+    data:
+      number: 633710
+      description: AUTO GAS (Community or Facilities employees only)
+  - model: GL
+    data:
+      number: 633720
+      description: AUTO REPAIRS (Community or Facilities employees only)
+  - model: GL
+    data:
+      number: 650620
+      description: BOOKS & SUBSCRIPTIONS (Newspaper, magazine, website subscription)
+  - model: GL
+    data:
+      number: 633610
+      description: CONFERENCE FEE (Registration, travel, & hotel relating to conference)
+  - model: GL
+    data:
+      number: 680120
+      description: DELIGHT THE CUSTOMER (For customer benefit only)
+  - model: GL
+    data:
+      number: 633544
+      description: FUND FOR FUN
+  - model: GL
+    data:
+      number: 633570
+      description: GOLF (For business development and relationship building, NO FOOD)
+  - model: GL
+    data:
+      number: 633400
+      description: HOTEL (Room only, NO FOOD)
+  - model: GL
+    data:
+      number: 633505
+      description: MEALS & ENTERTAINMENT STAFF (Food, beverage)
+  - model: GL
+    data:
+      number: 633510
+      description: MEALS & ENTERTAINMENT PROMO(Food,beverage when entertaining clients)
+  - model: GL
+    data:
+      number: 633600
+      description: MEETINGS (Room/equipment rental for business meetings, NO FOOD)
+  - model: GL
+    data:
+      number: 633400
+      description: MILEAGE (kilometres traveled using personal vehicle)
+  - model: GL
+    data:
+      number: 650800
+      description: OTHER (Miscellaneous expenses)
+  - model: GL
+    data:
+      number: 633400
+      description: PARKING (Hourly, daily, monthly parking cost)
+  - model: GL
+    data:
+      number: 630020
+      description: PERSONAL/PROF DUES, MBERSHP
+  - model: GL
+    data:
+      number: 650800
+      description: PRIZES
+  - model: GL
+    data:
+      number: 633020
+      description: TELEPHONE (Telephone, cell, pager, internet stick)
+  - model: GL
+    data:
+      number: 633400
+      description: TRAVEL (Hotel, ferry, taxi, parking, mileage)

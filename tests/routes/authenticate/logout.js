@@ -3,7 +3,7 @@ const app = require('../../../app');
 const async = require('async');
 const request = require('supertest');
 const helper = require('../../helper');
-const manager = require('../../../fixtures/manager');
+const manager = require('../../../seeds/manager');
 
 describe('logout page', function () {
   beforeEach(function (done) {
@@ -29,7 +29,9 @@ describe('logout page', function () {
   });
 
   it('/logout should log user out when authenticated', function (done) {
-    helper.withAuthenticate([
+    var agent = request.agent(app);
+
+    helper.withAuthenticate(agent, [
       function (agent, callback) {
         agent
           .get('/claims')

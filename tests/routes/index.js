@@ -3,7 +3,7 @@ const app = require('../../app');
 const request = require('supertest');
 const async = require('async');
 const helper = require('./../helper');
-const manager = require('../../fixtures/manager');
+const manager = require('../../seeds/manager');
 
 describe('home page', function () {
   beforeEach(function (done) {
@@ -29,7 +29,9 @@ describe('home page', function () {
   });
 
   it('/ should take user to claims list page when user is authenticated', function (done) {
-    helper.withAuthenticate([
+    var agent = request.agent(app);
+
+    helper.withAuthenticate(agent, [
       function(agent, callback) {
         agent
           .get('/')

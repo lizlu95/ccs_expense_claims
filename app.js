@@ -11,14 +11,7 @@ const uuidv4 = require('uuid/v4');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const sassMiddleware = require('node-sass-middleware');
-const vueOptions = {
-  rootPath: path.join(__dirname, '/views'),
-  layout: {
-    start: '<div id="expense-claim-app">',
-    end: '</div>'
-  }
-};
-const expressVueMiddleware = require('express-vue').init(vueOptions);
+const flash = require('connect-flash');
 
 // routes
 const index = require('./routes/index');
@@ -31,8 +24,8 @@ const configuration = require('./routes/configuration');// Steven
 const app = module.exports = express();
 
 // models
-const models = require('./models/index');
-const Employee = models.Employee;
+const database = require('./models/index');
+const Employee = database.Employee;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -45,7 +38,6 @@ app.use(sassMiddleware({
   dest: path.join(__dirname, 'public'),
   outputStyle: 'compressed',
 }));
-app.use(expressVueMiddleware);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -58,6 +50,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -104,11 +97,34 @@ app.use(function (req, res, next) {
   if (req.user) {
     next();
   } else {
+    req.session.returnTo = req.path;
+
     res.redirect('/login');
   }
 });
 
 // login protected routes
+// REST API routes
+
+// non-REST API routes
+app.use(function (req, res, next) {
+  // get recent claims
+  Employee.build({
+    id: req.user.id,
+  }).getExpenseClaims({
+    order: [
+      [
+        'createdAt',
+        'DESC',
+      ],
+    ],
+    limit: 10,
+  }).then((expenseClaims) => {
+    res.locals.recentExpenseClaims = expenseClaims;
+
+    next();
+  });
+});
 app.use('/', index);
 app.use('/logout', logout);
 app.use('/claims', claims);

@@ -2,7 +2,7 @@ const assert = require('chai').assert;
 const app = require('../../../app');
 const request = require('supertest');
 const helper = require('../../helper');
-const manager = require('../../../fixtures/manager');
+const manager = require('../../../seeds/manager');
 const async = require('async');
 
 describe('login page', function () {
@@ -28,7 +28,9 @@ describe('login page', function () {
   });
 
   it('/login should redirect to homepage when authenticated', function (done) {
-    helper.withAuthenticate([
+    var agent = request.agent(app);
+
+    helper.withAuthenticate(agent, [
       function (agent, callback) {
         agent
           .get('/login')
@@ -39,5 +41,32 @@ describe('login page', function () {
           });
       },
     ], done);
+  });
+
+  it('/logging in after attempting to access page other than homepage redirects to that page after successful login', (done) => {
+    var agent = request.agent(app);
+
+    var initialUrl = '/claims/new';
+
+    async.waterfall([
+      (callback) => {
+        agent
+          .get(initialUrl)
+          .expect(302)
+          .expect('Location', '/login')
+          .end((err, res) => {
+            callback(null);
+          });
+      },
+      (callback) => {
+        helper.authenticate(agent, callback, initialUrl);
+      },
+    ], (err) => {
+      if (err) {
+        done(err);
+      } else {
+        done();
+      }
+    });
   });
 });

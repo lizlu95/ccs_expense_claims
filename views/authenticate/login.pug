@@ -5,15 +5,18 @@ block body
     .container.h-100.background-alternate
       .row.h-100.align-items-center
         .col-4.offset-4
-          .row
-            .col-12
-              img.d-block.mx-auto.mb-4#logo(src="http://rethinkcanada.com/app/uploads/2015/02/coast-logo-320x320.png" alt="" width="160" height="160")
+          .row.text-center
+            .col-6.mx-auto.mb-2
+              img.img-fluid#logo(src='/images/logo.png' alt='Coast Capital Savings')
           .row.mb-3
             .col-12
               form(method='POST' action='/login')
                 h1.mb-3.font-weight-normal.text-center.text-white Log In
+                if error
+                  div.alert.alert-warning(role='alert')
+                    div.text-center= error
                 label(for='inputEmail' class='sr-only') Email Address
-                input(type='email' id='email' name='email' class='form-control' placeholder='Email address' required='' autofocus='' autocomplete='off')
+                input.mb-1(type='email' id='email' name='email' class='form-control' placeholder='Email address' required='' autofocus='' autocomplete='off')
                 label(for='inputPassword' class='sr-only') Password
                 input(type='password' id='password' name='password' class='form-control' placeholder='Password' required='' autocomplete='off')
                 button.btn.btn-lg.btn-block.btn-success.my-3(type='submit') Log In

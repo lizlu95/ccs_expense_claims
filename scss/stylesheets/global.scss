@@ -12,6 +12,11 @@ a {
   }
 }
 
+.my-45 {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+}
+
 .background-alternate {
 	background: $background-alternate;
 }
@@ -40,4 +45,9 @@ a {
 
 .badge-sm {
   font-size: 75%;
+}
+
+.progress {
+  font-size: 1rem;
+  height: 40px;
 }

@@ -3,7 +3,7 @@ const assert = chai.assert;
 const expect = chai.expect;
 const app = require('../../app');
 const request = require('supertest');
-const manager = require('../../fixtures/manager');
+const manager = require('../../seeds/manager');
 
 const models = require('../../models/index');
 const Employee = models.Employee;
@@ -34,6 +34,16 @@ describe('expense claim tests', function () {
     ExpenseClaimItem.findById(1).then((expenseClaimItem) => {
       expenseClaimItem.getReceipt().then((receipt) => {
         assert.isNotNull(receipt);
+
+        done();
+      });
+    });
+  });
+
+  it('expense claim item with GL belongs to one GL', function (done) {
+    ExpenseClaimItem.findById(1).then((expenseClaimItem) => {
+      expenseClaimItem.getGL().then((gl) => {
+        assert.isNotNull(gl);
 
         done();
       });
