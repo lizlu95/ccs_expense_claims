@@ -65,7 +65,7 @@ block inner-content
                     | Looks good!
                 .col-md-4
                   label(for='expense-category') Expense Category
-                  select#expense-category.custom-select(v-model='item.glDescription' @change='updateItemTotal(item)' required)
+                  select#expense-category.custom-select(v-model='item.glDescription' @change='onGlChange(item, $event)' required)
                     option(value='') Choose..
                     each gl in gls
                       option(value=gl.description)= gl.description
@@ -75,7 +75,7 @@ block inner-content
                     | Looks good!
                 .col-md-2
                   label(for='gl') GL
-                  select#gl.custom-select(:name="'items[' + index + '][glDescription]'" v-model='item.glDescription' @change='updateItemTotal(item)' required)
+                  select#gl.custom-select(:name="'items[' + index + '][glDescription]'" v-model='item.glDescription' @change='onGlChange(item, $event)' required)
                     option(value='') Choose..
                     each gl in gls
                       option(value=gl.description)= gl.number
@@ -107,14 +107,17 @@ block inner-content
                     .valid-feedback
                       | Looks good!
                 .col-md-4.upload.custom-file(v-show='!isMileageGlDescription(item.glDescription)')
-                  label File
-                  input#receipt-file.form-control.custom-file-input(:name="'items[' + index + '][receipt][file]'" type='file')
+                  label Receipt
+                  input#receipt-file.form-control.custom-file-input(:name="'items[' + index + '][receipt][file]'" type='file' @change='validateReceipt(item, $event)')
                   label.custom-file-label(for='receipt-file') Choose file..
                   .invalid-feedback
                     | Please upload a receipt.
                   .valid-feedback
                     | Looks good!
-                .col-md-3(v-if='!isMileageGlDescription(item.glDescription)')
+                .col-md-1(v-if='!isMileageGlDescription(item.glDescription)')
+                  label(for='receipt-lost') Lost?
+                  input#receipt-lost.form-control(:name="'items[' + index + '][receipt][lost]'" v-model='item.receipt.lost' type='checkbox' value='' @change='validateReceipt(item, $event)')
+                .col-md-2(v-if='!isMileageGlDescription(item.glDescription)')
                   label(for='receipt-amount') Amount
                   .input-group
                     .input-group-prepend
@@ -205,6 +208,7 @@ block scripts
           numKm: 0,
           receipt: {
             amount: 0,
+            lost: false,
           },
           description: '',
           total: 0,
@@ -244,17 +248,42 @@ block scripts
           }
         },
         addTooltip: function ($el) {
+        debugger;
           $el.find('.num-km-info').tooltip();
         },
         isMileageGlDescription(glDescription) {
           return glDescription === MILEAGE_GL_DESCRIPTION;
         },
+        validateReceipt: function (item, event) {
+          // necessary due to Vue Vritual DOM removing validity states
+          this.$nextTick(function () {
+            var $receiptEl = $(event.target).closest('.item').find('#receipt-file').first();
+            var validityMessage = '';
+            if ($receiptEl[0].files.length === 0 && !item.receipt.lost) {
+              validityMessage = 'No file and receipt not lost.';
+            }
+            $receiptEl[0].setCustomValidity(validityMessage);
+          });
+        },
+        onGlChange: function (item, event) {
+          this.updateItemTotal(item);
+          this.validateReceipt(item, event);
+        },
       },
       mounted: function () {
-        this.addTooltip($('.item').last());
+        var $item = $('.item').last();
+        this.addTooltip($item);
+        $item.find('#receipt-file').first()[0].setCustomValidity('No file and receipt not lost.');
       },
-      updated: function () {
-        this.addTooltip($('.item').last());
+      watch: {
+        items: function () {
+          // wait for DOM changes to propagate
+          this.$nextTick(function () {
+            var $item = $('.item').last();
+            this.addTooltip($item);
+            $item.find('#receipt-file').first()[0].setCustomValidity('No file and receipt not lost.');
+          });
+        },
       },
       computed: {
         itemsTotal: function () {
