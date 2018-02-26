@@ -84,6 +84,7 @@ router.get('/:id', function (req, res, next) {
 
 /* POST /claims */
 router.post('', multipartMiddleware, function (req, res, next) {
+  res.redirect('/claims/1');
   // TODO cleanup temp files after connect-multiparty
   async.waterfall([
     function (callback) {
