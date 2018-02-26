@@ -243,38 +243,6 @@ describe('new claims page', function () {
     });
   });
 
-  it('expenseClaimApp item creation adds tooltips', (done) => {
-    browser.visit('/claims/new', () => {
-      browser.assert.evaluate('expenseClaimApp.items.length === 1');
-
-      async.waterfall([
-        (callback) => {
-          var numAddedItems = 1;
-          for (var i = 0; i < numAddedItems; i++) {
-            addExpenseClaimAppItem();
-          }
-          browser.wait().then(() => {
-            // only for items with mileage associated GLs
-            var mileageAssociatedGlDescription = MILEAGE_GL_DESCRIPTION;
-            browser.evaluate('expenseClaimApp.items[1].glDescription = "' + mileageAssociatedGlDescription + '";');
-            browser.assert.evaluate('expenseClaimApp.items[1].glDescription === "' + mileageAssociatedGlDescription + '";');
-
-            browser.wait().then(() => {
-              callback(null);
-            });
-          });
-        },
-        (callback) => {
-          browser.assert.evaluate('$(".item").last().find(".num-km-info").data("bs.tooltip") !== undefined');
-
-          callback(null);
-        }
-      ], () => {
-        done();
-      });
-    });
-  });
-
   it('expenseClaimApp item total is calculated from one of receipt and numKm but not both', (done) => {
     var mileageAssociatedGlDescription = MILEAGE_GL_DESCRIPTION;
     var nonMileageAssociatedGlDescription = NON_MILEAGE_GL_DESCRIPTION;

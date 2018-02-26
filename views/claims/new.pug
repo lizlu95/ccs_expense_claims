@@ -247,8 +247,15 @@ block scripts
             item.total = Math.round(item.receipt.amount * 100)/100;
           }
         },
-        addTooltip: function ($el) {
-          $el.find('.num-km-info').tooltip();
+        addTooltip: function (item, event) {
+          if (this.isMileageGlDescription(item.glDescription)) {
+            this.$nextTick(function () {
+              var $numKmInfo = $(event.target).closest('.item').find('.num-km-info');
+              if (!$numKmInfo.data('bs.tooltip')) {
+                $numKmInfo.tooltip();
+              }
+            });
+          }
         },
         isMileageGlDescription(glDescription) {
           return glDescription === MILEAGE_GL_DESCRIPTION;
@@ -267,21 +274,19 @@ block scripts
         onGlChange: function (item, event) {
           this.updateItemTotal(item);
           this.validateReceipt(item, event);
+          this.addTooltip(item, event);
         },
       },
-      mounted: function () {
-        var $item = $('.item').last();
-        this.addTooltip($item);
-        $item.find('#receipt-file').first()[0].setCustomValidity('No file and receipt not lost.');
-      },
       watch: {
-        items: function () {
-          // wait for DOM changes to propagate
-          this.$nextTick(function () {
-            var $item = $('.item').last();
-            this.addTooltip($item);
-            $item.find('#receipt-file').first()[0].setCustomValidity('No file and receipt not lost.');
-          });
+        items: {
+          immediate: true,
+          handler: function () {
+            // wait for DOM changes to propagate
+            this.$nextTick(function () {
+              var $item = $('.item').last();
+              $item.find('#receipt-file').first()[0].setCustomValidity('No file and receipt not lost.');
+            });
+          },
         },
       },
       computed: {
