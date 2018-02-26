@@ -94,7 +94,7 @@ block inner-content
                   .valid-feedback
                     | Looks good!
               .row.mb-4
-                .col-md-7(v-if='isMileageGlDescription(item.glDescription)')
+                .col-md-8(v-if='isMileageGlDescription(item.glDescription)')
                   .d-flex.justify-content-between.align-items-center
                     label(for='num-km') # Km Travelled
                     span.badge.badge-secondary.badge-sm.num-km-info(data-toggle='tooltip' data-placement='top' title='' data-original-title='$0.54 < 5000Km, $0.48 > 5000Km') ?
@@ -117,7 +117,7 @@ block inner-content
                 .col-md-1(v-if='!isMileageGlDescription(item.glDescription)')
                   label(for='receipt-lost') Lost?
                   input#receipt-lost.form-control(:name="'items[' + index + '][receipt][lost]'" v-model='item.receipt.lost' type='checkbox' value='' @change='validateReceipt(item, $event)')
-                .col-md-2(v-if='!isMileageGlDescription(item.glDescription)')
+                .col-md-3(v-if='!isMileageGlDescription(item.glDescription)')
                   label(for='receipt-amount') Amount
                   .input-group
                     .input-group-prepend
@@ -127,7 +127,7 @@ block inner-content
                       | Please enter a receipt amount > $0.
                     .valid-feedback
                       | Looks good!
-                .col-md-5
+                .col-md-4
                   label(for='total') Total
                   .input-group
                     .input-group-prepend
