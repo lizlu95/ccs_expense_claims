@@ -213,13 +213,31 @@ block scripts
         previousMileage: parseInt(#{previousMileage}),
         costCentreNumber: '',
         bankAccount: '',
-        items: [
-          DEFAULT_ITEM
-        ],
+        items: [{
+          date: '',
+          glDescription: '',
+          numKm: '',
+          receipt: {
+            amount: '',
+            lost: false,
+          },
+          description: '',
+          total: 0,
+        }]
       },
       methods: {
         addItem: function () {
-          this.items.push(DEFAULT_ITEM);
+          this.items.push({
+            date: '',
+            glDescription: '',
+            numKm: '',
+            receipt: {
+              amount: '',
+              lost: false,
+            },
+            description: '',
+            total: 0,
+          });
         },
         updateItemTotal: function (item) {
           if (this.isMileageGlDescription(item.glDescription)) {
