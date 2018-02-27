@@ -120,8 +120,7 @@ describe('claims router', function () {
                   description: 'HOTEL (Room only, NO FOOD)',
                 },
                 receipt: {
-                  path: 'fixtures/files/flowers.jpg',
-                  size: 100,
+                  key: 'users/' + employeeOne.id.toString() + '/flowers.jpg',
                 },
                 numKm: 0,
                 description: 'My First Expense Claim Item',
@@ -134,8 +133,7 @@ describe('claims router', function () {
                   description: 'MILEAGE (kilometres traveled using personal vehicle)',
                 },
                 receipt: {
-                  path: 'fixtures/files/empty.txt',
-                  size: 0,
+                  key: '',
                 },
                 numKm: 100,
                 description: 'My Second Expense Claim Item',
@@ -144,24 +142,28 @@ describe('claims router', function () {
             ];
             agent
               .post(CLAIMS_LIST_ROUTE)
-              .field('costCentreNumber', costCentreNumber)
-              .field('bankAccount', bankAccount)
-              .field('companyName', companyName)
-              .attach('items[0][receipt][file]', items[0].receipt.path)
-              .field('items[0][date]', items[0].date)
-              .field('items[0][glDescription]', items[0].gl.description)
-              .field('items[0][numKm]', items[0].numKm)
-              .field('items[0][description]', items[0].description)
-              .field('items[0][total]', items[0].total)
-              .attach('items[1][receipt][file]', items[1].receipt.path)
-              .field('items[1][date]', items[1].date)
-              .field('items[1][glDescription]', items[1].gl.description)
-              .field('items[1][numKm]', items[1].numKm)
-              .field('items[1][description]', items[1].description)
-              .field('items[1][total]', items[1].total)
+              .type('form')
+              .send({
+                costCentreNumber: costCentreNumber,
+                bankAccount: bankAccount,
+                companyName: companyName,
+                'items[0][receipt][key]': items[0].receipt.key,
+                'items[0][date]': items[0].date,
+                'items[0][glDescription]': items[0].gl.description,
+                'items[0][numKm]': items[0].numKm,
+                'items[0][description]': items[0].description,
+                'items[0][total]': items[0].total,
+                'items[1][receipt][key]': items[1].receipt.key,
+                'items[1][date]': items[1].date,
+                'items[1][glDescription]': items[1].gl.description,
+                'items[1][numKm]': items[1].numKm,
+                'items[1][description]': items[1].description,
+                'items[1][total]': items[1].total,
+              })
               .expect(302)
               .expect('Location', '/claims/' + nextExpenseClaimId)
               .end(function (err, res) {
+                console.log(res)
                 async.waterfall([
                   function (callback) {
                     ExpenseClaim.findById(nextExpenseClaimId).then((expenseClaim) => {
@@ -243,10 +245,10 @@ describe('claims router', function () {
                         receiptExpenseClaimItem.getReceipt().then((receipt) => {
                           if (receipt) {
                             var receiptItem = items[0];
-                            if (receiptItem.size === receipt.size) {
+                            if (receiptItem.receipt.key === receipt.key) {
                               callback(null);
                             } else {
-                              callback('Found receipt item associated with expense claim item with wrong size!');
+                              callback('Found receipt item associated with expense claim item with wrong key!');
                             }
                           } else {
                             callback('Did not find associated receipt for expense claim item with receipt!');
@@ -291,9 +293,10 @@ describe('claims router', function () {
           function (lastExpenseClaimId, callback) {
             agent
               .post(CLAIMS_LIST_ROUTE)
-              .attach('items[0][receipt][file]', 'fixtures/files/flowers.jpg')
-              .field('costCentreNumber', '0754')
-              .field('bankAccount', '')
+              .type('form')
+              .send('items[0][receipt][key]', '')
+              .send('costCentreNumber', '0754')
+              .send('bankAccount', '')
               .expect(409)
               .end(function (err, res) {
                 callback(err);
@@ -328,8 +331,7 @@ describe('claims router', function () {
               description: 'HOTEL (Room only, NO FOOD)',
             },
             receipt: {
-              path: 'fixtures/files/flowers.jpg',
-              size: 100,
+              key: 'users/' + employeeOne.id.toString() + '/flowers.jpg',
             },
             numKm: 0,
             description: 'My First Expense Claim Item',
@@ -338,15 +340,16 @@ describe('claims router', function () {
         ];
         agent
           .post(CLAIMS_LIST_ROUTE)
-          .field('costCentreNumber', costCentreNumber)
-          .field('bankAccount', bankAccount)
-          .field('companyName', companyName)
-          .attach('items[0][receipt][file]', items[0].receipt.path)
-          .field('items[0][date]', items[0].date)
-          .field('items[0][glDescription]', items[0].gl.description)
-          .field('items[0][numKm]', items[0].numKm)
-          .field('items[0][description]', items[0].description)
-          .field('items[0][total]', items[0].total)
+          .type('form')
+          .send('costCentreNumber', costCentreNumber)
+          .send('bankAccount', bankAccount)
+          .send('companyName', companyName)
+          .send('items[0][receipt][key]', items[0].receipt.key)
+          .send('items[0][date]', items[0].date)
+          .send('items[0][glDescription]', items[0].gl.description)
+          .send('items[0][numKm]', items[0].numKm)
+          .send('items[0][description]', items[0].description)
+          .send('items[0][total]', items[0].total)
           .expect(302)
           .expect('Location', /claims\//)
           .end((err, res) => {
@@ -362,5 +365,4 @@ describe('claims router', function () {
       },
     ], done);
   });
-
 });

@@ -4,7 +4,7 @@ block inner-content
   .row.mb-5
     .col-12.text-center
       h1 New Claim
-  form.needs-validation(enctype='multipart/form-data' novalidate action='/claims' method='POST')
+  form.needs-validation(novalidate action='/claims' method='POST')
     .row.mb-5
       .col-12
         .row.mb-1
@@ -110,7 +110,8 @@ block inner-content
                       | Looks good!
                 .col-md-4.upload.custom-file(v-show='!isMileageGlDescription(item.glDescription)')
                   label Receipt
-                  input#receipt-file.form-control.custom-file-input(:name="'items[' + index + '][receipt][file]'" type='file' @change='validateReceipt(item, $event)')
+                  input#receipt-file.form-control.custom-file-input(type='file' @change='validateReceipt(item, $event)')
+                  input#receipt-key.form-control.custom-file-input(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model.number='item.receipt.key')
                   label.custom-file-label(for='receipt-file') Choose file..
                   .invalid-feedback
                     | Please upload a receipt < 2MB.
@@ -210,6 +211,7 @@ block scripts
           numKm: '',
           receipt: {
             amount: '',
+            key: '',
             lost: false,
           },
           description: '',
@@ -224,6 +226,7 @@ block scripts
             numKm: '',
             receipt: {
               amount: '',
+              key: '',
               lost: false,
             },
             description: '',

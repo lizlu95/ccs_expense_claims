@@ -6,7 +6,6 @@ const s = require('underscore.string');
 const moment = require('moment');
 const sequelize = require('../models/index').sequelize;
 const Op = require('sequelize').Op;
-const multipartMiddleware = require('connect-multiparty')();
 
 const Notifier = require('../mixins/notifier');
 
@@ -183,8 +182,7 @@ router.get('/:id', function (req, res, next) {
 });
 
 /* POST /claims */
-router.post('', multipartMiddleware, function (req, res, next) {
-  // TODO cleanup temp files after connect-multiparty
+router.post('', function (req, res, next) {
   async.waterfall([
     function (callback) {
       CostCentre.findOne({
@@ -232,9 +230,7 @@ router.post('', multipartMiddleware, function (req, res, next) {
       });
     },
     function (company, gls, costCentre, callback) {
-      var items = _.map(req.body.items, function (item, index) {
-        return _.extend(item, req.files.items[index]);
-      });
+      var items = req.body.items;
 
       var employeeId = req.user.id;
       // TODO make sure employee without manager is a manager of self
@@ -257,18 +253,13 @@ router.post('', multipartMiddleware, function (req, res, next) {
           total: parseInt(item.total) || 0,
         };
 
-        // TODO receipt path
-        if (item.receipt.file.size !== 0) {
-          // save temporary file
-
+        if (item.receipt.key.length > 0) {
           _.extend(model, {
             Receipt: {
-              path: item.receipt.file.path,
+              key: item.receipt.key,
             },
           });
         };
-
-        // remove temporary file
 
         return model;
       });
