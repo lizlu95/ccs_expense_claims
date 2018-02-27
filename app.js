@@ -18,6 +18,7 @@ const index = require('./routes/index');
 const login = require('./routes/authenticate/login');
 const logout = require('./routes/authenticate/logout');
 const claims = require('./routes/claims');
+const users = require('./routes/users');
 const reports = require('./routes/admin/reports');
 const configuration = require('./routes/configuration');// Steven
 
@@ -128,6 +129,7 @@ app.use(function (req, res, next) {
 app.use('/', index);
 app.use('/logout', logout);
 app.use('/claims', claims);
+app.use('/users', users);
 app.use('/reports', reports);
 
 // configuration Steven

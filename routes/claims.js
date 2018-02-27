@@ -7,7 +7,6 @@ const moment = require('moment');
 const sequelize = require('../models/index').sequelize;
 const Op = require('sequelize').Op;
 const multipartMiddleware = require('connect-multiparty')();
-const s3 = require('../s3');
 
 const Notifier = require('../mixins/notifier');
 
@@ -339,31 +338,6 @@ router.post('', multipartMiddleware, function (req, res, next) {
       res.redirect('/claims/' + expenseClaim.id);
     }
   });
-});
-
-/* GET /claims/:id/signature */
-router.get('/:id/signature', function (req, res, next) {
-  var fileName = req.query.fileName;
-  var contentType = req.query.contentType;
-  if (fileName && contentType) {
-    var fileKey = 'expenseClaims/' + req.params.id + '/' + fileName;
-    s3.getSignedUrlPromise('putObject', {
-      Key: fileKey,
-      ContentType: contentType,
-    }).then((url) => {
-      res.json({
-        signedUrl: url,
-      });
-    }).catch((err) => {
-      res.status(500).json({
-        error: err,
-      });
-    });
-  } else {
-    res.status(422).json({
-      error: 'Invalid or missing parameters.'
-    });
-  }
 });
 
 module.exports = router;
