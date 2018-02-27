@@ -29,13 +29,6 @@ router.get('', function (req, res, next) {
     id: req.user.id,
   });
 
-  var expenseClaimStatuses = [
-    ExpenseClaim.STATUS.PENDING,
-    ExpenseClaim.STATUS.APPROVED,
-    ExpenseClaim.STATUS.REJECTED,
-    ExpenseClaim.STATUS.FORWARDED,
-  ];
-
   res.locals.expenseClaims = {};
   async.waterfall([
     (callback) => {
