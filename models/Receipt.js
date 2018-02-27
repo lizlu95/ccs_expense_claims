@@ -2,10 +2,7 @@
 
 module.exports = (sequelize, DataTypes) => {
   var Receipt = sequelize.define('Receipt', {
-    type: {
-      type: DataTypes.STRING,
-    },
-    path: {
+    key: {
       type: DataTypes.STRING,
     },
     createdAt: {
