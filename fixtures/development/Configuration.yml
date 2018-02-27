@@ -1,13 +1,26 @@
 fixtures:
   - model: Configuration
     data:
-      name: max_per_diem_amount
-      value: 1
+      json:
+        name: max_per_diem_amount
+        value: 1
   - model: Configuration
     data:
-      name: per_mileage_value
-      value: 2
+      json:
+        name: KM_rates_less_than_5000
+        value: 2
   - model: Configuration
     data:
-      name: max_per_meal_amount
-      value: 3
+      json:
+        name: KM_rates_great_than_5000
+        value: 3
+  - model: Configuration
+    data:
+      json:
+        name: per_mileage_value
+        value: 4
+  - model: Configuration
+    data:
+      json:
+        name: admin_employee_ids
+        value: '[1,3,5]'

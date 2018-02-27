@@ -1,22 +1,25 @@
-const async = require('async');
 const express = require('express');
 const router = express.Router();
-const _ = require('underscore');
 const models = require('../models/index');
 const Configuration = models.Configuration;
+const Employee = models.Employee;
+
 /* add more if want add more column of table into PUG */
 const SettingKeysOnPug = ['name', 'value'];
+const UserKeysOnPug = ['id', 'email', 'name', 'updated_at'];
 
 const NAME = 'newSettingsValue';
+const AdminArrName = 'admin_employee_ids';
 
-/* INT(11) = -2147483648_2147483647 */
-const MAXOnDataBase = 2147483647;
+const MAXLimit = 100;
 const MINLimit = 0;
 
 /* GET /system/configuration
    read data from database */
 let settings;
-
+let users;
+let admins;
+let notAdmins;
 router.get('/', function (req, res, next) {
     getValues().then(function (result) {
         // console.log(result);
@@ -24,7 +27,10 @@ router.get('/', function (req, res, next) {
         res.render('admin/sysConfig',
             {
                 settingsPug: settings,
-                newSettingValuePug: NAME
+                newSettingValuePug: NAME,
+                usersPug: users,
+                adminsPug: admins,
+                notAdminsPug: notAdmins
             }
         )
     }).catch(function (error) {
@@ -34,23 +40,66 @@ router.get('/', function (req, res, next) {
 });
 
 getValues = function () {
-    getValue = function (item, arr) {
+
+    getValue = function (configuration, arr) {
+
+        isBelongArr2 = function (arr1, arr2) {
+            let boolean = true;
+            for (let x of arr1) {
+                if (!arr2.includes(x)) {
+                    boolean = false;
+                }
+            }
+            return boolean;
+        };
+
         let result = {};
         for (let x of arr) {
-            result[x] = item.dataValues[x];
+            if (isBelongArr2(arr, SettingKeysOnPug)) {
+                result[x] = configuration.dataValues.json[x]
+            } else if (isBelongArr2(arr, UserKeysOnPug)) {
+                result[x] = configuration.dataValues[x]
+            }
         }
         return result;
     };
 
+    isAdminArr = function (configuration) {
+        return configuration.dataValues.json.name === AdminArrName
+    };
+
     return new Promise(function (fulfill, reject) {
         settings = [];
-        Configuration.findAll().then(function (result) {
-            for (let item of result) {
-                settings.push(getValue(item, SettingKeysOnPug))
+        users = [];
+        admins = [];
+        notAdmins = [];
+        Configuration.findAll().then(function (configurations) {
+            for (let configuration of configurations) {
+                if (!isAdminArr(configuration)) {
+                    settings.push(getValue(configuration, SettingKeysOnPug))
+                } else {
+                    Employee.findAll().then(function (employees) {
+                        for (let employee of employees) {
+                            let user = getValue(employee, UserKeysOnPug);
+                            let adminArr = JSON.parse(configuration.dataValues.json.value);
+                            let isAdmin = adminArr.includes(user.id);
+                            user.isAdmin = isAdmin;
+                            users.push(user);
+                            if (isAdmin) {
+                                admins.push(user)
+                            } else {
+                                notAdmins.push(user)
+                            }
+                        }
+                        fulfill({
+                            settings: settings,
+                            users: users,
+                            admins: admins,
+                            notAdmins: notAdmins
+                        })
+                    })
+                }
             }
-            fulfill({
-                settings: settings
-            });
         }).catch(function (error) {
             reject(error)
         })
@@ -100,20 +149,25 @@ updateSetting = function (name, value) {
         promise = new Promise(function (fulfill, reject) {
             fulfill(name + ' does not change')
         })
-    } else if (value >= MINLimit && value <= MAXOnDataBase) {
+    } else if (value >= MINLimit && value <= MAXLimit) {
         /*  one change request and input is valid
             Configurations.update return a promise */
         promise = Configuration.update({
-            value: value
+            json: {
+                name: name,
+                value: value
+            }
         }, {
             where: {
-                name: name
+                json: {
+                    name: name
+                }
             }
         })
     } else {
         /* one change request but input is invalid because over limit */
         promise = new Promise(function (fulfill, reject) {
-            reject(name + ': ' + value + ' is invalid [' + MINLimit + '<=' + name + '<=' + MAXOnDataBase + ']')
+            reject(name + ': ' + value + ' is invalid [' + MINLimit + '<=' + name + '<=' + MAXLimit + ']')
         })
     }
     return promise
