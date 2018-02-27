@@ -10,8 +10,8 @@ const s3 = new S3({
 });
 
 s3.getSignedUrlPromise = function () {
-  new Promise((resolve, reject) => {
-    s3.getSignedUrl.apply(s3, arguments.concat((err, url) => {
+  return new Promise((resolve, reject) => {
+    s3.getSignedUrl.apply(s3, Array.prototype.slice.call(arguments).concat((err, url) => {
       if (err) {
         reject(err);
       } else {
