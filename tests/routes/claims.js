@@ -386,9 +386,6 @@ describe('claims router', function () {
     ], (component) => {
       expectedUrl += component;
     });
-    var fakeUrl = expectedUrl + '&Expires=60&Signature=ABC';
-
-    var s3Stub = sinon.stub(s3, 'getSignedUrlPromise').returns(Promise.resolve(fakeUrl));
 
     async.waterfall([
       function (callback) {
