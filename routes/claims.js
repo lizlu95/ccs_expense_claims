@@ -348,4 +348,31 @@ router.post('', multipartMiddleware, function (req, res, next) {
   });
 });
 
+/* GET /claims/:id/signature */
+router.get('/:id/signature', function (req, res, next) {
+  var fileName = req.query.fileName;
+  var contentType = req.query.contentType;
+  if (fileName && contentType) {
+    var fileKey = 'expenseClaims/' + req.params.id + '/' + fileName;
+    s3.getSignedUrl('putObject', {
+      Key: fileKey,
+      ContentType: contentType,
+    }, (err, url) => {
+      if (err) {
+        res.status(500).json({
+          error: err,
+        });
+      } else {
+        res.json({
+          signedUrl: url,
+        });
+      }
+    });
+  } else {
+    res.status(422).json({
+      error: 'Invalid or missing parameters.'
+    });
+  }
+});
+
 module.exports = router;

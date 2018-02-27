@@ -45,16 +45,17 @@ helper.authenticate = function (agent, callback, location) {
 };
 
 /*
- * @param agent  agent to authenticate
- * @param steps  array of steps to execute that accept agent param
- *               where agent can be used to make authenticated requests
- * @param done   callback to call after all steps are completed
- *               NOTE pass err to callback in anoyne of steps to fail/err
+ * @param agent      agent to authenticate
+ * @param steps      array of steps to execute that accept agent param
+ *                   where agent can be used to make authenticated requests
+ * @param done       callback to call after all steps are completed
+ *                   NOTE pass err to callback in anoyne of steps to fail/err
+ * @param location   where the login is expected to redirect to
  */
-helper.withAuthenticate = function (agent, steps, done) {
+helper.withAuthenticate = function (agent, steps, done, location) {
   async.waterfall([
     function (callback) {
-      helper.authenticate(agent, callback);
+      helper.authenticate(agent, callback, location);
     },
     function(agent, callback) {
       async.eachSeries(steps, function (step, callback) {

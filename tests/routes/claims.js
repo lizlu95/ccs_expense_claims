@@ -10,6 +10,8 @@ const YAML = require('yamljs');
 const sinon = require('sinon');
 const Promise = require('promise');
 
+const s3 = require('../../s3');
+
 const Notifier = require('../../mixins/notifier');
 
 const models = require('../../models/index');
@@ -36,7 +38,7 @@ const CLAIMS_ROUTES = [
   CLAIMS_NEW_ROUTE,
 ];
 
-describe('home page', function () {
+describe('claims router', function () {
   beforeEach(function (done) {
     manager.load(done);
   });
@@ -359,5 +361,97 @@ describe('home page', function () {
           });
       },
     ], done);
+  });
+
+  it('/claims/:id/signature GET retrieves self-signed key from Amazon S3', (done) => {
+    var agent = request.agent(app);
+
+    var claimId = 1;
+    async.waterfall([
+      function (callback) {
+        agent
+          .get('/claims/' + claimId.toString() + '/signature')
+          .expect(302)
+          .expect('Location', '/login')
+          .end((err, res) => {
+            callback(null);
+          });
+      },
+      function (callback) {
+        helper.withAuthenticate(agent, [
+          function (agent, callback) {
+            // with proper params signature is fetched
+            var fileName = 'filename.jpg';
+            var contentType = 'image/jpeg';
+            var fileKey = 'expenseClaims/1/' + fileName;
+            agent
+              .get('/claims/' + claimId.toString() + '/signature')
+              .query({
+                fileName: fileName,
+                contentType: contentType,
+              })
+              .expect(200)
+              .expect('Content-Type', 'application/json; charset=utf-8')
+              .end((err, res) => {
+                if (err) {
+                  callback(err);
+                } else {
+                  // build up expected S3 string
+                  var expectedUrl = '';
+                  _.each([
+                    'https://',
+                    s3.config.params.Bucket,
+                    '.s3.',
+                    s3.config.region,
+                    '.amazonaws.com/',
+                    fileKey,
+                    '?AWSAccessKeyId=',
+                    s3.config.accessKeyId,
+                    '&Content-Type=',
+                    encodeURIComponent(contentType),
+                  ], (component) => {
+                    expectedUrl += component;
+                  });
+
+                  var signedUrl = res.body.signedUrl;
+                  var signedUrlParts = signedUrl.split('&Expires');
+                  assert.equal(signedUrlParts[0], expectedUrl);
+                  assert.isNotNull(signedUrlParts[1]);
+                  assert.isTrue(signedUrl.indexOf('Signature') !== -1);
+
+                  callback(null);
+                }
+              });
+          },
+          function (agent, callback) {
+            // with improper params 422 is returned
+            var claimId = 1;
+            async.eachSeries([
+              { fileName: 'filename.jpg' },
+              { contentType: 'image/jpeg' },
+              {},
+            ], (params, callback) => {
+              agent
+                .get('/claims/' + claimId.toString() + '/signature')
+                .query({
+                  fileName: 'filename.jpg',
+                })
+                .expect(422)
+                .end((err, res) => {
+                  callback(err);
+                });
+            }, (err) => {
+              callback(err);
+            });
+          },
+        ], callback, '/claims/' + claimId.toString() + '/signature');
+      },
+    ], (err) => {
+      if (err) {
+        done(err);
+      } else {
+        done();
+      }
+    });
   });
 });
