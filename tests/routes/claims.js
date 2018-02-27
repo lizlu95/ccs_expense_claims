@@ -367,6 +367,29 @@ describe('claims router', function () {
     var agent = request.agent(app);
 
     var claimId = 1;
+    var fileName = 'filename.jpg';
+    var contentType = 'image/jpeg';
+    var fileKey = 'expenseClaims/1/' + fileName;
+    // build up expected S3 string
+    var expectedUrl = '';
+    _.each([
+      'https://',
+      s3.config.params.Bucket,
+      '.s3.',
+      s3.config.region,
+      '.amazonaws.com/',
+      fileKey,
+      '?AWSAccessKeyId=',
+      s3.config.accessKeyId,
+      '&Content-Type=',
+      encodeURIComponent(contentType),
+    ], (component) => {
+      expectedUrl += component;
+    });
+    var fakeUrl = expectedUrl + '&Expires=60&Signature=ABC';
+
+    var s3Stub = sinon.stub(s3, 'getSignedUrlPromise').returns(Promise.resolve(fakeUrl));
+
     async.waterfall([
       function (callback) {
         agent
@@ -381,9 +404,6 @@ describe('claims router', function () {
         helper.withAuthenticate(agent, [
           function (agent, callback) {
             // with proper params signature is fetched
-            var fileName = 'filename.jpg';
-            var contentType = 'image/jpeg';
-            var fileKey = 'expenseClaims/1/' + fileName;
             agent
               .get('/claims/' + claimId.toString() + '/signature')
               .query({
@@ -396,23 +416,6 @@ describe('claims router', function () {
                 if (err) {
                   callback(err);
                 } else {
-                  // build up expected S3 string
-                  var expectedUrl = '';
-                  _.each([
-                    'https://',
-                    s3.config.params.Bucket,
-                    '.s3.',
-                    s3.config.region,
-                    '.amazonaws.com/',
-                    fileKey,
-                    '?AWSAccessKeyId=',
-                    s3.config.accessKeyId,
-                    '&Content-Type=',
-                    encodeURIComponent(contentType),
-                  ], (component) => {
-                    expectedUrl += component;
-                  });
-
                   var signedUrl = res.body.signedUrl;
                   var signedUrlParts = signedUrl.split('&Expires');
                   assert.equal(signedUrlParts[0], expectedUrl);

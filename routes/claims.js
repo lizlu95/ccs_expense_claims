@@ -354,19 +354,17 @@ router.get('/:id/signature', function (req, res, next) {
   var contentType = req.query.contentType;
   if (fileName && contentType) {
     var fileKey = 'expenseClaims/' + req.params.id + '/' + fileName;
-    s3.getSignedUrl('putObject', {
+    s3.getSignedUrlPromise('putObject', {
       Key: fileKey,
       ContentType: contentType,
-    }, (err, url) => {
-      if (err) {
-        res.status(500).json({
-          error: err,
-        });
-      } else {
-        res.json({
-          signedUrl: url,
-        });
-      }
+    }).then((url) => {
+      res.json({
+        signedUrl: url,
+      });
+    }).catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
     });
   } else {
     res.status(422).json({
