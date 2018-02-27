@@ -98,6 +98,7 @@ block inner-content
                 .col-md-8(v-if='isMileageGlDescription(item.glDescription)')
                   .d-flex.justify-content-between.align-items-center
                     label(for='num-km') # Km Travelled
+                    // TODO make this dynamic based on configuration values
                     span.badge.badge-secondary.badge-sm.num-km-info(data-toggle='tooltip' data-placement='top' title='' data-original-title='$0.54 < 5000Km, $0.48 > 5000Km') ?
                   .input-group
                     input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm' min="0" step="0.01" @input='updateItemTotal(item)' required='required')
