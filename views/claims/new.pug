@@ -118,8 +118,8 @@ block inner-content
                     label(v-show='isItemReceiptStatus(item, "error")')
                       i.fas.fa-exclamation.text-danger
                   input#receipt-file.form-control.custom-file-input(type='file' @change='handleReceiptFile(item, $event)' v-on:click='handleReceiptFileClick(item, $event)')
-                  input#receipt-key.form-control.custom-file-input(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model.number='item.receipt.key')
-                  label.custom-file-label(for='receipt-file' v-bind:class='{ "disabled" : isItemReceiptStatus(item, "pending") }') Choose file..
+                  input#receipt-key.form-control.custom-file-input-key(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model.number='item.receipt.key')
+                  label.custom-file-label(for='receipt-file' v-bind:class='{ "disabled" : isItemReceiptStatus(item, "pending") }') {{ formatFileKey(item.receipt.key) }}
                   .invalid-feedback
                     | Please upload a receipt < 2MB.
                   .valid-feedback
@@ -178,13 +178,6 @@ block inner-content
             button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
 
 block scripts
-  script.
-    $(document).ready(function () {
-      $(document).on('change', '.custom-file-input', function () {
-        $(this).closest('.custom-file').find('.custom-file-label').html($(this).val().split('\\').slice(-1)[0]);
-      });
-    });
-
   script.
     (function() {
       'use strict';
@@ -288,6 +281,9 @@ block scripts
             }
             $receiptEl[0].setCustomValidity(validityMessage);
           });
+        },
+        formatFileKey: function (key) {
+          return key.split('/').pop();
         },
         setItemReceiptStatus: function (item, status, key) {
           var processingStatus = '';
