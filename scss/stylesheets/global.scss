@@ -54,4 +54,12 @@ a {
 
 .custom-file-label {
   overflow: hidden;
+
+  &.disabled {
+    background: $disabled-grey;
+  }
+}
+
+.custom-file-input:disabled {
+  opacity: 0 !important;
 }

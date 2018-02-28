@@ -117,16 +117,16 @@ block inner-content
                       i.fas.fa-check.text-success
                     label(v-show='isItemReceiptStatus(item, "error")')
                       i.fas.fa-exclamation.text-danger
-                  input#receipt-file.form-control.custom-file-input(type='file' @change='onReceiptFileChange(item, $event)')
+                  input#receipt-file.form-control.custom-file-input(type='file' @change='onReceiptFileChange(item, $event)' :disabled='isItemReceiptStatus(item, "pending")')
                   input#receipt-key.form-control.custom-file-input(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model.number='item.receipt.key')
-                  label.custom-file-label(for='receipt-file') Choose file..
+                  label.custom-file-label(for='receipt-file' v-bind:class='{ "disabled" : isItemReceiptStatus(item, "pending") }') Choose file..
                   .invalid-feedback
                     | Please upload a receipt < 2MB.
                   .valid-feedback
                     | Looks good!
                 .col-md-1(v-if='!isMileageGlDescription(item.glDescription)')
                   label(for='receipt-lost') Lost?
-                  input#receipt-lost.form-control(:name="'items[' + index + '][receipt][lost]'" v-model='item.receipt.lost' type='checkbox' value='' @change='validateReceipt(item, $event)')
+                  input#receipt-lost.form-control(:name="'items[' + index + '][receipt][lost]'" v-model='item.receipt.lost' type='checkbox' value='' @change='validateReceipt(item, $event)' )
                 .col-md-3(v-if='!isMileageGlDescription(item.glDescription)')
                   label(for='receipt-amount') Amount
                   .input-group
