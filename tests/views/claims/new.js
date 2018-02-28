@@ -5,6 +5,10 @@ require('../../../index');
 const async = require('async');
 const manager = require('../../../seeds/manager');
 const _ = require('underscore');
+const sinon = require('sinon');
+const Promise = require('promise');
+
+const s3 = require('../../../s3');
 
 const database = require('../../../models/index');
 const Employee = database.Employee;
@@ -582,6 +586,70 @@ describe('new claims page', function () {
       },
     ], () => {
       done();
+    });
+  });
+
+  it('expenseClaimApp attaching a file uploads the file and sets the key on receipt', function (done) {
+    this.timeout(4000);
+
+    var signedUrlErrorStub = function (callback) {
+      sinon.stub(s3, 'getSignedUrlPromise').returns(Promise.reject('error'));
+
+      callback(null);
+    };
+
+    var fileName = 'flowers.jpg';
+    var fileKey = 'users/1/' + fileName;
+    var fileContentType = 'image/jpeg';
+
+    async.eachSeries([[null, 'success'], [signedUrlErrorStub, 'error']], (options, callback) => {
+      browser.visit('/claims/new', () => {
+        async.waterfall([
+          (callback) => {
+            var fn = options[0];
+            if (fn) {
+              fn(callback);
+            } else {
+              callback(null);
+            }
+          },
+          (callback) => {
+            var expectedProcessingStatus = options[1];
+
+            // no key to begin
+            browser.assert.evaluate('expenseClaimApp.items[0].receipt.key === "";');
+            browser.assert.evaluate('expenseClaimApp.items[0].receipt.processing === "";');
+
+            // attaching file successfully assigns key to item
+            browser.attach('#receipt-file', 'fixtures/files/' + fileName);
+            browser.wait(1000).then(() => {
+              browser.wait(() => {
+                return browser.evaluate('expenseClaimApp.items[0].receipt.processing !== "";') &&
+                  browser.evaluate('expenseClaimApp.items[0].receipt.processing !== "pending";');
+              }, () => {
+                // done processing
+                browser.assert.evaluate('expenseClaimApp.items[0].receipt.processing === "' + expectedProcessingStatus + '";');
+
+                if (expectedProcessingStatus === 'success') {
+                  browser.assert.evaluate('expenseClaimApp.items[0].receipt.key.length > 0;');
+                } else {
+                  browser.assert.evaluate('expenseClaimApp.items[0].receipt.key.length === 0;');
+                }
+
+                callback(null);
+              });
+            });
+          },
+        ], (err) => {
+          callback(err);
+        });
+      });
+    }, (err) => {
+      if (err) {
+        done(err);
+      } else {
+        done();
+      }
     });
   });
 });
