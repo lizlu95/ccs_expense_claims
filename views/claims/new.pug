@@ -109,7 +109,14 @@ block inner-content
                     .valid-feedback
                       | Looks good!
                 .col-md-4.upload.custom-file(v-show='!isMileageGlDescription(item.glDescription)')
-                  label Receipt
+                  .d-flex.justify-content-between.align-items-center
+                    label Receipt
+                    label(v-show='isItemReceiptStatus(item, "pending")')
+                      i.fas.fa-sync.fa-spin
+                    label(v-show='isItemReceiptStatus(item, "success")')
+                      i.fas.fa-check.text-success
+                    label(v-show='isItemReceiptStatus(item, "error")')
+                      i.fas.fa-exclamation.text-danger
                   input#receipt-file.form-control.custom-file-input(type='file' @change='onReceiptFileChange(item, $event)')
                   input#receipt-key.form-control.custom-file-input(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model.number='item.receipt.key')
                   label.custom-file-label(for='receipt-file') Choose file..
@@ -285,10 +292,7 @@ block scripts
         setItemReceiptStatus: function (item, status, key) {
           var processingStatus = '';
           var fileKey = '';
-          if (status === 'none') {
-            processingStatus = '';
-            fileKey = '';
-          } else if (status === 'error') {
+          if (status === 'error' || status === 'pending') {
             processingStatus = status;
             fileKey = '';
           } else if (status === 'success') {
@@ -297,6 +301,9 @@ block scripts
           }
           item.receipt.processing = processingStatus;
           item.receipt.key = fileKey;
+        },
+        isItemReceiptStatus: function (item, status) {
+          return item.receipt.processing === status;
         },
         handleReceiptFile: function (item, event) {
           var $target = $(event.target);
