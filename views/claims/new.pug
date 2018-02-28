@@ -181,7 +181,7 @@ block scripts
   script.
     $(document).ready(function () {
       $(document).on('change', '.custom-file-input', function () {
-        $(this).next('.custom-file-label').html($(this).val().split('\\').slice(-1)[0]);
+        $(this).closest('.custom-file').find('.custom-file-label').html($(this).val().split('\\').slice(-1)[0]);
       });
     });
 
