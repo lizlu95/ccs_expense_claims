@@ -163,7 +163,6 @@ describe('claims router', function () {
               .expect(302)
               .expect('Location', '/claims/' + nextExpenseClaimId)
               .end(function (err, res) {
-                console.log(res)
                 async.waterfall([
                   function (callback) {
                     ExpenseClaim.findById(nextExpenseClaimId).then((expenseClaim) => {
@@ -331,7 +330,7 @@ describe('claims router', function () {
               description: 'HOTEL (Room only, NO FOOD)',
             },
             receipt: {
-              key: 'users/' + employeeOne.id.toString() + '/flowers.jpg',
+              key: 'users/' + submitter.id.toString() + '/flowers.jpg',
             },
             numKm: 0,
             description: 'My First Expense Claim Item',
@@ -341,15 +340,17 @@ describe('claims router', function () {
         agent
           .post(CLAIMS_LIST_ROUTE)
           .type('form')
-          .send('costCentreNumber', costCentreNumber)
-          .send('bankAccount', bankAccount)
-          .send('companyName', companyName)
-          .send('items[0][receipt][key]', items[0].receipt.key)
-          .send('items[0][date]', items[0].date)
-          .send('items[0][glDescription]', items[0].gl.description)
-          .send('items[0][numKm]', items[0].numKm)
-          .send('items[0][description]', items[0].description)
-          .send('items[0][total]', items[0].total)
+          .send({
+            costCentreNumber: costCentreNumber,
+            bankAccount: bankAccount,
+            companyName: companyName,
+            'items[0][receipt][key]': items[0].receipt.key,
+            'items[0][date]': items[0].date,
+            'items[0][glDescription]': items[0].gl.description,
+            'items[0][numKm]': items[0].numKm,
+            'items[0][description]': items[0].description,
+            'items[0][total]': items[0].total,
+          })
           .expect(302)
           .expect('Location', /claims\//)
           .end((err, res) => {
