@@ -66,7 +66,7 @@ block inner-content
                     | Looks good!
                 .col-md-4
                   label(for='expense-category') Expense Category
-                  select#expense-category.custom-select(v-model='item.glDescription' @change='onGlChange(item, $event)' required)
+                  select#expense-category.custom-select(v-model='item.glDescription' @change='handleGlChange(item, $event)' required)
                     option(value='') Choose..
                     each gl in gls
                       option(value=gl.description)= gl.description
@@ -76,7 +76,7 @@ block inner-content
                     | Looks good!
                 .col-md-2
                   label(for='gl') GL
-                  select#gl.custom-select(:name="'items[' + index + '][glDescription]'" v-model='item.glDescription' @change='onGlChange(item, $event)' required)
+                  select#gl.custom-select(:name="'items[' + index + '][glDescription]'" v-model='item.glDescription' @change='handleGlChange(item, $event)' required)
                     option(value='') Choose..
                     each gl in gls
                       option(value=gl.description)= gl.number
@@ -117,7 +117,7 @@ block inner-content
                       i.fas.fa-check.text-success
                     label(v-show='isItemReceiptStatus(item, "error")')
                       i.fas.fa-exclamation.text-danger
-                  input#receipt-file.form-control.custom-file-input(type='file' @change='onReceiptFileChange(item, $event)' v-on:click='handleReceiptFileClick(item, $event)')
+                  input#receipt-file.form-control.custom-file-input(type='file' @change='handleReceiptFile(item, $event)' v-on:click='handleReceiptFileClick(item, $event)')
                   input#receipt-key.form-control.custom-file-input(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model.number='item.receipt.key')
                   label.custom-file-label(for='receipt-file' v-bind:class='{ "disabled" : isItemReceiptStatus(item, "pending") }') Choose file..
                   .invalid-feedback
@@ -282,7 +282,7 @@ block scripts
             var $receiptEl = $(event.target).closest('.item').find('#receipt-file').first();
             var validityMessage = '';
             if (!item.receipt.lost) {
-              if ($receiptEl[0].files.length === 0 || $receiptEl[0].files[0].size > MB_SIZE_IN_B * 2) {
+              if (!this.isItemReceiptStatus(item, 'success')) {
                 validityMessage = 'No file < 2MB and receipt not lost.';
               }
             }
@@ -314,11 +314,15 @@ block scripts
           var $target = $(event.target);
           var files = $target.prop('files');
           if (!files.length) {
-            this.setItemReceiptStatus(item, 'none');
+            this.setItemReceiptStatus(item);
+
+            this.validateReceipt(item, event);
           } else {
             var file = files[0];
             if (file.size > MB_SIZE_IN_B * 2) {
               this.setItemReceiptStatus(item, 'error');
+
+              this.validateReceipt(item, event);
             } else {
               // TODO disable during processing with a try catch
               this.setItemReceiptStatus(item, 'pending');
@@ -346,25 +350,27 @@ block scripts
                   axios.put(signedUrl, file, s3Options)
                     .then(_.bind(function (res) {
                       this.setItemReceiptStatus(item, 'success', fileKey);
+
+                      this.validateReceipt(item, event);
                     }, this))
                     .catch(_.bind(function (err) {
                       this.setItemReceiptStatus(item, 'error');
+
+                      this.validateReceipt(item, event);
                     }, this));
                 }, this))
                 .catch(_.bind(function (err) {
                   this.setItemReceiptStatus(item, 'error');
+
+                  this.validateReceipt(item, event);
                 }, this));
             }
           }
         },
-        onGlChange: function (item, event) {
+        handleGlChange: function (item, event) {
           this.updateItemTotal(item);
           this.validateReceipt(item, event);
           this.addTooltip(item, event);
-        },
-        onReceiptFileChange: function (item, event) {
-          this.validateReceipt(item, event);
-          this.handleReceiptFile(item, event);
         },
       },
       watch: {
