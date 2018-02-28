@@ -117,7 +117,7 @@ block inner-content
                       i.fas.fa-check.text-success
                     label(v-show='isItemReceiptStatus(item, "error")')
                       i.fas.fa-exclamation.text-danger
-                  input#receipt-file.form-control.custom-file-input(type='file' @change='onReceiptFileChange(item, $event)' :disabled='isItemReceiptStatus(item, "pending")')
+                  input#receipt-file.form-control.custom-file-input(type='file' @change='onReceiptFileChange(item, $event)' v-on:click='handleReceiptFileClick(item, $event)')
                   input#receipt-key.form-control.custom-file-input(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model.number='item.receipt.key')
                   label.custom-file-label(for='receipt-file' v-bind:class='{ "disabled" : isItemReceiptStatus(item, "pending") }') Choose file..
                   .invalid-feedback
@@ -304,6 +304,11 @@ block scripts
         },
         isItemReceiptStatus: function (item, status) {
           return item.receipt.processing === status;
+        },
+        handleReceiptFileClick: function (item, event) {
+          if (this.isItemReceiptStatus(item, 'pending')) {
+            event.preventDefault();
+          }
         },
         handleReceiptFile: function (item, event) {
           var $target = $(event.target);
