@@ -63,3 +63,9 @@ a {
 .custom-file-input:disabled {
   opacity: 0 !important;
 }
+
+.tab-content {
+  &.clickable {
+    cursor: pointer;
+  }
+}
