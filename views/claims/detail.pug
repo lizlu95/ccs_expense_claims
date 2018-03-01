@@ -12,6 +12,13 @@ mixin progressBar(status)
       when 'forwarded'
         .progress-bar.progress-bar-striped.progress-bar-animated.bg-info(role='progressbar' style='width: 75%;' aria-valuenow='Forwarded' aria-valuemin='0' aria-valuemax='100') Forwarded
 
+mixin receiptRow(expenseClaimItem)
+  if (expenseClaimItem.Receipt)
+    td
+      img(src=`https://s3-${s3Region}.amazonaws.com/${s3BucketName}/${expenseClaimItem.Receipt.key}` crossorigin='anonymous')
+  else
+    td
+
 mixin expenseClaimLog(employeeExpenseClaim)
   if employeeExpenseClaim.isOwner
     td #{employeeExpenseClaim.Employee.name} submitted the claim.
@@ -60,17 +67,19 @@ block inner-content
                   th Date
                   th Expense Category
                   th # Km Travelled
+                  th Receipt
                   th GL
                   th Total
               tbody(id='claim-items')
                 each expenseClaimItem in expenseClaim.ExpenseClaimItems
                   tr
-                    td=expenseClaimItem.id
-                    td=expenseClaimItem.createdAt
-                    td=expenseClaimItem.GL.description
-                    td=expenseClaimItem.numKm
-                    td=expenseClaimItem.GL.number
-                    td=expenseClaimItem.total
+                    td= expenseClaimItem.id
+                    td= expenseClaimItem.createdAt
+                    td= expenseClaimItem.GL.description
+                    td= expenseClaimItem.numKm
+                    +receiptRow(expenseClaimItem)
+                    td= expenseClaimItem.GL.number
+                    td= expenseClaimItem.total
   .row.mb-4
     .col-12
       .row.mb-1

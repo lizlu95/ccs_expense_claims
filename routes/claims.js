@@ -7,6 +7,8 @@ const moment = require('moment');
 const sequelize = require('../models/index').sequelize;
 const Op = require('sequelize').Op;
 
+const s3 = require('../s3');
+
 const Notifier = require('../mixins/notifier');
 
 const database = require('../models/index');
@@ -121,6 +123,9 @@ router.get('/:id', function (req, res, next) {
   var expenseClaimId = req.params.id;
 
   res.locals.title = 'Claim ' + expenseClaimId;
+
+  res.locals.s3BucketName = s3.config.params.Bucket;
+  res.locals.s3Region = s3.config.region;
 
   // TODO
   async.waterfall([
