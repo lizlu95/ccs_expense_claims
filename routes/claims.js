@@ -348,4 +348,50 @@ router.post('', multipartMiddleware, function (req, res, next) {
   });
 });
 
+
+router.post('/:id', function (req, res, next) {
+    var expenseClaimId = req.params.id;
+    res.locals.title = 'Claim ' + expenseClaimId;
+    updates(req).then(function () {
+        res.redirect('/claims');
+    });
+});
+
+updates = function (req) {
+    var expenseClaimId = req.params.id;
+    var managerId = req.body.managerId;
+    var status = req.body.approved;
+
+    var newEmployeeExpenseClaim = {
+        //employeeId: , TODO new manager
+        isOwner: false,
+        isActive: true
+    }
+
+    return new Promise(function (fulfill, reject) {
+        let pArr = [];
+        pArr.push(ExpenseClaim.update({
+            status: status
+        }, {
+            where: { id: expenseClaimId }
+        }));
+
+        //TODO changing isActive has bad result
+        // pArr.push(EmployeeExpenseClaim.update({
+        //     isActive: false
+        // }, {
+        //     where: { expenseClaimId: expenseClaimId }
+        // }));
+
+        //TODO uncomment after forward manager found
+        // if (status.equals('forwarded')) {
+        //     pArr.push(EmployeeExpenseClaim.create(newEmployeeExpenseClaim));
+        // }
+
+        Promise.all(pArr).then(function (nothing) {
+            fulfill(nothing);
+        });
+    });
+};
+
 module.exports = router;

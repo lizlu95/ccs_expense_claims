@@ -21,6 +21,16 @@ mixin expenseClaimLog(employeeExpenseClaim)
     else
       td #{employeeExpenseClaim.Employee.name} was assigned to claim.
 
+mixin manageButtons(expenseClaim)
+  .row.mb-4
+    .col-2.mb-3
+      button#approved.btn.btn-primary.btn-lg(type='submit' name='approved' value='approved') Approve
+    .col-2.mb-3
+      button#rejected.btn.btn-primary.btn-lg(type='submit' name='rejected' value='rejected') Reject
+    // TODO when choose forward, give list of possible options
+    .col-2.mb-3
+      button#forwarded.btn.btn-primary.btn-lg(type='submit' name='forwarded' value='forwarded') Forward
+
 block inner-content
   .row.mb-4
     .col-12
@@ -38,13 +48,13 @@ block inner-content
       .row.mb-4
         .col-md-4
           label(for='employee-id') Submitter
-          input#name.form-control(type='text' value=expenseClaim.submitter.name readonly=true)
+          input#employee-id.form-control(type='text' value=employeeId readonly=true)
         .col-md-4
           label(for='approver-id') Approver
-          input#name.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
+          input#approver-id.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
         .col-md-4
           label(for='id') Cost Centre
-          input#name.form-control(type='text' value=expenseClaim.CostCentre.number readonly=true)
+          input#id.form-control(type='text' value=expenseClaim.CostCentre.number readonly=true)
   .row.mb-4
     .col-12
       .row.mb-1
@@ -89,3 +99,7 @@ block inner-content
                   tr
                     +expenseClaimLog(employeeExpenseClaim)
                     td= employeeExpenseClaim.createdAt
+
+  form(method='post', action='/claims/' + expenseClaim.id)
+      +manageButtons(expenseClaim)
+
