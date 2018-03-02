@@ -110,7 +110,7 @@ describe('claims router', function () {
             //   - one item with GL associated with Receipt
             //   - one item with GL associated with numKm
             var costCentreNumber = costCentreOne['number'];
-            var bankAccount = '';
+            var bankNumber = '';
             var companyName = companyOne['name'];
             var items = [
               {
@@ -145,7 +145,7 @@ describe('claims router', function () {
               .type('form')
               .send({
                 costCentreNumber: costCentreNumber,
-                bankAccount: bankAccount,
+                bankNumber: bankNumber,
                 companyName: companyName,
                 'items[0][receipt][key]': items[0].receipt.key,
                 'items[0][date]': items[0].date,
@@ -295,7 +295,7 @@ describe('claims router', function () {
               .type('form')
               .send('items[0][receipt][key]', '')
               .send('costCentreNumber', '0754')
-              .send('bankAccount', '')
+              .send('bankNumber', '')
               .expect(409)
               .end(function (err, res) {
                 callback(err);
@@ -320,7 +320,7 @@ describe('claims router', function () {
     helper.withAuthenticate(agent, [
       (agent, callback) => {
         var costCentreNumber = costCentreOne['number'];
-        var bankAccount = '';
+        var bankNumber = '';
         var companyName = companyOne['name'];
         var items = [
           {
@@ -342,7 +342,7 @@ describe('claims router', function () {
           .type('form')
           .send({
             costCentreNumber: costCentreNumber,
-            bankAccount: bankAccount,
+            bankNumber: bankNumber,
             companyName: companyName,
             'items[0][receipt][key]': items[0].receipt.key,
             'items[0][date]': items[0].date,

@@ -287,7 +287,7 @@ router.post('', function (req, res, next) {
 
         var expenseClaim = {
           status: ExpenseClaim.STATUS.DEFAULT,
-          bankAccount: req.body.bankAccount,
+          bankNumber: req.body.bankNumber,
           costCentreId: costCentre.id,
           companyId: company.id,
           ExpenseClaimItems: expenseClaimItems,

@@ -39,7 +39,7 @@ describe('new claims page', function () {
     browser.visit('/claims/new', () => {
       browser.assert.evaluate('expenseClaimApp;');
       browser.assert.evaluate('expenseClaimApp.costCentreNumber === "";');
-      browser.assert.evaluate('expenseClaimApp.bankAccount === "";');
+      browser.assert.evaluate('expenseClaimApp.bankNumber === "";');
       browser.assert.evaluate('expenseClaimApp.items.length === 1;');
       browser.assert.evaluate('expenseClaimApp.items[0].date === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');

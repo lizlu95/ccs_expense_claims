@@ -40,7 +40,7 @@ block inner-content
               | Looks good!
           .col-md-4
               label(for='bank-account') Bank Account #
-              input#bank-account.form-control(name='bankAccount' placeholder='Leave blank for payroll..' type='text' maxlength='14' minlength='14')
+              input#bank-account.form-control(name='bankNumber' placeholder='Leave blank for payroll..' type='text' maxlength='14' minlength='14' v-model.number='bankNumber')
               .invalid-feedback
                 | Please enter a 14 digit bank account.
               .valid-feedback
@@ -205,7 +205,7 @@ block scripts
       data: {
         previousMileage: parseInt(#{previousMileage}),
         costCentreNumber: '',
-        bankAccount: '',
+        bankNumber: '',
         items: [{
           date: '',
           glDescription: '',
