@@ -10,7 +10,7 @@ mixin progressBar(status)
       when 'rejected'
         .progress-bar.bg-danger(role='progressbar' style='width: 100%;' aria-valuenow='Rejected' aria-valuemin='0' aria-valuemax='100') Rejected
       when 'forwarded'
-        .progress-bar.progress-bar-striped.progress-bar-animated.bg-info(role='progressbar' style='width: 75%;' aria-valuenow='Forwarded' aria-valuemin='0' aria-valuemax='100') Forwarded
+        .progress-bar.progress-bar-striped.bg-info(role='progressbar' style='width: 100%;' aria-valuenow='Forwarded' aria-valuemin='0' aria-valuemax='100') Forwarded
 
 mixin receiptRow(expenseClaimItem)
   if (expenseClaimItem.Receipt && expenseClaimItem.Receipt.key)
