@@ -258,7 +258,7 @@ router.post('', function (req, res, next) {
           total: parseInt(item.total) || 0,
         };
 
-        if (item.receipt.key.length > 0) {
+        if (item.receipt && item.receipt.key.length > 0) {
           _.extend(model, {
             Receipt: {
               key: item.receipt.key,

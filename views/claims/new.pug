@@ -108,7 +108,7 @@ block inner-content
                       | Please enter the # of kilometers travelled.
                     .valid-feedback
                       | Looks good!
-                .col-md-4.upload.custom-file(v-show='!isMileageGlDescription(item.glDescription)')
+                .col-md-4.upload.custom-file(v-if='!isMileageGlDescription(item.glDescription)')
                   .d-flex.justify-content-between.align-items-center
                     label Receipt
                     label(v-show='isItemReceiptStatus(item, "pending")')
