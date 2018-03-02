@@ -13,7 +13,7 @@ mixin progressBar(status)
         .progress-bar.progress-bar-striped.progress-bar-animated.bg-info(role='progressbar' style='width: 75%;' aria-valuenow='Forwarded' aria-valuemin='0' aria-valuemax='100') Forwarded
 
 mixin receiptRow(expenseClaimItem)
-  if (expenseClaimItem.Receipt)
+  if (expenseClaimItem.Receipt && expenseClaimItem.Receipt.key)
     td
       img.img-fluid(src=`https://s3-${s3Region}.amazonaws.com/${s3BucketName}/${expenseClaimItem.Receipt.key}` crossorigin='anonymous')
   else
