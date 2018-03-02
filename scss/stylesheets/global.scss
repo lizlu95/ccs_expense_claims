@@ -66,6 +66,8 @@ a {
 
 .tab-content {
   &.clickable {
-    cursor: pointer;
+    td {
+      cursor: pointer;
+    }
   }
 }
