@@ -164,6 +164,12 @@ router.get('/:id', function (req, res, next) {
               employeeExpenseClaim.isActive;
           }).Employee;
 
+          // mark as forwarded for non-active managers
+          if (expenseClaim.activeManager.id !== req.user.id &&
+              expenseClaim.status === ExpenseClaim.STATUS.PENDING) {
+            expenseClaim.status = ExpenseClaim.STATUS.FORWARDED;
+          }
+
           res.locals.expenseClaim = expenseClaim;
 
           callback(null, expenseClaim);
