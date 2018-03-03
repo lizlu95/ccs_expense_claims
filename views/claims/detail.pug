@@ -15,7 +15,11 @@ mixin progressBar(status)
 mixin receiptRow(expenseClaimItem)
   if (expenseClaimItem.Receipt && expenseClaimItem.Receipt.key)
     td
-      img.img-fluid(src=`https://s3-${s3Region}.amazonaws.com/${s3BucketName}/${expenseClaimItem.Receipt.key}` crossorigin='anonymous')
+      - var resourceUrl = `https://s3-${s3Region}.amazonaws.com/${s3BucketName}/${expenseClaimItem.Receipt.key}`
+      if (expenseClaimItem.Receipt.type === 'application/pdf')
+        iframe(src=`http://docs.google.com/gview?url=${resourceUrl}&embedded=true` style='' frameborder='0')
+      else
+        img.img-fluid(src=resourceUrl crossorigin='anonymous')
   else
     td
 
