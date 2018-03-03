@@ -10,8 +10,7 @@ const Employee = database.Employee;
 
 class Notifier {
   constructor() {
-    // TODO make this system configurable
-    this.fromEmail = process.env.ECA_SMTP_FROM_EMAIL || 'no-reply@ccs-expense-claims.herokuapp.com';
+    this.fromEmail = process.env.ECA_SMTP_FROM_EMAIL;
 
     var isSecure = process.env.ECA_SMTP_SECURE === 'true';
     this.transporter = nodemailer.createTransport({
