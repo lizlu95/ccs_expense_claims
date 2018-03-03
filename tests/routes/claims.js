@@ -121,6 +121,7 @@ describe('claims router', function () {
                 },
                 receipt: {
                   key: 'users/' + employeeOne.id.toString() + '/flowers.jpg',
+                  type: 'image/jpeg',
                 },
                 numKm: 0,
                 description: 'My First Expense Claim Item',
@@ -134,6 +135,7 @@ describe('claims router', function () {
                 },
                 receipt: {
                   key: '',
+                  type: '',
                 },
                 numKm: 100,
                 description: 'My Second Expense Claim Item',
@@ -148,12 +150,14 @@ describe('claims router', function () {
                 bankNumber: bankNumber,
                 companyName: companyName,
                 'items[0][receipt][key]': items[0].receipt.key,
+                'items[0][receipt][type]': items[0].receipt.type,
                 'items[0][date]': items[0].date,
                 'items[0][glDescription]': items[0].gl.description,
                 'items[0][numKm]': items[0].numKm,
                 'items[0][description]': items[0].description,
                 'items[0][total]': items[0].total,
                 'items[1][receipt][key]': items[1].receipt.key,
+                'items[1][receipt][type]': items[0].receipt.type,
                 'items[1][date]': items[1].date,
                 'items[1][glDescription]': items[1].gl.description,
                 'items[1][numKm]': items[1].numKm,
@@ -244,10 +248,11 @@ describe('claims router', function () {
                         receiptExpenseClaimItem.getReceipt().then((receipt) => {
                           if (receipt) {
                             var receiptItem = items[0];
-                            if (receiptItem.receipt.key === receipt.key) {
+                            if (receiptItem.receipt.key === receipt.key &&
+                               receiptItem.receipt.type === receipt.type) {
                               callback(null);
                             } else {
-                              callback('Found receipt item associated with expense claim item with wrong key!');
+                              callback('Found receipt associated with expense claim item with wrong key or content type.');
                             }
                           } else {
                             callback('Did not find associated receipt for expense claim item with receipt!');
@@ -331,6 +336,7 @@ describe('claims router', function () {
             },
             receipt: {
               key: 'users/' + submitter.id.toString() + '/flowers.jpg',
+              type: 'image/jpeg',
             },
             numKm: 0,
             description: 'My First Expense Claim Item',
@@ -345,6 +351,7 @@ describe('claims router', function () {
             bankNumber: bankNumber,
             companyName: companyName,
             'items[0][receipt][key]': items[0].receipt.key,
+            'items[0][receipt][type]': items[0].receipt.type,
             'items[0][date]': items[0].date,
             'items[0][glDescription]': items[0].gl.description,
             'items[0][numKm]': items[0].numKm,

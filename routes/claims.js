@@ -268,6 +268,7 @@ router.post('', function (req, res, next) {
           _.extend(model, {
             Receipt: {
               key: item.receipt.key,
+              type: item.receipt.type,
             },
           });
         };

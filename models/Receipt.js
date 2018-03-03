@@ -5,6 +5,9 @@ module.exports = (sequelize, DataTypes) => {
     key: {
       type: DataTypes.STRING,
     },
+    type: {
+      type: DataTypes.STRING,
+    },
     createdAt: {
       type: DataTypes.DATE,
       field: 'created_at',

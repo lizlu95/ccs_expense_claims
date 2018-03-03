@@ -45,6 +45,8 @@ describe('new claims page', function () {
       browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].numKm === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === "";');
+      browser.assert.evaluate('expenseClaimApp.items[0].receipt.key === "";');
+      browser.assert.evaluate('expenseClaimApp.items[0].receipt.type === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].description === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
 
@@ -589,7 +591,7 @@ describe('new claims page', function () {
     });
   });
 
-  it('expenseClaimApp attaching a file uploads the file and sets the key on receipt', function (done) {
+  it('expenseClaimApp attaching a file uploads the file and sets the key and file type on receipt', function (done) {
     this.timeout(4000);
 
     var signedUrlErrorStub = function (callback) {
@@ -618,6 +620,7 @@ describe('new claims page', function () {
 
             // no key to begin
             browser.assert.evaluate('expenseClaimApp.items[0].receipt.key === "";');
+            browser.assert.evaluate('expenseClaimApp.items[0].receipt.type === "";');
             browser.assert.evaluate('expenseClaimApp.items[0].receipt.processing === "";');
 
             // attaching file successfully assigns key to item
@@ -632,6 +635,7 @@ describe('new claims page', function () {
 
                 if (expectedProcessingStatus === 'success') {
                   browser.assert.evaluate('expenseClaimApp.items[0].receipt.key.length > 0;');
+                  browser.assert.evaluate('expenseClaimApp.items[0].receipt.type === "' + fileContentType + '";');
                 } else {
                   browser.assert.evaluate('expenseClaimApp.items[0].receipt.key.length === 0;');
                 }

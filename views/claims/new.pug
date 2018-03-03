@@ -118,7 +118,8 @@ block inner-content
                     label(v-show='isItemReceiptStatus(item, "error")')
                       i.fas.fa-exclamation.text-danger
                   input#receipt-file.form-control.custom-file-input(type='file' @change='handleReceiptFile(item, $event)' v-on:click='handleReceiptFileClick(item, $event)')
-                  input#receipt-key.form-control.custom-file-input-key(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model.number='item.receipt.key')
+                  input#receipt-key.form-control(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model='item.receipt.key')
+                  input#receipt-type.form-control(:name="'items[' + index + '][receipt][type]'" type='hidden' v-model='item.receipt.type')
                   label.custom-file-label(for='receipt-file' v-bind:class='{ "disabled" : isItemReceiptStatus(item, "pending") }') {{ formatFileKey(item.receipt.key) }}
                   .invalid-feedback
                     | Please upload a receipt < 2MB.
@@ -213,6 +214,7 @@ block scripts
           receipt: {
             amount: '',
             key: '',
+            type: '',
             processing: '',
             lost: false,
           },
@@ -229,6 +231,7 @@ block scripts
             receipt: {
               amount: '',
               key: '',
+              type: '',
               processing: '',
               lost: false,
             },
@@ -285,18 +288,22 @@ block scripts
         formatFileKey: function (key) {
           return key.split('/').pop();
         },
-        setItemReceiptStatus: function (item, status, key) {
+        setItemReceiptStatus: function (item, status, key, type) {
           var processingStatus = '';
           var fileKey = '';
+          var fileType = '';
           if (status === 'error' || status === 'pending') {
             processingStatus = status;
             fileKey = '';
+            fileType = '';
           } else if (status === 'success') {
             processingStatus = status;
             fileKey = key;
+            fileType = type;
           }
           item.receipt.processing = processingStatus;
           item.receipt.key = fileKey;
+          item.receipt.type = fileType;
         },
         isItemReceiptStatus: function (item, status) {
           return item.receipt.processing === status;
@@ -341,11 +348,11 @@ block scripts
                     headers: {
                       'Content-Type': contentType,
                     },
-                   };
+                  };
                   var signedUrl = res.data.signedUrl;
                   axios.put(signedUrl, file, s3Options)
                     .then(_.bind(function (res) {
-                      this.setItemReceiptStatus(item, 'success', fileKey);
+                      this.setItemReceiptStatus(item, 'success', fileKey, contentType);
 
                       this.validateReceipt(item, event);
                     }, this))
