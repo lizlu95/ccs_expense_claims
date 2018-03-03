@@ -34,7 +34,13 @@ describe('notifier tests', function () {
   });
 
   it('notifier class', function (done) {
-    var notifier = new Notifier();
+    var req = {
+      get: function () {
+        return '';
+      },
+      protocol: '',
+    };
+    var notifier = new Notifier(req);
 
     assert(notifier.transporter);
 
@@ -42,7 +48,13 @@ describe('notifier tests', function () {
   });
 
   it('notifyExpenseClaimSubmitted should send emails to approver and sender', (done) => {
-    var notifier = new Notifier();
+    var req = {
+      get: function () {
+        return '';
+      },
+      protocol: '',
+    };
+    var notifier = new Notifier(req);
 
     var submitter = employeeOne;
     var approver = employeeTwo;

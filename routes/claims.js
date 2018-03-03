@@ -314,9 +314,9 @@ router.post('', function (req, res, next) {
             }],
             transaction: t,
           }).then(function (expenseClaim) {
-            var notifier = new Notifier();
+            var notifier = new Notifier(req);
 
-            notifier.notifyExpenseClaimSubmitted(employeeId, managerId)
+            notifier.notifyExpenseClaimSubmitted(employeeId, managerId, expenseClaim.id)
               .then((info) => {
                 callback(null, expenseClaim);
               })
