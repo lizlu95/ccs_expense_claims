@@ -15,7 +15,7 @@ mixin progressBar(status)
 mixin receiptRow(expenseClaimItem)
   if (expenseClaimItem.Receipt && expenseClaimItem.Receipt.key)
     td
-      - var resourceUrl = `https://s3-${s3Region}.amazonaws.com/${s3BucketName}/${expenseClaimItem.Receipt.key}`
+      - var resourceUrl = `https://s3-${s3Region}.amazonaws.com/${s3BucketName}/${encodeURIComponent(expenseClaimItem.Receipt.key)}`
       if (expenseClaimItem.Receipt.type === 'application/pdf')
         iframe(src=`https://docs.google.com/gview?url=${resourceUrl}&embedded=true` style='' frameborder='0')
       else
