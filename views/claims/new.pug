@@ -133,8 +133,10 @@ block inner-content
                   .input-group
                     .input-group-prepend
                       .input-group-text $
-                    input#receipt-amount.form-control(:name="'items[' + index + '][receipt][amount]'" v-model.number='item.receipt.amount' min="0" step="0.01" @input='updateItemTotal(item)' type='number' required='required')
-                    .invalid-feedback
+                    input#receipt-amount.form-control(:name="'items[' + index + '][receipt][amount]'" v-model.number='item.receipt.amount' min='0' step='0.01' :max='item.receipt.maxAmount' @input='updateItemTotal(item)' type='number' required='required')
+                    .invalid-feedback(v-if='isMealGlDescription(item.glDescription)')
+                      | Please enter a receipt amount > $0 and <= $200.
+                    .invalid-feedback(v-else)
                       | Please enter a receipt amount > $0.
                     .valid-feedback
                       | Looks good!
@@ -199,7 +201,11 @@ block scripts
 
   script.
     // TODO make this dynamic from configuration
-    var MILEAGE_GL_DESCRIPTION = "MILEAGE (kilometres traveled using personal vehicle)";
+    var MILEAGE_GL_DESCRIPTION = 'MILEAGE (kilometres traveled using personal vehicle)';
+    var MEAL_GL_DESCRIPTIONS = [
+      'MEALS & ENTERTAINMENT STAFF (Food, beverage)',
+      'MEALS & ENTERTAINMENT PROMO (Food,beverage when entertaining clients)',
+    ];
     var MB_SIZE_IN_B = 1024000;
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
@@ -216,6 +222,7 @@ block scripts
             key: '',
             type: '',
             processing: '',
+            maxAmount: 'infinity',
             lost: false,
           },
           description: '',
@@ -233,6 +240,7 @@ block scripts
               key: '',
               type: '',
               processing: '',
+              maxAmount: 'infinity',
               lost: false,
             },
             description: '',
@@ -271,6 +279,16 @@ block scripts
         },
         isMileageGlDescription(glDescription) {
           return glDescription === MILEAGE_GL_DESCRIPTION;
+        },
+        isMealGlDescription(glDescription) {
+          return _.contains(MEAL_GL_DESCRIPTIONS, glDescription);
+        },
+        updateReceiptMaxAmount: function (item) {
+          var receiptMaxAmount = 'infinity';
+          if (this.isMealGlDescription(item.glDescription)) {
+            receiptMaxAmount = 200;
+          }
+          item.receipt.maxAmount = receiptMaxAmount;
         },
         validateReceipt: function (item, event) {
           // necessary due to Vue Vritual DOM removing validity states
@@ -372,6 +390,7 @@ block scripts
         },
         handleGlChange: function (item, event) {
           this.updateItemTotal(item);
+          this.updateReceiptMaxAmount(item);
           this.validateReceipt(item, event);
           this.addTooltip(item, event);
         },
