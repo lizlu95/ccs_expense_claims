@@ -20,6 +20,7 @@ const CostCentre = database.CostCentre;
 const GL = database.GL;
 const Company = database.Company;
 const Receipt = database.Receipt;
+const Configuration = database.Configuration;
 
 /* GET /claims */
 router.get('', function (req, res, next) {
@@ -105,6 +106,15 @@ router.get('/new', function (req, res, next) {
             description: gl.description,
           };
         });
+
+        callback(null);
+      });
+    },
+    function (callback) {
+      Configuration.findAll().then((configurations) => {
+        res.locals.configurations = _.object(_.map(configurations, (configuration) => {
+          return [configuration.name, configuration.value];
+        }));
 
         callback(null);
       });

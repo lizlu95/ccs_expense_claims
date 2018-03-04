@@ -135,7 +135,7 @@ block inner-content
                       .input-group-text $
                     input#receipt-amount.form-control(:name="'items[' + index + '][receipt][amount]'" v-model.number='item.receipt.amount' min='0' step='0.01' :max='item.receipt.maxAmount' @input='updateItemTotal(item)' type='number' required='required')
                     .invalid-feedback(v-if='isMealGlDescription(item.glDescription)')
-                      | Please enter a receipt amount > $0 and <= $200.
+                      | Please enter a receipt amount > $0 and <= $#{configurations.max_per_meal_amount}.
                     .invalid-feedback(v-else)
                       | Please enter a receipt amount > $0.
                     .valid-feedback
@@ -286,7 +286,7 @@ block scripts
         updateReceiptMaxAmount: function (item) {
           var receiptMaxAmount = 'infinity';
           if (this.isMealGlDescription(item.glDescription)) {
-            receiptMaxAmount = 200;
+            receiptMaxAmount = #{configurations.max_per_meal_amount};
           }
           item.receipt.maxAmount = receiptMaxAmount;
         },
