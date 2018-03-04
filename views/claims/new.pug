@@ -298,13 +298,15 @@ block scripts
           // necessary due to Vue Vritual DOM removing validity states
           this.$nextTick(function () {
             var $receiptEl = $(event.target).closest('.item').find('#receipt-file').first();
-            var validityMessage = '';
-            if (!item.receipt.lost) {
-              if (!this.isItemReceiptStatus(item, 'success')) {
-                validityMessage = 'No file < 2MB and receipt not lost.';
+            if ($receiptEl.length) {
+              var validityMessage = '';
+              if (!item.receipt.lost) {
+                if (!this.isItemReceiptStatus(item, 'success')) {
+                  validityMessage = 'No file < 2MB and receipt not lost.';
+                }
               }
+              $receiptEl[0].setCustomValidity(validityMessage);
             }
-            $receiptEl[0].setCustomValidity(validityMessage);
           });
         },
         formatFileKey: function (key) {
