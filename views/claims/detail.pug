@@ -47,15 +47,19 @@ block inner-content
           label Status
           +progressBar(expenseClaim.status)
       .row.mb-4
-        .col-md-4
+        .col-md-6
           label(for='employee-id') Submitter
           input#name.form-control(type='text' value=expenseClaim.submitter.name readonly=true)
-        .col-md-4
+        .col-md-6
           label(for='approver-id') Approver
           input#name.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
-        .col-md-4
-          label(for='id') Cost Centre
-          input#name.form-control(type='text' value=expenseClaim.CostCentre.number readonly=true)
+      .row
+        .col-md-6
+          label(for='cost-centre-number') Cost Centre
+          input#cost-centre-number.form-control(type='text' value=expenseClaim.CostCentre.number readonly=true)
+        .col-md-6
+          label(for='bank-account-number') Bank Account
+          input#name.form-control(type='text' value=expenseClaim.bankNumber readonly=true)
   .row.mb-4
     .col-12
       .row.mb-1
