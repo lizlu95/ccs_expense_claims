@@ -60,7 +60,6 @@ passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'
   }, function(email, password, done) {
-    // TODO stored procedure
     Employee.findOne({
       where: {
         email: {
