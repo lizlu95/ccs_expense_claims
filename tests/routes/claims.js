@@ -364,10 +364,28 @@ describe('claims router', function () {
             if (err) {
               callback(err);
             } else {
-              assert.isTrue(notifyExpenseClaimSubmittedStub.calledWithExactly(submitter.id, approver.id));
-              assert.isTrue(notifyExpenseClaimSubmittedStub.calledOnce);
+              async.waterfall([
+                (callback) => {
+                  ExpenseClaim.findAll({
+                    limit: 1,
+                    order: [ [ 'id', 'DESC' ] ],
+                  }).then(function (expenseClaims) {
+                    if (!_.isEmpty(expenseClaims)) {
+                      callback(null, expenseClaims[0]);
+                    } else {
+                      callback('Could not find latest expense claim.');
+                    }
+                  });
+                },
+                (expenseClaim, callback) => {
+                  assert.isTrue(notifyExpenseClaimSubmittedStub.calledWithExactly(submitter.id, approver.id, expenseClaim.id));
+                  assert.isTrue(notifyExpenseClaimSubmittedStub.calledOnce);
 
-              callback(null);
+                  callback(null);
+                },
+              ], (err) => {
+                callback(null);
+              });
             }
           });
       },
