@@ -115,6 +115,11 @@ block scripts
         .parent()
         .zoom({
           on: 'grab',
+          callback: function () {
+            $(this).parent().css({
+              'cursor': 'pointer',
+            });
+          },
         });
     });
 
