@@ -67,22 +67,22 @@ describe('new claims page', function () {
 
       async.waterfall([
         (callback) => {
-          // 3439.3 * 0.54 = 1857.222 (round down)
           // wait for DOM to render from v-if
           browser.wait().then(() => {
-            browser.fill('items[0][numKm]', '3439.3');
+            // round down case
+            browser.fill('items[0][numKm]', '1000.323');
             browser.wait().then(() => {
-              browser.assert.evaluate('expenseClaimApp.items[0].total === 1857.22');
+              browser.assert.evaluate('expenseClaimApp.items[0].total === 1000.32');
 
               callback(null);
             });
           });
         },
         (callback) => {
-          // 3439.2 * 0.54 = 1857.168 (round up)
-          browser.fill('items[0][numKm]', '3439.2');
+          // round up case
+          browser.fill('items[0][numKm]', '1000.326');
           browser.wait().then(() => {
-            browser.assert.evaluate('expenseClaimApp.items[0].total === 1857.17');
+            browser.assert.evaluate('expenseClaimApp.items[0].total === 1000.33');
 
             callback(null);
           });

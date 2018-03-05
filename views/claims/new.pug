@@ -176,6 +176,7 @@ block inner-content
                 .input-group-prepend
                   .input-group-text $
                 input#total.form-control(type='number' :value='itemsTotal' readonly=true)
+                input#total-max.form-control(type='hidden' :value='itemsTotal')
         .row
           .col-12
             button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
@@ -200,7 +201,6 @@ block scripts
     })();
 
   script.
-    // TODO make this dynamic from configuration
     var MILEAGE_GL_DESCRIPTION = 'MILEAGE (kilometres traveled using personal vehicle)';
     var MEAL_GL_DESCRIPTIONS = [
       'MEALS & ENTERTAINMENT STAFF (Food, beverage)',
