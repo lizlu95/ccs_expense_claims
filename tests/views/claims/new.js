@@ -7,11 +7,19 @@ const manager = require('../../../seeds/manager');
 const _ = require('underscore');
 const sinon = require('sinon');
 const Promise = require('promise');
+const YAML = require('yamljs');
 
 const s3 = require('../../../s3');
 
 const database = require('../../../models/index');
 const Employee = database.Employee;
+
+const fixturesDirectory = 'fixtures/test/';
+const fixturesRootKey = 'fixtures';
+const fixturesDataKey = 'data';
+const configurationFixtures = YAML.load(fixturesDirectory + 'Configuration.yml')[fixturesRootKey];
+const perMileageValueInitial = configurationFixtures[1][fixturesDataKey];
+const perMileageValueOverflow = configurationFixtures[2][fixturesDataKey];
 
 const CLAIMS_NEW_ROUTE = '/claims/new';
 
@@ -253,7 +261,7 @@ describe('new claims page', function () {
     var mileageAssociatedGlDescription = MILEAGE_GL_DESCRIPTION;
     var nonMileageAssociatedGlDescription = NON_MILEAGE_GL_DESCRIPTION;
     var numKm = 65;
-    var mileageRate = 1;
+    var mileageRate = parseInt(perMileageValueInitial.value);
     var receiptAmount = 93;
 
     browser.visit('/claims/new', () => {
@@ -350,7 +358,7 @@ describe('new claims page', function () {
     var mileageAssociatedGlDescription = 'MILEAGE (kilometres traveled using personal vehicle)';
     var nonMileageAssociatedGlDescription = 'OTHER (Miscellaneous expenses)';
     var numKm = 65;
-    var mileageRate = 1;
+    var mileageRate = parseInt(perMileageValueInitial.value);
     var receiptAmount = 93;
 
     browser.visit('/claims/new', () => {
@@ -447,9 +455,8 @@ describe('new claims page', function () {
     var mileageAssociatedGlDescription = 'MILEAGE (kilometres traveled using personal vehicle)';
     var nonMileageAssociatedGlDescription = 'OTHER (Miscellaneous expenses)';
     var numKm = 100;
-    // TODO dynamic tests from fixtures
-    var mileageRateInitial = 1;
-    var mileageRateOverflow = 2;
+    var mileageRateInitial = parseInt(perMileageValueInitial.value);
+    var mileageRateOverflow = parseInt(perMileageValueOverflow.value);
 
     async.waterfall([
       (callback) => {
