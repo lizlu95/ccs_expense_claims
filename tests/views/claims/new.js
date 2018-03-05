@@ -253,7 +253,7 @@ describe('new claims page', function () {
     var mileageAssociatedGlDescription = MILEAGE_GL_DESCRIPTION;
     var nonMileageAssociatedGlDescription = NON_MILEAGE_GL_DESCRIPTION;
     var numKm = 65;
-    var mileageRate = 0.54;
+    var mileageRate = 1;
     var receiptAmount = 93;
 
     browser.visit('/claims/new', () => {
@@ -350,7 +350,7 @@ describe('new claims page', function () {
     var mileageAssociatedGlDescription = 'MILEAGE (kilometres traveled using personal vehicle)';
     var nonMileageAssociatedGlDescription = 'OTHER (Miscellaneous expenses)';
     var numKm = 65;
-    var mileageRate = 0.54;
+    var mileageRate = 1;
     var receiptAmount = 93;
 
     browser.visit('/claims/new', () => {
