@@ -415,10 +415,12 @@ block scripts
       },
       computed: {
         itemsTotal: function () {
-          return this.items.reduce((acc, item) => acc + item.total, 0);
+          return this.items.reduce(function (acc, item) {
+            return acc + item.total;
+          }, 0);
         },
         carryForwardMileage: function () {
-          return this.previousMileage + this.items.reduce((acc, item) => {
+          return this.previousMileage + this.items.reduce(function (acc, item) {
             var amount;
             if (item.glDescription === MILEAGE_GL_DESCRIPTION) {
               amount = parseInt(item.numKm || 0);
