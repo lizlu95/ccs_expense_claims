@@ -21,14 +21,18 @@ mixin expenseClaimLog(employeeExpenseClaim)
     else
       td #{employeeExpenseClaim.Employee.name} was assigned to claim.
 
-mixin manageButtons(employee)
+mixin updateButtons(employee)
   .row.mb-4
     .col-2.mb-3
-      button#approved.btn.btn-primary.btn-lg(type='submit' name='status' value='approved') Approve
+      button#approved.btn.btn-primary.btn-lg.btn-success(type='submit' name='status' value='approved') Approve
     .col-2.mb-3
-      button#rejected.btn.btn-primary.btn-lg(type='submit' name='status' value='rejected') Reject
+      button#rejected.btn.btn-primary.btn-lg.btn-danger(type='submit' name='status' value='rejected') Reject
     .col-2.mb-3
-      button#forwarded.btn.btn-primary.btn-lg(type='submit' name='status' value='forwarded') Forward
+
+mixin forwardButtons(employee)
+  .row.mb-4
+    .col-2.mb-3
+      button#forwarded.btn.btn-primary.btn-lg.btn-info(type='submit') Forward
 
 
 block inner-content
@@ -101,6 +105,8 @@ block inner-content
                     td= employeeExpenseClaim.createdAt
 
   form(method='post', action='/claims/' + expenseClaim.id)
-      +manageButtons(employee)
+    +updateButtons(employee)
+  form(method='get' action='/claims/' + expenseClaim.id + '/forwardees')
+    +forwardButtons(employee)
 
 

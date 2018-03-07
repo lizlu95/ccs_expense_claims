@@ -349,142 +349,177 @@ router.post('', multipartMiddleware, function (req, res, next) {
 });
 
 /* POST /claims/:id */
+// TODO PUT
 router.post('/:id', function (req, res, next) {
-    var expenseClaimId = req.params.id;
-    res.locals.title = 'Claim ' + expenseClaimId;
-    // TODO make it a transaction then notify
-    var status = req.body.status;
-    var forw = req.body.sub;
+  var expenseClaimId = req.params.id;
+  // TODO make it a transaction then notify
+  var status = req.body.status;
 
-    if (status != 'forwarded') {
-      return new Promise(function (fulfill, reject) {
-        let pArr = [];
-        //if (status != 'forwarded') {
-            pArr.push(ExpenseClaim.update({
-                status: status
-            }, {
-                where: {
-                    id: {[Op.eq]: expenseClaimId}
-                }
-            }));
+  res.locals.title = 'Claim ' + expenseClaimId;
 
+  var updateAttributes = {};
+  if (!_.isUndefined(status)) {
+    updateAttributes['status'] = status;
+  };
 
-        Promise.all(pArr).then(function (nothing) {
-            fulfill(nothing);
-        });
-      }).then(function () {
-          res.redirect('/claims');
-      });
-    }
-    else {
-        res.locals.title = 'Forwardees';
+  new Promise(function (fulfill, reject) {
+    let pArr = [];
+    pArr.push(ExpenseClaim.update(updateAttributes, {
+      where: {
+        id: {
+          [Op.eq]: expenseClaimId
+        }
+      }
+    }));
 
-        let forwardees = [];
-        findManagers(req).then(function (result) {
-
-            for (let r of result) {
-                forwardees.push(r.dataValues.employeeId);
-            }
-            res.locals.forwardeesid = forwardees;
-            res.render('claims/forwardees', {forwardeesid: forwardees, ecid: expenseClaimId});
-            }
-        ).then(function () {
-            if (forw) {
-                var newEmployeeExpenseClaim = {
-                    employeeId: req.body.forwardee,
-                    expenseClaimId: expenseClaimId,
-                    isOwner: false,
-                    isActive: true
-                }
-
-                return new Promise(function (fulfill, reject) {
-                    let pArr = [];
-
-                    //TODO uncomment after forward manager found
-                    // pArr.push(EmployeeExpenseClaim.update({
-                    //     isActive: false
-                    // }, {
-                    //     where: {
-                    //         expenseClaimId: { [Op.eq]: expenseClaimId },
-                    //         isOwner: { [Op.eq]: false }
-                    //     }
-                    // }));
-                    pArr.push(EmployeeExpenseClaim.create(newEmployeeExpenseClaim));
-
-                    Promise.all(pArr).then(function (nothing) {
-                        res.redirect('');
-                        fulfill(nothing);
-                    });
-                });
-            }
-        });
-    }
-
-
-
+    Promise.all(pArr).then(function (nothing) {
+      fulfill(nothing);
+    });
+  }).then(function () {
+    res.redirect('/claims/' + expenseClaimId);
+  });
 });
 
-findManagers = function (req) {
-    var expenseClaimId = req.params.id;
-    var total = 0;
-    //var abc;
-    return new Promise(function (fulfill, reject) {
-        ExpenseClaim.findOne({
-            where: {
-                id: {
-                    [Op.eq]: expenseClaimId
-                }
+router.post('/:id/forward', function (req, res, next) {
+  var expenseClaimId = req.params.id;
+
+  async.waterfall([
+    (callback) => {
+      // only transact if current manager is removed and new manager is added
+      sequelize.transaction(function (t) {
+        return EmployeeExpenseClaim.update({
+          isActive: false,
+        }, {
+          where: {
+            expenseClaimId: {
+              [Op.eq]: expenseClaimId,
+            },
+            isOwner: {
+              [Op.eq]: 0,
+            },
+            isActive: {
+              [Op.eq]: 1,
+            },
+          },
+          transaction: t,
+        }).then(function (employeeExpenseClaim) {
+          var newEmployeeExpenseClaim = {
+            employeeId: req.body.forwardee,
+            expenseClaimId: expenseClaimId,
+            isOwner: false,
+            isActive: true,
+          };
+          return EmployeeExpenseClaim.create(newEmployeeExpenseClaim, {
+            transaction: t,
+          });
+        }).then(function (employeeExpenseClaim) {
+          var notifier = new Notifier(req);
+
+          // TODO notify
+        //  notifier.notifyExpenseClaimSubmitted(employeeId, managerId)
+        //    .then((info) => {
+        //      callback(null, expenseClaim);
+        //    })
+        //    .catch((err) => {
+        //      // TODO flash message forward based on err
+        //      callback(null, expenseClaim);
+        //    });
+          // TODO remove line below once notify
+          callback(null);
+        }).catch(function(err) {
+          callback(err);
+        });
+      });
+    },
+  ], (err) => {
+    if (err) {
+      err = {
+        message: 'Failed to create expense claim!',
+        status: 409,
+      };
+
+      next(err);
+    } else {
+      res.redirect('/claims/' + expenseClaimId);
+    }
+  });
+});
+
+/* GET /claims/:id/forwardees */
+router.get('/:id/forwardees', function (req, res, next) {
+  var expenseClaimId = req.params.id;
+  res.locals.title = 'Claim ' + expenseClaimId.toString() + ' Forwardees';
+
+  findForwardees(expenseClaimId).then(function (forwardees) {
+    let forwardeeIds = [];
+    for (let forwardee of forwardees) {
+      forwardeeIds.push(forwardee.employeeId);
+    }
+    res.locals.forwardeeIds = forwardeeIds;
+    res.locals.expenseClaimId = expenseClaimId;
+
+    res.render('claims/forwardees');
+  });
+});
+
+var findForwardees = function (expenseClaimId) {
+  var total = 0;
+  return new Promise(function (fulfill, reject) {
+    ExpenseClaim.findOne({
+      where: {
+        id: {
+          [Op.eq]: expenseClaimId
+        }
+      }
+    }).then(function (result) {
+      ExpenseClaimItem.findAll(
+        {
+          where: {
+            expenseClaimId: {
+              [Op.eq]: expenseClaimId
             }
-        }).then(function (result) {
-
-            ExpenseClaimItem.findAll(
-                {
-                    where: {
-                        expenseClaimId: { [Op.eq]: expenseClaimId }
-                    }
-                }
-            ).then(function (items) {
-                for (var expenseClaimItem of items) {
-                    total += expenseClaimItem.total;
-                }
-                ApprovalLimit.findAll(
-                    {
-                        where: {
-                            costCentreId: {
-                                [Op.eq]: result.costCentreId
-                            },
-                            limit: {
-                                [Op.gte]: total
-                            }
-                        }
-                    }
-                ).then(function (value) {
-                    //console.log(value);
-                    fulfill(value);
-                })
-            })
-
-
-        })/*.then(function (abc) {
-            console.log(abc)
-            console.log("here ")
-            ApprovalLimit.findAll(
-                {
-                    where: {
-                        costCentreId: {
-                            [Op.eq]: abc.costCentreId
-                        },
-                        limit: {
-                            [Op.gte]: total
-                        }
-                    }
-                }
-            ).then(function (value) {
-                //console.log(value);
-                fulfill(value);
-            })
-        })*/;
-    })
-}
+          }
+        }
+      ).then(function (items) {
+        for (var expenseClaimItem of items) {
+          total += expenseClaimItem.total;
+        }
+        ApprovalLimit.findAll(
+          {
+            where: {
+              costCentreId: {
+                [Op.eq]: result.costCentreId
+              },
+              limit: {
+                [Op.gte]: total
+              }
+            }
+          }
+        ).then(function (value) {
+          fulfill(value);
+        });
+      });
+    });
+    /*.then(function (abc) {
+      console.log(abc)
+      console.log("here ")
+      ApprovalLimit.findAll(
+      {
+      where: {
+      costCentreId: {
+      [Op.eq]: abc.costCentreId
+      },
+      limit: {
+      [Op.gte]: total
+      }
+      }
+      }
+      ).then(function (value) {
+      //console.log(value);
+      fulfill(value);
+      })
+      })*/;
+  });
+};
 
 module.exports = router;
