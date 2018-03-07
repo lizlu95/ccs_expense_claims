@@ -281,10 +281,10 @@ block scripts
             });
           }
         },
-        isMileageGlDescription(glDescription) {
+        isMileageGlDescription: function (glDescription) {
           return glDescription === MILEAGE_GL_DESCRIPTION;
         },
-        isMealGlDescription(glDescription) {
+        isMealGlDescription: function (glDescription) {
           return _.contains(MEAL_GL_DESCRIPTIONS, glDescription);
         },
         updateReceiptMaxAmount: function (item) {
