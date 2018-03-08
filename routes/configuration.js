@@ -5,116 +5,109 @@ const Configuration = models.Configuration;
 const Employee = models.Employee;
 
 /* add more if want add more column of table into PUG */
-const SettingKeysOnPug = ['name', 'value'];
-const UserKeysOnPug = ['id', 'email', 'name', 'updated_at'];
+const Setting_Keys_Pug = ['name', 'value'];
+const User_Keys_Pug = ['id', 'email', 'name'];
 
-const NAME = 'newSettingsValue';
-const AdminArrName = 'admin_employee_ids';
+const NEW_SETTING_VALUE_NAME_JS = 'newSettingsValue';
+const Admin_Arr_Name_MYSQL = 'admin_employee_ids';
 
-const MAXLimit = 100;
-const MINLimit = 0;
+// const MAX_LIMIT = 100;
+// const MIN_LIMIT = 0;
 
 /* GET /system/configuration
    read data from database */
-let settings;
-let users;
-let admins;
-let notAdmins;
+let settings, users, selectedIDs, adminArr;
 router.get('/', function (req, res, next) {
     getValues().then(function (result) {
-        // console.log(result);
         res.locals.title = 'System Configuration';
         res.render('admin/sysConfig',
             {
-                settingsPug: settings,
-                newSettingValuePug: NAME,
-                usersPug: users,
-                adminsPug: admins,
-                notAdminsPug: notAdmins
+                settingsPug: result.settings,
+                newSettingValuePug: NEW_SETTING_VALUE_NAME_JS,
+                usersPug: result.selectedUsers,
+                maxPug: MAX_LIMIT,
+                minPug: MIN_LIMIT
             }
-        )
+        );
     }).catch(function (error) {
-        // console.log(error);
-        res.render('error')
+        next(error)
     })
 });
 
 getValues = function () {
-
-    getValue = function (configuration, arr) {
-
-        isBelongArr2 = function (arr1, arr2) {
-            let boolean = true;
-            for (let x of arr1) {
-                if (!arr2.includes(x)) {
-                    boolean = false;
+    return new Promise(function (fulfill, reject) {
+        if (typeof selectedIDs === 'undefined') {
+            Configuration.findAll().then(function (configurations) {
+                settings = [];
+                for (let configuration of configurations) {
+                    if (!isAdminArr(configuration)) {
+                        settings.push(getValue(configuration, Setting_Keys_Pug))
+                    } else {
+                        Employee.findAll().then(function (employees) {
+                            users = [];
+                            selectedIDs = [];
+                            adminArr = JSON.parse(configuration.dataValues.value);
+                            for (let employee of employees) {
+                                let user = getValue(employee, User_Keys_Pug);
+                                let id = user.id;
+                                user.isAdmin = adminArr.includes(id);
+                                users.push(user);
+                                selectedIDs.push(id);
+                            }
+                            fulfill({
+                                settings: settings,
+                                selectedUsers: users
+                            })
+                        }).catch(function (error) {
+                            reject(error)
+                        })
+                    }
+                }
+            }).catch(function (error) {
+                reject(error)
+            })
+        } else {
+            let selectedUsers = [];
+            for (let x of users) {
+                if (selectedIDs.includes(x.id)) {
+                    selectedUsers.push(x);
                 }
             }
-            return boolean;
-        };
-
-        let result = {};
-        for (let x of arr) {
-            if (isBelongArr2(arr, SettingKeysOnPug)) {
-                result[x] = configuration.dataValues.json[x]
-            } else if (isBelongArr2(arr, UserKeysOnPug)) {
-                result[x] = configuration.dataValues[x]
-            }
-        }
-        return result;
-    };
-
-    isAdminArr = function (configuration) {
-        return configuration.dataValues.json.name === AdminArrName
-    };
-
-    return new Promise(function (fulfill, reject) {
-        settings = [];
-        users = [];
-        admins = [];
-        notAdmins = [];
-        Configuration.findAll().then(function (configurations) {
-            for (let configuration of configurations) {
-                if (!isAdminArr(configuration)) {
-                    settings.push(getValue(configuration, SettingKeysOnPug))
-                } else {
-                    Employee.findAll().then(function (employees) {
-                        for (let employee of employees) {
-                            let user = getValue(employee, UserKeysOnPug);
-                            let adminArr = JSON.parse(configuration.dataValues.json.value);
-                            let isAdmin = adminArr.includes(user.id);
-                            user.isAdmin = isAdmin;
-                            users.push(user);
-                            if (isAdmin) {
-                                admins.push(user)
-                            } else {
-                                notAdmins.push(user)
-                            }
-                        }
-                        fulfill({
-                            settings: settings,
-                            users: users,
-                            admins: admins,
-                            notAdmins: notAdmins
-                        })
+            Configuration.findAll().then(function (configurations) {
+                settings = [];
+                for (let configuration of configurations) {
+                    if (!isAdminArr(configuration)) {
+                        settings.push(getValue(configuration, Setting_Keys_Pug))
+                    }
+                    fulfill({
+                        settings: settings,
+                        selectedUsers: selectedUsers
                     })
                 }
-            }
-        }).catch(function (error) {
-            reject(error)
-        })
+            }).catch(function (error) {
+                reject(error)
+            })
+        }
     })
+};
+getValue = function (data, arr) {
+    let result = {};
+    for (let x of arr) {
+        result[x] = data.dataValues[x]
+    }
+    return result
+};
+isAdminArr = function (configuration) {
+    return configuration.dataValues.name === Admin_Arr_Name_MYSQL
 };
 
 /* POST /system/configuration/settings
    update database */
 router.post('/settings', function (req, res, next) {
-    updateSettings(req).then(function (result) {
-        // console.log(result);
+    updateSettings(req).then(function () {
         res.redirect('/system/configuration')
     }).catch(function (error) {
-        // console.log(error);
-        res.redirect('/system/configuration')
+        next(error)
     })
 });
 
@@ -122,15 +115,14 @@ router.post('/settings', function (req, res, next) {
 updateSettings = function (req) {
     return new Promise(function (fulfill, reject) {
         let pArr = [];
-        let newValue = req.body[NAME];
-        /* kArr = ['max_per_diem_amount', 'newSettingsValue', 'KM_rates_less_than_5000', 'KM_rates_great_than_5000', 'per_mileage_value', 'max_per_meal_amount'] */
+        let newValue = req.body[NEW_SETTING_VALUE_NAME_JS];
         let kArr = Object.keys(req.body);
-        let index = kArr.indexOf(NAME);    // <-- Not supported in <IE9
+        let index = kArr.indexOf(NEW_SETTING_VALUE_NAME_JS);
         if (index !== -1) {
             kArr.splice(index, 1);
         }
-        /* kArr = ['max_per_diem_amount', 'KM_rates_less_than_5000', 'KM_rates_great_than_5000', 'per_mileage_value', 'max_per_meal_amount'] */
         for (let x in kArr) {
+            settings[kArr[x]] = newValue[x];
             pArr.push(updateSetting(kArr[x], newValue[x]));
         }
         Promise.all(pArr).then(function (result) {
@@ -145,32 +137,161 @@ updateSettings = function (req) {
 updateSetting = function (name, value) {
     let promise;
     if (value === '') {
-        // no change request for these configuration
-        promise = new Promise(function (fulfill, reject) {
+        /* no change request for these configuration */
+        promise = new Promise(function (fulfill) {
             fulfill(name + ' does not change')
         })
-    } else if (value >= MINLimit && value <= MAXLimit) {
-        /*  one change request and input is valid
+    } else {
+        /*  one change request
             Configurations.update return a promise */
         promise = Configuration.update({
-            json: {
-                name: name,
-                value: value
-            }
+            name: name,
+            value: value
         }, {
             where: {
-                json: {
-                    name: name
-                }
+                name: name
             }
-        })
-    } else {
-        /* one change request but input is invalid because over limit */
-        promise = new Promise(function (fulfill, reject) {
-            reject(name + ': ' + value + ' is invalid [' + MINLimit + '<=' + name + '<=' + MAXLimit + ']')
         })
     }
     return promise
+};
+
+/* POST /system/configuration/settings
+   update database */
+router.post('/users', function (req, res, next) {
+    updateUser(req).then(function () {
+        res.redirect('/system/configuration')
+    }).catch(function (error) {
+        next(error)
+    })
+});
+updateUser = function (req) {
+    return new Promise(function (fulfill, reject) {
+        let body = req.body;
+        let bodyArr = Object.keys(body);
+        if (bodyArr.includes('all')) {
+            selectedIDs = [];
+            for (let x of users) {
+                selectedIDs.push(x.id)
+            }
+            fulfill(selectedIDs)
+        } else if (bodyArr.includes('admin')) {
+            selectedIDs = adminArr;
+            fulfill(selectedIDs)
+        } else if (bodyArr.includes('notAdmin')) {
+            selectedIDs = [];
+            for (let x of users) {
+                let id = x.id;
+                if (!adminArr.includes(id)) {
+                    selectedIDs.push(id)
+                }
+            }
+            fulfill(selectedIDs)
+        } else if (bodyArr.includes('move')) {
+            let numAdmin = 0;
+            let numNotAdmin = 0;
+            let moveArr = [];
+            for (let x of bodyArr) {
+                if (body[x] === 'on') {
+                    let index = Number(x);
+                    if (adminArr.includes(index)) {
+                        moveArr.push(index);
+                        numAdmin++
+                    } else {
+                        numNotAdmin++
+                    }
+                }
+            }
+            if (numNotAdmin === 0 && numAdmin > 0) {
+                for (let x of moveArr) {
+                    let index = adminArr.indexOf(x);
+                    if (index !== -1) {
+                        adminArr.splice(index, 1);
+                    }
+                }
+                adminArr = '[' + adminArr.toString() + ']';
+                Configuration.update({
+                    name: Admin_Arr_Name_MYSQL,
+                    value: adminArr
+                }, {
+                    where: {
+                        name: Admin_Arr_Name_MYSQL
+                    }
+                }).then(function () {
+                    Configuration.findAll().then(function (configurations) {
+                        for (let configuration of configurations) {
+                            if (isAdminArr(configuration)) {
+                                adminArr = JSON.parse(configuration.dataValues.value);
+                                for (let x of users) {
+                                    x.isAdmin = adminArr.includes(x.id)
+                                }
+                                fulfill(selectedIDs)
+                            }
+                        }
+                    }).catch(function (error) {
+                        reject(error)
+                    })
+                })
+            } else {
+                fulfill(selectedIDs)
+            }
+        } else if (bodyArr.includes('add')) {
+            let numAdmin = 0;
+            let numNotAdmin = 0;
+            let addArr = [];
+            for (let x of bodyArr) {
+                if (body[x] === 'on') {
+                    let index = Number(x);
+                    if (!adminArr.includes(index)) {
+                        addArr.push(index);
+                        numNotAdmin++
+                    } else {
+                        numAdmin++
+                    }
+                }
+            }
+            if (numNotAdmin > 0 && numAdmin === 0) {
+                for (let x of addArr) {
+                    adminArr.push(x);
+                }
+                adminArr = '[' + adminArr.toString() + ']';
+                Configuration.update({
+                    name: Admin_Arr_Name_MYSQL,
+                    value: adminArr
+                }, {
+                    where: {
+                        name: Admin_Arr_Name_MYSQL
+                    }
+                }).then(function (result) {
+                    Configuration.findAll().then(function (configurations) {
+                        for (let configuration of configurations) {
+                            if (isAdminArr(configuration)) {
+                                adminArr = JSON.parse(configuration.dataValues.value);
+                                for (let x of users) {
+                                    x.isAdmin = adminArr.includes(x.id)
+                                }
+                                fulfill(selectedIDs)
+                            }
+                        }
+                    }).catch(function (error) {
+                        reject(error)
+                    })
+                })
+            } else {
+                fulfill(selectedIDs)
+            }
+        } else if (bodyArr.includes('find')) {
+            let idArr = JSON.parse('[' + body.filter + ']');
+            selectedIDs = [];
+            for (let x of users) {
+                let id = x.id;
+                if (idArr.includes(id)) {
+                    selectedIDs.push(id);
+                }
+            }
+            fulfill(selectedIDs)
+        }
+    })
 };
 
 module.exports = router;

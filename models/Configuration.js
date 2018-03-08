@@ -1,7 +1,8 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
     var Configuration = sequelize.define('Configuration', {
-        json: DataTypes.JSON
+        name: DataTypes.STRING,
+        value: DataTypes.STRING
     }, {
         underscored: true,
         tableName: 'configurations',

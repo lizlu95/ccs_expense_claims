@@ -15,6 +15,7 @@ block inner-content
         .col-3.mb-3
           input#settingValue.form-control(type='number' name=setting.name value=setting.value readonly=true)
         .col-3.mb-3
+          //input#newsettingValue.form-control(type='number' name=newSettingValuePug min=minPug max=maxPug)
           input#newsettingValue.form-control(type='number' name=newSettingValuePug)
     .row
       .col-2.mb-3
@@ -22,72 +23,36 @@ block inner-content
   h2 User
   .row.mb-3
     .col-md-12.col-lg-12
-      ul.nav.nav-tabs
-        li.nav-item
-          a(class='nav-link active' href='#user' id='all-tab' data-toggle='tab' aria-controls='home' aria-expanded='true') All
-        li.nav-item
-          a(class='nav-link' href='#admin' id='admin-tab' data-toggle='tab') Admin
-        li.nav-item
-          a(class='nav-link' href='#not_admin' id='not_admin-tab' data-toggle='tab') Not Admin
-      div.tab-content
-        div.tab-pane.show.active(id='user')
-          .table-responsive
-            table(class='table table-striped table-hover' cellpadding='5')
-              thead
-                tr
-                  th Employee ID
-                  th Email
-                  th Name
-                  th Update Date
-                  th User Type
-              tbody
-                -
-                each user in usersPug
+      form(method='post', action='/system/configuration/users')
+        .row
+          button(type='submit' name='all') All
+          button(type='submit' name='admin') Admin
+          button(type='submit' name='notAdmin') Not Admin
+          input(type='text' name='filter' placeholder='id1,id2,id3...')
+          button(type='submit' name='find') Find
+        .row
+          button(type='submit' name='move') Move
+          button(type='submit' name='add') Add
+        div.tab-content
+          div.tab-pane.show.active(id='user')
+            .table-responsive
+              table(class='table table-striped table-hover' cellpadding='5')
+                thead
                   tr
-                    td #{user.id}
-                    td #{user.email}
-                    td #{user.name}
-                    td #{user.updated_at}
-                    if user.isAdmin
-                      td.bg-success Admin
-                    else
-                      td.bg-warning Not Admin
-                    td
-        div.tab-pane(id='admin')
-          .table-responsive
-            table(class='table table-striped table-hover' cellpadding='5')
-              thead
-                tr
-                  th Employee ID
-                  th Email
-                  th Name
-                  th Update Date
-                  th User Type
-              tbody
-                -
-                each admin in adminsPug
-                  tr
-                    td #{admin.id}
-                    td #{admin.email}
-                    td #{admin.name}
-                    td #{admin.updated_at}
-                    td.bg-success Admin
-        div.tab-pane(id='not_admin')
-          .table-responsive
-            table(class='table table-striped table-hover' cellpadding='5')
-              thead
-                tr
-                  th Employee ID
-                  th Email
-                  th Name
-                  th Update Date
-                  th User Type
-              tbody
-                -
-                each notAdmin in notAdminsPug
-                  tr
-                    td #{notAdmin.id}
-                    td #{notAdmin.email}
-                    td #{notAdmin.name}
-                    td #{notAdmin.updated_at}
-                    td.bg-warning Not Admin
+                    th Employee ID
+                    th Email
+                    th Name
+                    th User Type
+                tbody
+                  -
+                  each user in usersPug
+                    tr
+                      td
+                        input(type='checkbox' name=user.id)
+                        |   #{user.id}
+                      td #{user.email}
+                      td #{user.name}
+                      if user.isAdmin
+                        td.bg-success Admin
+                      else
+                        td.bg-warning Not Admin

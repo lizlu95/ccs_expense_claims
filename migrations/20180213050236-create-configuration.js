@@ -9,8 +9,11 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            json: {
-                type: Sequelize.JSON
+            name: {
+                type: Sequelize.STRING
+            },
+            value: {
+                type: Sequelize.STRING
             },
             createdAt: {
                 allowNull: false,
