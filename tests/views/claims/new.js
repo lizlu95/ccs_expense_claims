@@ -5,9 +5,21 @@ require('../../../index');
 const async = require('async');
 const manager = require('../../../seeds/manager');
 const _ = require('underscore');
+const sinon = require('sinon');
+const Promise = require('promise');
+const YAML = require('yamljs');
+
+const s3 = require('../../../s3');
 
 const database = require('../../../models/index');
 const Employee = database.Employee;
+
+const fixturesDirectory = 'fixtures/test/';
+const fixturesRootKey = 'fixtures';
+const fixturesDataKey = 'data';
+const configurationFixtures = YAML.load(fixturesDirectory + 'Configuration.yml')[fixturesRootKey];
+const perMileageValueInitial = configurationFixtures[1][fixturesDataKey];
+const perMileageValueOverflow = configurationFixtures[2][fixturesDataKey];
 
 const CLAIMS_NEW_ROUTE = '/claims/new';
 
@@ -35,12 +47,14 @@ describe('new claims page', function () {
     browser.visit('/claims/new', () => {
       browser.assert.evaluate('expenseClaimApp;');
       browser.assert.evaluate('expenseClaimApp.costCentreNumber === "";');
-      browser.assert.evaluate('expenseClaimApp.bankAccount === "";');
+      browser.assert.evaluate('expenseClaimApp.bankNumber === "";');
       browser.assert.evaluate('expenseClaimApp.items.length === 1;');
       browser.assert.evaluate('expenseClaimApp.items[0].date === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].glDescription === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].numKm === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].receipt.amount === "";');
+      browser.assert.evaluate('expenseClaimApp.items[0].receipt.key === "";');
+      browser.assert.evaluate('expenseClaimApp.items[0].receipt.type === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].description === "";');
       browser.assert.evaluate('expenseClaimApp.items[0].total === 0;');
 
@@ -61,22 +75,22 @@ describe('new claims page', function () {
 
       async.waterfall([
         (callback) => {
-          // 3439.3 * 0.54 = 1857.222 (round down)
           // wait for DOM to render from v-if
           browser.wait().then(() => {
-            browser.fill('items[0][numKm]', '3439.3');
+            // round down case
+            browser.fill('items[0][numKm]', '1000.323');
             browser.wait().then(() => {
-              browser.assert.evaluate('expenseClaimApp.items[0].total === 1857.22');
+              browser.assert.evaluate('expenseClaimApp.items[0].total === 1000.32');
 
               callback(null);
             });
           });
         },
         (callback) => {
-          // 3439.2 * 0.54 = 1857.168 (round up)
-          browser.fill('items[0][numKm]', '3439.2');
+          // round up case
+          browser.fill('items[0][numKm]', '1000.326');
           browser.wait().then(() => {
-            browser.assert.evaluate('expenseClaimApp.items[0].total === 1857.17');
+            browser.assert.evaluate('expenseClaimApp.items[0].total === 1000.33');
 
             callback(null);
           });
@@ -247,7 +261,7 @@ describe('new claims page', function () {
     var mileageAssociatedGlDescription = MILEAGE_GL_DESCRIPTION;
     var nonMileageAssociatedGlDescription = NON_MILEAGE_GL_DESCRIPTION;
     var numKm = 65;
-    var mileageRate = 0.54;
+    var mileageRate = parseInt(perMileageValueInitial.value);
     var receiptAmount = 93;
 
     browser.visit('/claims/new', () => {
@@ -344,7 +358,7 @@ describe('new claims page', function () {
     var mileageAssociatedGlDescription = 'MILEAGE (kilometres traveled using personal vehicle)';
     var nonMileageAssociatedGlDescription = 'OTHER (Miscellaneous expenses)';
     var numKm = 65;
-    var mileageRate = 0.54;
+    var mileageRate = parseInt(perMileageValueInitial.value);
     var receiptAmount = 93;
 
     browser.visit('/claims/new', () => {
@@ -441,9 +455,8 @@ describe('new claims page', function () {
     var mileageAssociatedGlDescription = 'MILEAGE (kilometres traveled using personal vehicle)';
     var nonMileageAssociatedGlDescription = 'OTHER (Miscellaneous expenses)';
     var numKm = 100;
-    // TODO dynamic tests from fixtures
-    var mileageRateInitial = 0.54;
-    var mileageRateOverflow = 0.48;
+    var mileageRateInitial = parseInt(perMileageValueInitial.value);
+    var mileageRateOverflow = parseInt(perMileageValueOverflow.value);
 
     async.waterfall([
       (callback) => {
@@ -582,6 +595,72 @@ describe('new claims page', function () {
       },
     ], () => {
       done();
+    });
+  });
+
+  it('expenseClaimApp attaching a file uploads the file and sets the key and file type on receipt', function (done) {
+    this.timeout(4000);
+
+    var signedUrlErrorStub = function (callback) {
+      sinon.stub(s3, 'getSignedUrlPromise').returns(Promise.reject('error'));
+
+      callback(null);
+    };
+
+    var fileName = 'flowers.jpg';
+    var fileKey = 'users/1/' + fileName;
+    var fileContentType = 'image/jpeg';
+
+    async.eachSeries([[null, 'success'], [signedUrlErrorStub, 'error']], (options, callback) => {
+      browser.visit('/claims/new', () => {
+        async.waterfall([
+          (callback) => {
+            var fn = options[0];
+            if (fn) {
+              fn(callback);
+            } else {
+              callback(null);
+            }
+          },
+          (callback) => {
+            var expectedProcessingStatus = options[1];
+
+            // no key to begin
+            browser.assert.evaluate('expenseClaimApp.items[0].receipt.key === "";');
+            browser.assert.evaluate('expenseClaimApp.items[0].receipt.type === "";');
+            browser.assert.evaluate('expenseClaimApp.items[0].receipt.processing === "";');
+
+            // attaching file successfully assigns key to item
+            browser.attach('#receipt-file', 'fixtures/files/' + fileName);
+            browser.wait(1000).then(() => {
+              browser.wait(() => {
+                return browser.evaluate('expenseClaimApp.items[0].receipt.processing !== "";') &&
+                  browser.evaluate('expenseClaimApp.items[0].receipt.processing !== "pending";');
+              }, () => {
+                // done processing
+                browser.assert.evaluate('expenseClaimApp.items[0].receipt.processing === "' + expectedProcessingStatus + '";');
+
+                if (expectedProcessingStatus === 'success') {
+                  browser.assert.evaluate('expenseClaimApp.items[0].receipt.key.length > 0;');
+                  browser.assert.evaluate('expenseClaimApp.items[0].receipt.type === "' + fileContentType + '";');
+                } else {
+                  browser.assert.evaluate('expenseClaimApp.items[0].receipt.key.length === 0;');
+                }
+
+                callback(null);
+              });
+            });
+          },
+        ], (err) => {
+          callback(err);
+        });
+      });
+    }, (err) => {
+      if (err) {
+        done(err);
+      } else {
+        done();
+      }
     });
   });
 });

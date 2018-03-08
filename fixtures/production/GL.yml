@@ -38,7 +38,7 @@ fixtures:
   - model: GL
     data:
       number: 633510
-      description: MEALS & ENTERTAINMENT PROMO(Food,beverage when entertaining clients)
+      description: MEALS & ENTERTAINMENT PROMO (Food,beverage when entertaining clients)
   - model: GL
     data:
       number: 633600

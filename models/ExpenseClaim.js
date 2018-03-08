@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       field: 'company_id',
     },
+    bankNumber: {
+      type: DataTypes.INTEGER,
+      field: 'bank_number',
+    },
     createdAt: {
       type: DataTypes.DATE,
       field: 'created_at',

@@ -33,6 +33,7 @@ A web application to track internal expense claims for Coast Capital Savings Cre
     $ export ECA_SMTP_SECURE=true
     $ export ECA_SMTP_USERNAME=username
     $ export ECA_SMTP_PASSWORD=password
+    $ export ECA_SMTP_FROM_EMAIL=email@email.com
     $ export ECA_AWS_ACCESS_KEY_ID=id
     $ export ECA_AWS_SECRET_ACCESS_KEY=key
     $ export ECA_AWS_S3_BUCKET_NAME=expense-claim-app

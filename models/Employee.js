@@ -67,7 +67,6 @@ module.exports = (sequelize, DataTypes) => {
         var expenseClaimIds = _.map(expenseClaims, (expenseClaim) => {
           return expenseClaim.id;
         });
-
         return models.ExpenseClaim.findAll({
           where: {
             id: {
@@ -96,10 +95,11 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     Employee.prototype.getManagedExpenseClaims = function () {
+      var that = this;
       return this.getExpenseClaims({
         where: {
           '$EmployeeExpenseClaims.employee_id$': {
-            [Op.eq]: this.id,
+            [Op.eq]: that.id,
           },
           '$EmployeeExpenseClaims.is_owner$': {
             [Op.eq]: 0,
@@ -116,7 +116,6 @@ module.exports = (sequelize, DataTypes) => {
         var expenseClaimIds = _.map(expenseClaims, (expenseClaim) => {
           return expenseClaim.id;
         });
-
         return models.ExpenseClaim.findAll({
           where: {
             id: {
@@ -137,6 +136,15 @@ module.exports = (sequelize, DataTypes) => {
             });
 
             expenseClaim.submitter = submitterEmployeeExpenseClaim.Employee;
+
+            // if not active then mark as forwarded regardless of current status
+            var currentEmployeeExpenseClaim = _.filter(expenseClaim.EmployeeExpenseClaims, (employeeExpenseClaim) => {
+              return employeeExpenseClaim.employeeId === that.id;
+            }).pop();
+
+            if (!currentEmployeeExpenseClaim.isActive) {
+              expenseClaim.status = models.ExpenseClaim.STATUS.FORWARDED;
+            };
           });
 
           return expenseClaims;

@@ -19,8 +19,11 @@ const fixturesDirectory = 'fixtures/test/';
 const fixturesRootKey = 'fixtures';
 const fixturesDataKey = 'data';
 const employeeFixtures = YAML.load(fixturesDirectory + 'Employee.yml')[fixturesRootKey];
+const expenseClaimFixtures = YAML.load(fixturesDirectory + 'ExpenseClaim.yml')[fixturesRootKey];
 const employeeOne = employeeFixtures[0][fixturesDataKey];
 const employeeTwo = employeeFixtures[1][fixturesDataKey];
+const expenseClaimOne = employeeFixtures[0][fixturesDataKey];
+
 
 const Notifier = rewire('../../mixins/notifier');
 
@@ -34,7 +37,13 @@ describe('notifier tests', function () {
   });
 
   it('notifier class', function (done) {
-    var notifier = new Notifier();
+    var req = {
+      get: function () {
+        return '';
+      },
+      protocol: '',
+    };
+    var notifier = new Notifier(req);
 
     assert(notifier.transporter);
 
@@ -42,19 +51,36 @@ describe('notifier tests', function () {
   });
 
   it('notifyExpenseClaimSubmitted should send emails to approver and sender', (done) => {
-    var notifier = new Notifier();
+    var req = {
+      get: function () {
+        return '';
+      },
+      protocol: '',
+    };
+    var notifier = new Notifier(req);
 
     var submitter = employeeOne;
     var approver = employeeTwo;
     assert.isTrue(employeeOne.managerId === employeeTwo.id);
+    var expenseClaim = expenseClaimOne;
 
     var submitterTo = submitter.name + '<' + submitter.email + '>';
     var submitterSubject = 'Expense Claim Approval Submitted';
-    var submitterMessage = 'Hello, please find your submitted request link below.';
+    var submitterMessage = 'Hello, please find your submitted request at ' +
+        req.protocol +
+        '://' +
+        req.get('host') +
+        '/claims/' +
+        expenseClaim.id;
 
     var approverTo = approver.name + '<' + approver.email + '>';
     var approverSubject = 'Expense Claim Approval Requested';
-    var approverMessage = 'Hello, please find the attached link below.';
+    var approverMessage = 'Hello, your review has been requested for the expense claim at ' +
+        req.protocol +
+        '://' +
+        req.get('host') +
+        '/claims/' +
+        expenseClaim.id;
 
     var _notifyStub = sinon.stub().returns(Promise.resolve('info'));
     var _notifyOriginal = Notifier.__set__('_notify', _notifyStub);
@@ -69,7 +95,7 @@ describe('notifier tests', function () {
       approverSubject,
       approverMessage,
     ];
-    notifier.notifyExpenseClaimSubmitted(submitter.id, approver.id).then(() => {
+    notifier.notifyExpenseClaimSubmitted(submitter.id, approver.id, expenseClaim.id).then(() => {
       _.each([submitterNotifyExpenseClaimSubmittedArgs, approverNotifyExpenseClaimSubmittedArgs], (args) => {
         assert.isTrue(_notifyStub.calledWithExactly.apply(_notifyStub, args));
       });
