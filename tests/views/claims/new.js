@@ -31,7 +31,7 @@ var browser = new Browser();
 browser.silent = true;
 
 describe('new claims page', function () {
-  this.timeout(3000);
+  this.timeout(9000);
 
   before((done) => {
     manager.load(() => {
@@ -599,8 +599,6 @@ describe('new claims page', function () {
   });
 
   it('expenseClaimApp attaching a file uploads the file and sets the key and file type on receipt', function (done) {
-    this.timeout(4000);
-
     var signedUrlErrorStub = function (callback) {
       sinon.stub(s3, 'getSignedUrlPromise').returns(Promise.reject('error'));
 
