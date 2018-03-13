@@ -38,6 +38,6 @@ describe('system configuration page', function () {
     });
 
     it('/system/configuration/settings POST routes', function (done) {
-        //
+        done()
     });
 });
