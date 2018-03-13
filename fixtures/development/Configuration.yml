@@ -18,4 +18,4 @@ fixtures:
   - model: Configuration
     data:
       name: admin_employee_ids
-      value: "[1,3,5]"
+      value: "[]"

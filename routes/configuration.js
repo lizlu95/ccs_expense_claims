@@ -11,12 +11,10 @@ const User_Keys_Pug = ['id', 'email', 'name'];
 const NEW_SETTING_VALUE_NAME_JS = 'newSettingsValue';
 const Admin_Arr_Name_MYSQL = 'admin_employee_ids';
 
-// const MAX_LIMIT = 100;
-// const MIN_LIMIT = 0;
+let settings, users, selectedIDs, adminArr, selectedUsers;
 
 /* GET /system/configuration
    read data from database */
-let settings, users, selectedIDs, adminArr;
 router.get('/', function (req, res, next) {
     getValues().then(function (result) {
         res.locals.title = 'System Configuration';
@@ -25,8 +23,8 @@ router.get('/', function (req, res, next) {
                 settingsPug: result.settings,
                 newSettingValuePug: NEW_SETTING_VALUE_NAME_JS,
                 usersPug: result.selectedUsers,
-                maxPug: MAX_LIMIT,
-                minPug: MIN_LIMIT
+                // maxPug: MAX_LIMIT,
+                // minPug: MIN_LIMIT
             }
         );
     }).catch(function (error) {
@@ -67,29 +65,20 @@ getValues = function () {
                 reject(error)
             })
         } else {
-            let selectedUsers = [];
+            selectedUsers = [];
             for (let x of users) {
                 if (selectedIDs.includes(x.id)) {
                     selectedUsers.push(x);
                 }
             }
-            Configuration.findAll().then(function (configurations) {
-                settings = [];
-                for (let configuration of configurations) {
-                    if (!isAdminArr(configuration)) {
-                        settings.push(getValue(configuration, Setting_Keys_Pug))
-                    }
-                    fulfill({
-                        settings: settings,
-                        selectedUsers: selectedUsers
-                    })
-                }
-            }).catch(function (error) {
-                reject(error)
+            fulfill({
+                settings: settings,
+                selectedUsers: selectedUsers
             })
         }
     })
 };
+
 getValue = function (data, arr) {
     let result = {};
     for (let x of arr) {
@@ -97,6 +86,7 @@ getValue = function (data, arr) {
     }
     return result
 };
+
 isAdminArr = function (configuration) {
     return configuration.dataValues.name === Admin_Arr_Name_MYSQL
 };
@@ -122,11 +112,10 @@ updateSettings = function (req) {
             kArr.splice(index, 1);
         }
         for (let x in kArr) {
-            settings[kArr[x]] = newValue[x];
-            pArr.push(updateSetting(kArr[x], newValue[x]));
+            pArr.push(updateSetting(x, kArr[x], newValue[x]));
         }
-        Promise.all(pArr).then(function (result) {
-            fulfill(result)
+        Promise.all(pArr).then(function () {
+            fulfill();
         }).catch(function (error) {
             reject(error)
         })
@@ -134,7 +123,7 @@ updateSettings = function (req) {
 };
 
 /* update value for one system configuration */
-updateSetting = function (name, value) {
+updateSetting = function (index, name, value) {
     let promise;
     if (value === '') {
         /* no change request for these configuration */
@@ -153,6 +142,11 @@ updateSetting = function (name, value) {
             }
         })
     }
+    promise.then(function (result) {
+        if (typeof result === 'object') {
+            settings[index].value = value;
+        }
+    });
     return promise
 };
 
@@ -165,133 +159,139 @@ router.post('/users', function (req, res, next) {
         next(error)
     })
 });
+
 updateUser = function (req) {
-    return new Promise(function (fulfill, reject) {
-        let body = req.body;
-        let bodyArr = Object.keys(body);
-        if (bodyArr.includes('all')) {
-            selectedIDs = [];
-            for (let x of users) {
-                selectedIDs.push(x.id)
+    let promise;
+    let body = req.body;
+    let bodyArr = Object.keys(body);
+    if (bodyArr.includes('all')) {
+        selectedIDs = [];
+        for (let x of users) {
+            selectedIDs.push(x.id)
+        }
+        promise = new Promise(function (fulfill) {
+            fulfill('All')
+        })
+    } else if (bodyArr.includes('admin')) {
+        selectedIDs = [];
+        for (let x of adminArr) {
+            selectedIDs.push(x)
+        }
+        promise = new Promise(function (fulfill) {
+            fulfill('Admin')
+        })
+    } else if (bodyArr.includes('notAdmin')) {
+        selectedIDs = [];
+        for (let x of users) {
+            let id = x.id;
+            if (!adminArr.includes(id)) {
+                selectedIDs.push(id)
             }
-            fulfill(selectedIDs)
-        } else if (bodyArr.includes('admin')) {
-            selectedIDs = adminArr;
-            fulfill(selectedIDs)
-        } else if (bodyArr.includes('notAdmin')) {
-            selectedIDs = [];
-            for (let x of users) {
-                let id = x.id;
-                if (!adminArr.includes(id)) {
-                    selectedIDs.push(id)
+        }
+        promise = new Promise(function (fulfill) {
+            fulfill('Not Admin')
+        })
+    } else if (bodyArr.includes('move')) {
+        let numAdmin = 0;
+        let numNotAdmin = 0;
+        let moveArr = [];
+        let notMoveArr = [];
+        for (let x of bodyArr) {
+            if (body[x] === 'on') {
+                let index = Number(x);
+                if (adminArr.includes(index)) {
+                    moveArr.push(index);
+                    numAdmin++
+                } else {
+                    notMoveArr.push(index);
+                    numNotAdmin++
                 }
             }
-            fulfill(selectedIDs)
-        } else if (bodyArr.includes('move')) {
-            let numAdmin = 0;
-            let numNotAdmin = 0;
-            let moveArr = [];
-            for (let x of bodyArr) {
-                if (body[x] === 'on') {
-                    let index = Number(x);
-                    if (adminArr.includes(index)) {
-                        moveArr.push(index);
-                        numAdmin++
-                    } else {
-                        numNotAdmin++
-                    }
+        }
+        if (numNotAdmin === 0 && numAdmin > 0) {
+            for (let x of moveArr) {
+                let index = adminArr.indexOf(x);
+                if (index !== -1) {
+                    adminArr.splice(index, 1);
                 }
             }
-            if (numNotAdmin === 0 && numAdmin > 0) {
-                for (let x of moveArr) {
-                    let index = adminArr.indexOf(x);
-                    if (index !== -1) {
-                        adminArr.splice(index, 1);
-                    }
+            let adminArrStr = '[' + adminArr.toString() + ']';
+            promise = Configuration.update({
+                name: Admin_Arr_Name_MYSQL,
+                value: adminArrStr
+            }, {
+                where: {
+                    name: Admin_Arr_Name_MYSQL
                 }
-                adminArr = '[' + adminArr.toString() + ']';
-                Configuration.update({
-                    name: Admin_Arr_Name_MYSQL,
-                    value: adminArr
-                }, {
-                    where: {
-                        name: Admin_Arr_Name_MYSQL
-                    }
-                }).then(function () {
-                    Configuration.findAll().then(function (configurations) {
-                        for (let configuration of configurations) {
-                            if (isAdminArr(configuration)) {
-                                adminArr = JSON.parse(configuration.dataValues.value);
-                                for (let x of users) {
-                                    x.isAdmin = adminArr.includes(x.id)
-                                }
-                                fulfill(selectedIDs)
-                            }
-                        }
-                    }).catch(function (error) {
-                        reject(error)
-                    })
-                })
-            } else {
-                fulfill(selectedIDs)
-            }
-        } else if (bodyArr.includes('add')) {
-            let numAdmin = 0;
-            let numNotAdmin = 0;
-            let addArr = [];
-            for (let x of bodyArr) {
-                if (body[x] === 'on') {
-                    let index = Number(x);
-                    if (!adminArr.includes(index)) {
-                        addArr.push(index);
-                        numNotAdmin++
-                    } else {
-                        numAdmin++
-                    }
+            })
+        } else {
+            promise = new Promise(function (fulfill) {
+                fulfill('Move: ' + notMoveArr.toString()  + ' is Not Admin already')
+            })
+        }
+    } else if (bodyArr.includes('add')) {
+        let numAdmin = 0;
+        let numNotAdmin = 0;
+        let addArr = [];
+        let notAddArr = [];
+        for (let x of bodyArr) {
+            if (body[x] === 'on') {
+                let index = Number(x);
+                if (!adminArr.includes(index)) {
+                    addArr.push(index);
+                    numNotAdmin++
+                } else {
+                    notAddArr.push(index);
+                    numAdmin++
                 }
             }
-            if (numNotAdmin > 0 && numAdmin === 0) {
-                for (let x of addArr) {
-                    adminArr.push(x);
-                }
-                adminArr = '[' + adminArr.toString() + ']';
-                Configuration.update({
-                    name: Admin_Arr_Name_MYSQL,
-                    value: adminArr
-                }, {
-                    where: {
-                        name: Admin_Arr_Name_MYSQL
-                    }
-                }).then(function (result) {
-                    Configuration.findAll().then(function (configurations) {
-                        for (let configuration of configurations) {
-                            if (isAdminArr(configuration)) {
-                                adminArr = JSON.parse(configuration.dataValues.value);
-                                for (let x of users) {
-                                    x.isAdmin = adminArr.includes(x.id)
-                                }
-                                fulfill(selectedIDs)
-                            }
-                        }
-                    }).catch(function (error) {
-                        reject(error)
-                    })
-                })
-            } else {
-                fulfill(selectedIDs)
+        }
+        if (numNotAdmin > 0 && numAdmin === 0) {
+            for (let x of addArr) {
+                adminArr.push(x);
             }
-        } else if (bodyArr.includes('find')) {
+            let adminArrStr = '[' + adminArr.toString() + ']';
+            promise = Configuration.update({
+                name: Admin_Arr_Name_MYSQL,
+                value: adminArrStr
+            }, {
+                where: {
+                    name: Admin_Arr_Name_MYSQL
+                }
+            })
+        } else {
+            promise = new Promise(function (fulfill) {
+                fulfill('Add: ' + notAddArr.toString() + ' is Admin already')
+            })
+        }
+    } else if (bodyArr.includes('find')) {
+        try {
             let idArr = JSON.parse('[' + body.filter + ']');
             selectedIDs = [];
             for (let x of users) {
                 let id = x.id;
                 if (idArr.includes(id)) {
-                    selectedIDs.push(id);
+                    selectedIDs.push(id)
                 }
             }
-            fulfill(selectedIDs)
+            promise = new Promise(function (fulfill) {
+                fulfill('Find: ' + idArr.toString())
+            })
+        } catch (error) {
+            promise = new Promise(function (fulfill) {
+                fulfill('Find: ' + body.filter + 'is not valid')
+            })
         }
-    })
+    }
+    promise.then(function (result) {
+        if (typeof result === 'object') {
+            // mean the database is update, so users need update
+            for (let x of users) {
+                x.isAdmin = adminArr.includes(x.id)
+            }
+        }
+    });
+    return promise
 };
 
 module.exports = router;
