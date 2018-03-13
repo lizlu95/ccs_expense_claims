@@ -33,11 +33,16 @@ module.exports = (sequelize, DataTypes) => {
 
   EmployeeExpenseClaim.associate = function (models) {
     EmployeeExpenseClaim.Employee = EmployeeExpenseClaim.belongsTo(models.Employee, {
-      foreign_key: 'employee_id',
+      foreignKey: 'employee_id',
     });
 
     EmployeeExpenseClaim.ExpenseClaim = EmployeeExpenseClaim.belongsTo(models.ExpenseClaim, {
-      foreign_key: 'expense_claim_id',
+      foreignKey: 'expense_claim_id',
+    });
+
+    EmployeeExpenseClaim.EmployeeExpenseClaims = EmployeeExpenseClaim.hasMany(models.EmployeeExpenseClaim, {
+      foreignKey: 'expense_claim_id',
+      targetKey: 'expense_claim_id',
     });
   };
 
