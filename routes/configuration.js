@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const models = require('../models/index');
-const Configuration = models.Configuration;
-const Employee = models.Employee;
+const database = require('../models/index');
+const Configuration = database.Configuration;
+const Employee = database.Employee;
 
 /* add more if want add more column of table into PUG */
 const Setting_Keys_Pug = ['name', 'value'];
