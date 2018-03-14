@@ -13,5 +13,13 @@ fixtures:
       value: 2
   - model: Configuration
     data:
-      name: max_per_meal_amount
+      name: KM_rates_great_than_5000
       value: 3
+  - model: Configuration
+    data:
+      name: per_mileage_value
+      value: 5
+  - model: Configuration
+    data:
+      name: admin_employee_ids
+      value: "[]"
