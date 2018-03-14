@@ -6,6 +6,10 @@ fixtures:
       password: password
       name: One One
       managerId: 2
+<<<<<<< HEAD
+=======
+#      isAdmin: 0
+>>>>>>> show_all_data
   - model: Employee
     data:
       id: 2
@@ -13,6 +17,10 @@ fixtures:
       password: password
       name: Two Two
       managerId: null
+<<<<<<< HEAD
+=======
+#      isAdmin: 1
+>>>>>>> show_all_data
   - model: Employee
     data:
       id: 3
@@ -20,3 +28,7 @@ fixtures:
       password: password
       name: Three Three
       managerId: 2
+<<<<<<< HEAD
+=======
+#      isAdmin: 1
+>>>>>>> show_all_data
