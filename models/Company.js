@@ -1,11 +1,8 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-  var Receipt = sequelize.define('Receipt', {
-    key: {
-      type: DataTypes.STRING,
-    },
-    type: {
+  var Company = sequelize.define('Company', {
+    name: {
       type: DataTypes.STRING,
     },
     createdAt: {
@@ -18,12 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     underscored: true,
-    tableName: 'receipts',
+    tableName: 'companies',
   });
 
-  Receipt.associate = function (models) {
-    Receipt.ExpenseClaimItems = Receipt.hasMany(models.ExpenseClaimItem);
+  Company.associate = function (models) {
+    Company.ExpenseClaimItem = Company.hasMany(models.ExpenseClaim);
   };
 
-  return Receipt;
+  return Company;
 };

@@ -10,13 +10,13 @@
     "db:seed": "node seeds/seed.js",
     "test": "PORT=9000 NODE_ENV=test nyc --reporter=text-summary mocha --exit --recursive tests",
     "coverage": "nyc report --reporter=text-summary",
-    "heroku-postbuild": "node seeds/seed.js"
+    "heroku-postbuild": "npm run db:migrate; npm run db:seed"
   },
   "dependencies": {
     "async": "^2.6.0",
+    "aws-sdk": "^2.202.0",
     "body-parser": "~1.18.2",
     "connect-flash": "^0.1.1",
-    "connect-multiparty": "^2.1.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.15.5",
@@ -25,6 +25,7 @@
     "morgan": "~1.9.0",
     "mysql2": "^1.5.1",
     "node-sass-middleware": "^0.11.0",
+    "nodemailer": "^4.5.0",
     "nyc": "^11.4.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
@@ -42,6 +43,8 @@
     "chai": "^4.1.2",
     "mocha": "^5.0.0",
     "nodemon": "^1.15.0",
+    "rewire": "^3.0.2",
+    "sinon": "^4.3.0",
     "supertest": "^3.0.0",
     "zombie": "^5.0.7"
   },

@@ -42,4 +42,31 @@ describe('login page', function () {
       },
     ], done);
   });
+
+  it('/logging in after attempting to access page other than homepage redirects to that page after successful login', (done) => {
+    var agent = request.agent(app);
+
+    var initialUrl = '/claims/new';
+
+    async.waterfall([
+      (callback) => {
+        agent
+          .get(initialUrl)
+          .expect(302)
+          .expect('Location', '/login')
+          .end((err, res) => {
+            callback(null);
+          });
+      },
+      (callback) => {
+        helper.authenticate(agent, callback, initialUrl);
+      },
+    ], (err) => {
+      if (err) {
+        done(err);
+      } else {
+        done();
+      }
+    });
+  });
 });

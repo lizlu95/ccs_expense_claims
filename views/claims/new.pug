@@ -4,138 +4,182 @@ block inner-content
   .row.mb-5
     .col-12.text-center
       h1 New Claim
-  .row.mb-5
-    form.needs-validation.col-12(enctype='multipart/form-data' novalidate action='/claims' method='POST')
-      .row.mb-1
-        .col-12
-          h2 Information
-      .row.mb-3
-        .col-md-6
-          label(for='employee-name') Name
-          input#employee-name.form-control(type='text' value='Liz Lu' readonly=true)
-        .col-md-6
-          label(for='employee-id') Employee ID
-          input#employee-id.form-control(type='number' value='12345678' readonly=true)
-      .row
-        .col-md-6
-          label(for='cost-centre') Cost Centre
-          select#cost-centre.custom-select(name='costCentreNumber' required)
-            each costCentre in costCentres
-              option(value= costCentre)= costCentre
-          .invalid-feedback
-            | Please select a valid cost centre.
-          .valid-feedback
-            | Looks good!
-        .col-md-6
-            label(for='bank-account') Bank Account #
-            input#bank-account.form-control(name='bankAccount' placeholder='Leave blank for payroll..' type='text' maxlength='14' minlength='14')
+  form.needs-validation(novalidate action='/claims' method='POST')
+    .row.mb-5
+      .col-12
+        .row.mb-1
+          .col-12
+            h2 Information
+        .row.mb-3
+          .col-md-6
+            label(for='employee-name') Name
+            input#employee-name.form-control(type='text' value=employeeName readonly=true)
+          .col-md-6
+            label(for='employee-id') Employee ID
+            input#employee-id.form-control(type='number' value=employeeId readonly=true)
+        .row
+          .col-md-4
+            label(for='company-name') Company
+            select#company-name.custom-select(name='companyName' required)
+              option(value='') Choose..
+              each companyName in companyNames
+                option(value= companyName)= companyName
             .invalid-feedback
-              | Please enter a 14 digit bank account.
+              | Please select a valid company.
             .valid-feedback
               | Looks good!
-  .row.mb-5
-    .col-12
-      .row.mb-1
-        .col-12
-          h2 Items
-      .row
-        .col-12
-          div.item(v-for="(item, index) in items")
-            .row
-              .col-md-1
-                span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
-              .col-md-4
-                label(for='date') Date
-                input.date.form-control(name='items[0][date]' type='date' value='' required)
-                .invalid-feedback
-                  | Please enter a valid date.
-                .valid-feedback
-                  | Looks good!
-              .col-md-4
-                label(for='expense-category') Expense Category
-                select.expense-category.custom-select(required)
-                  option Choose...
-                  option(value= 'gas') AUTO GAS (Community or Facilities employees only)
-                  option(value= 'repairs') AUTO REPAIRS (Community or Facilities employees only)
-                  option(value= 'books') BOOKS & SUBSCRIPTIONS (Newspaper, magazine, website subscription)
-                  option(value= 'conference') CONFERENCE FEE (Registration, travel, & hotel relating to conference)
-                  option(value= 'customer') DELIGHT THE CUSTOMER (For customer benefit only)
-                  option(value= 'fun') FUND FOR FUN
-                  option(value= 'golf') GOLF (For business development and relationship building, NO FOOD)
-                  option(value= 'hotel') HOTEL (Room only, NO FOOD)
-                  option(value= 'staff') MEALS & ENTERTAINMENT STAFF (Food, beverage)
-                  option(value= 'promo') MEALS & ENTERTAINMENT PROMO(Food,beverage when entertaining clients)
-                  option(value= 'meeting') MEETINGS (Room/equipment rental for business meetings, NO FOOD)
-                  option(value= 'mileage') MILEAGE (kilometres traveled using personal vehicle)
-                  option(value= 'other') OTHER (Miscellaneous expenses)
-                  option(value= 'parking') PARKING (Hourly, daily, monthly parking cost)
-                  option(value= 'dues') PERSONAL/PROF DUES, MBERSHP
-                  option(value= 'prizes') PRIZES
-                  option(value= 'tel') TELEPHONE (Telephone, cell, pager, internet stick)
-                  option(value= 'travel') TRAVEL (Hotel, ferry, taxi, parking, mileage)
-                .invalid-feedback
-                  | Please select an expense category.
-                .valid-feedback
-                  | Looks good!
-              .col-md-2
-                label(for='gl') GL
-                select#gl.custom-select(name='items[0][glId]' required)
-                  option Choose...
-                  option(value=2302) 633710
-                .invalid-feedback
-                  | Please select a valid GL.
-                .valid-feedback
-                  | Looks good!
-              .col-md-1.text-right
-                span#remove-item.btn.badge.badge-danger.badge-pill.badge-lg(v-if="index !== 0" @click="items.splice(index, 1)") -
-            .row.mb-3
-              .col-md-12
-                label(for='description') Description
-                input#description.form-control(name='[0][description]' type='text' value='' size='70' required)
-                .invalid-feedback
-                  | Please enter a description.
-                .valid-feedback
-                  | Looks good!
-            .row.mb-5
-              .col-md-7
-                .d-flex.justify-content-between.align-items-center
-                  label(for='num-km') # Km Travelled
-                  span.badge.badge-secondary.badge-sm.num-km-info(data-toggle="tooltip" data-placement="top" title="" data-original-title="$0.54 < 5000Km, $0.48 > 5000Km") ?
-                input.num-km.form-control(name='items[0][numKm]' type='number' value='' required)
-                .invalid-feedback
-                  | Please enter the # of kilometers travelled.
-                .valid-feedback
-                  | Looks good!
-              .col-md-12.upload(style="display:none;")
-                  label(class='custom-file-label' for='receipt') Choose file..
-                  input.receipt.form-control(name='items[0][receipt]' class='custom-file-input' value='' type='file')
-              .col-md-5
-                label(for='total') Total
-                input.total.form-control(name='items[0][total]' type='number' value='' readonly=true)
-      .row
-        .col-12
-          button#add-item.btn.btn-warning.btn-block.btn-lg(type="button" @click="items.push({ date: null })") Add Item
-  .row.mb-1.mb-5
-    .col-12.text-center
-      .d-flex.justify-content-between.align-items-center.mb-3
-        h2.mb-0 Summary
-        span.badge.badge-success.badge-pill.badge-lg {{ items.length }}
-      .row.mb-3
-        .col-md-6
-          label(for='previous-total-mileage') Previous Total Mileage
-          input#previous-total-mileage.form-control(type='number' value='104' readonly=true)
-        .col-md-6
-          label(for='carry-mileage') Carry Forward Mileage
-          input#carry-mileage.form-control(type='number' value='104' readonly=true)
-      .row.mb-5
-        .col-12
-          hr
-          div
-            label(for='total') Total
-            input#total.form-control(type='number' value='100' readonly=true)
-      .row
-        .col-12
-          button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
+          .col-md-4
+            label(for='cost-centre') Cost Centre
+            select#cost-centre.custom-select(name='costCentreNumber' required)
+              option(value='') Choose..
+              each costCentre in costCentres
+                option(value= costCentre)= costCentre
+            .invalid-feedback
+              | Please select a valid cost centre.
+            .valid-feedback
+              | Looks good!
+          .col-md-4
+              label(for='bank-account') Bank Account #
+              input#bank-account.form-control(name='bankNumber' placeholder='Leave blank for payroll..' type='text' maxlength='14' minlength='14' v-model.number='bankNumber')
+              .invalid-feedback
+                | Please enter a 14 digit bank account.
+              .valid-feedback
+                | Looks good!
+    .row.mb-5
+      .col-12
+        .row.mb-1
+          .col-12
+            h2 Items
+        .row
+          .col-12
+            div.item(v-for='(item, index) in items')
+              hr.my-5(v-show='index !== 0 && items.length > 1')
+              .row
+                .col-md-1
+                  span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
+                .col-md-4
+                  label(for='date') Date
+                  input.date.form-control(:name="'items[' + index + '][date]'" type='date' v-model='item.date' value='' required)
+                  .invalid-feedback
+                    | Please enter a valid date.
+                  .valid-feedback
+                    | Looks good!
+                .col-md-4
+                  label(for='expense-category') Expense Category
+                  select#expense-category.custom-select(v-model='item.glDescription' @change='handleGlChange(item, $event)' required)
+                    option(value='') Choose..
+                    each gl in gls
+                      option(value=gl.description)= gl.description
+                  .invalid-feedback
+                    | Please select an expense category.
+                  .valid-feedback
+                    | Looks good!
+                .col-md-2
+                  label(for='gl') GL
+                  select#gl.custom-select(:name="'items[' + index + '][glDescription]'" v-model='item.glDescription' @change='handleGlChange(item, $event)' required)
+                    option(value='') Choose..
+                    each gl in gls
+                      option(value=gl.description)= gl.number
+                  .invalid-feedback
+                    | Please select a valid GL.
+                  .valid-feedback
+                    | Looks good!
+                .col-md-1.text-right
+                  span#remove-item.btn.badge.badge-danger.badge-pill.badge-lg(v-show='index !== 0' @click='items.splice(index, 1)') -
+              .row.mb-3
+                .col-md-12
+                  label(for='description') Description
+                  input#description.form-control(:name="'items[' + index + '][description]'" type='text' value='' v-model='item.description' size='70' required)
+                  .invalid-feedback
+                    | Please enter a description.
+                  .valid-feedback
+                    | Looks good!
+              .row.mb-4
+                .col-md-8(v-if='isMileageGlDescription(item.glDescription)')
+                  .d-flex.justify-content-between.align-items-center
+                    label(for='num-km') # km Travelled
+                    // TODO make this dynamic based on configuration values
+                    span.badge.badge-secondary.badge-sm.num-km-info(data-toggle='tooltip' data-placement='top' title='' data-original-title=`$${configurations.per_mileage_value_initial} < 5000km, $${configurations.per_mileage_value_overflow} > 5000km`) ?
+                  .input-group
+                    input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm' min="0" step="0.01" @input='updateItemTotal(item)' required='required')
+                    .input-group-append
+                      .input-group-text km
+                    .invalid-feedback
+                      | Please enter the # of kilometers travelled.
+                    .valid-feedback
+                      | Looks good!
+                .col-md-4.upload.custom-file(v-if='!isMileageGlDescription(item.glDescription)')
+                  .d-flex.justify-content-between.align-items-center
+                    label Receipt
+                    label(v-show='isItemReceiptStatus(item, "pending")')
+                      i.fas.fa-sync.fa-spin
+                    label(v-show='isItemReceiptStatus(item, "success")')
+                      i.fas.fa-check.text-success
+                    label(v-show='isItemReceiptStatus(item, "error")')
+                      i.fas.fa-exclamation.text-danger
+                  input#receipt-file.form-control.custom-file-input(type='file' @change='handleReceiptFile(item, $event)' v-on:click='handleReceiptFileClick(item, $event)')
+                  input#receipt-key.form-control(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model='item.receipt.key')
+                  input#receipt-type.form-control(:name="'items[' + index + '][receipt][type]'" type='hidden' v-model='item.receipt.type')
+                  label.custom-file-label(for='receipt-file' v-bind:class='{ "disabled" : isItemReceiptStatus(item, "pending") }') {{ formatFileKey(item.receipt.key) }}
+                  .invalid-feedback
+                    | Please upload a receipt < 2MB.
+                  .valid-feedback
+                    | Looks good!
+                .col-md-1(v-if='!isMileageGlDescription(item.glDescription)')
+                  label(for='receipt-lost') Lost?
+                  input#receipt-lost.form-control(:name="'items[' + index + '][receipt][lost]'" v-model='item.receipt.lost' type='checkbox' value='' @change='validateReceipt(item, $event)' )
+                .col-md-3(v-if='!isMileageGlDescription(item.glDescription)')
+                  label(for='receipt-amount') Amount
+                  .input-group
+                    .input-group-prepend
+                      .input-group-text $
+                    input#receipt-amount.form-control(:name="'items[' + index + '][receipt][amount]'" v-model.number='item.receipt.amount' min='0' step='0.01' :max='item.receipt.maxAmount' @input='updateItemTotal(item)' type='number' required='required')
+                    .invalid-feedback(v-if='isMealGlDescription(item.glDescription)')
+                      | Please enter a receipt amount > $0 and <= $#{configurations.max_per_meal_amount}.
+                    .invalid-feedback(v-else)
+                      | Please enter a receipt amount > $0.
+                    .valid-feedback
+                      | Looks good!
+                .col-md-4
+                  label(for='total') Total
+                  .input-group
+                    .input-group-prepend
+                      .input-group-text $
+                    input#total.form-control(name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
+        .row
+          .col-12
+            div#add-item.btn.btn-warning.btn-block.btn-lg(@click='addItem()') Add Item
+    .row.mb-1.mb-5
+      .col-12
+        .d-flex.justify-content-between.align-items-center.mb-3
+          h2.mb-0 Summary
+          span.badge.badge-success.badge-pill.badge-lg {{ items.length }}
+        .row.mb-3
+          .col-md-6
+            label(for='previous-total-mileage') Previous Total Mileage
+            .input-group
+              input#previous-total-mileage.form-control(type='number' :value='previousMileage' readonly=true)
+              .input-group-append
+                .input-group-text km
+          .col-md-6
+            label(for='carry-mileage') Carry Forward Mileage
+            .input-group
+              input#carry-mileage.form-control(type='number' :value='carryForwardMileage' readonly=true)
+              .input-group-append
+                .input-group-text km
+        .row.mb-4
+          .col-12
+            hr
+            div
+              label(for='total') Total
+              .input-group
+                .input-group-prepend
+                  .input-group-text $
+                input#total.form-control(type='number' :value='itemsTotal' readonly=true)
+                input#total-max.form-control(type='hidden' :value='itemsTotal')
+        .row
+          .col-12
+            button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
 
 block scripts
   script.
@@ -157,29 +201,235 @@ block scripts
     })();
 
   script.
+    var MILEAGE_GL_DESCRIPTION = 'MILEAGE (kilometres traveled using personal vehicle)';
+    var MEAL_GL_DESCRIPTIONS = [
+      'MEALS & ENTERTAINMENT STAFF (Food, beverage)',
+      'MEALS & ENTERTAINMENT PROMO (Food,beverage when entertaining clients)',
+    ];
+    var MB_SIZE_IN_B = 1024000;
+    var PER_MILEAGE_VALUES = {
+      INITIAL: parseInt(#{configurations.per_mileage_value_initial}) || '',
+      OVERFLOW: parseInt(#{configurations.per_mileage_value_overflow}) || '',
+    };
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
       data: {
-        costCentreNumber: null,
-        bankAccount: null,
+        previousMileage: parseInt(#{previousMileage}),
+        costCentreNumber: '',
+        bankNumber: '',
         items: [{
-          date: null,
-          glId: null,
-          numKm: null,
-          receipt: null,
-          description: null,
-          total: null,
-        }],
+          date: '',
+          glDescription: '',
+          numKm: '',
+          receipt: {
+            amount: '',
+            key: '',
+            type: '',
+            processing: '',
+            maxAmount: 'infinity',
+            lost: false,
+          },
+          description: '',
+          total: 0,
+        }]
       },
       methods: {
-        addTooltips: function () {
-          $(this.$el).find('.num-km-info').tooltip();
+        addItem: function () {
+          this.items.push({
+            date: '',
+            glDescription: '',
+            numKm: '',
+            receipt: {
+              amount: '',
+              key: '',
+              type: '',
+              processing: '',
+              maxAmount: 'infinity',
+              lost: false,
+            },
+            description: '',
+            total: 0,
+          });
+        },
+        updateItemTotal: function (item) {
+          if (this.isMileageGlDescription(item.glDescription)) {
+            var cost = 0;
+            var remainingInitialMileage = 5000 - this.previousMileage;
+            if (remainingInitialMileage > 0) {
+              if (item.numKm <= remainingInitialMileage) {
+                cost = item.numKm * PER_MILEAGE_VALUES.INITIAL;
+              } else {
+                cost += remainingInitialMileage * PER_MILEAGE_VALUES.INITIAL;
+                cost += (item.numKm - remainingInitialMileage) * PER_MILEAGE_VALUES.OVERFLOW;
+              }
+            } else {
+              cost = item.numKm * PER_MILEAGE_VALUES.OVERFLOW;
+            }
+
+            item.total = Math.round(cost * 100)/100;
+          } else {
+            item.total = Math.round(item.receipt.amount * 100)/100;
+          }
+        },
+        addTooltip: function (item, event) {
+          if (this.isMileageGlDescription(item.glDescription)) {
+            this.$nextTick(function () {
+              var $numKmInfo = $(event.target).closest('.item').find('.num-km-info');
+              if (!$numKmInfo.data('bs.tooltip')) {
+                $numKmInfo.tooltip();
+              }
+            });
+          }
+        },
+        isMileageGlDescription: function (glDescription) {
+          return glDescription === MILEAGE_GL_DESCRIPTION;
+        },
+        isMealGlDescription: function (glDescription) {
+          return _.contains(MEAL_GL_DESCRIPTIONS, glDescription);
+        },
+        updateReceiptMaxAmount: function (item) {
+          var receiptMaxAmount = 'infinity';
+          if (this.isMealGlDescription(item.glDescription)) {
+            receiptMaxAmount = #{configurations.max_per_meal_amount};
+          }
+          item.receipt.maxAmount = receiptMaxAmount;
+        },
+        validateReceipt: function (item, event) {
+          // necessary due to Vue Vritual DOM removing validity states
+          this.$nextTick(function () {
+            var $receiptEl = $(event.target).closest('.item').find('#receipt-file').first();
+            if ($receiptEl.length) {
+              var validityMessage = '';
+              if (!item.receipt.lost) {
+                if (!this.isItemReceiptStatus(item, 'success')) {
+                  validityMessage = 'No file < 2MB and receipt not lost.';
+                }
+              }
+              $receiptEl[0].setCustomValidity(validityMessage);
+            }
+          });
+        },
+        formatFileKey: function (key) {
+          return key.split('/').pop();
+        },
+        setItemReceiptStatus: function (item, status, key, type) {
+          var processingStatus = '';
+          var fileKey = '';
+          var fileType = '';
+          if (status === 'error' || status === 'pending') {
+            processingStatus = status;
+            fileKey = '';
+            fileType = '';
+          } else if (status === 'success') {
+            processingStatus = status;
+            fileKey = key;
+            fileType = type;
+          }
+          item.receipt.processing = processingStatus;
+          item.receipt.key = fileKey;
+          item.receipt.type = fileType;
+        },
+        isItemReceiptStatus: function (item, status) {
+          return item.receipt.processing === status;
+        },
+        handleReceiptFileClick: function (item, event) {
+          if (this.isItemReceiptStatus(item, 'pending')) {
+            event.preventDefault();
+          }
+        },
+        handleReceiptFile: function (item, event) {
+          var $target = $(event.target);
+          var files = $target.prop('files');
+          if (!files.length) {
+            this.setItemReceiptStatus(item);
+
+            this.validateReceipt(item, event);
+          } else {
+            var file = files[0];
+            if (file.size > MB_SIZE_IN_B * 2) {
+              this.setItemReceiptStatus(item, 'error');
+
+              this.validateReceipt(item, event);
+            } else {
+              // TODO disable during processing with a try catch
+              this.setItemReceiptStatus(item, 'pending');
+              // take care of the (possibly new) image
+              var getSignatureUrl = '';
+              $.each([
+                '/users/#{employeeId}/signature?fileName=',
+                file.name,
+                '&contentType=',
+                file.type,
+              ], function (index, component) {
+                getSignatureUrl += component;
+              });
+
+              axios.get(getSignatureUrl)
+                .then(_.bind(function (res) {
+                  var fileKey = 'users/#{employeeId}/' + file.name;
+                  var contentType = file.type;
+                  var s3Options = {
+                    headers: {
+                      'Content-Type': contentType,
+                    },
+                  };
+                  var signedUrl = res.data.signedUrl;
+                  axios.put(signedUrl, file, s3Options)
+                    .then(_.bind(function (res) {
+                      this.setItemReceiptStatus(item, 'success', fileKey, contentType);
+
+                      this.validateReceipt(item, event);
+                    }, this))
+                    .catch(_.bind(function (err) {
+                      this.setItemReceiptStatus(item, 'error');
+
+                      this.validateReceipt(item, event);
+                    }, this));
+                }, this))
+                .catch(_.bind(function (err) {
+                  this.setItemReceiptStatus(item, 'error');
+
+                  this.validateReceipt(item, event);
+                }, this));
+            }
+          }
+        },
+        handleGlChange: function (item, event) {
+          this.updateItemTotal(item);
+          this.updateReceiptMaxAmount(item);
+          this.validateReceipt(item, event);
+          this.addTooltip(item, event);
         },
       },
-      mounted: function () {
-        this.addTooltips();
+      watch: {
+        items: {
+          immediate: true,
+          handler: function () {
+            // wait for DOM changes to propagate
+            this.$nextTick(function () {
+              var $item = $('.item').last();
+              $item.find('#receipt-file').first()[0].setCustomValidity('No file < 2MB and receipt not lost.');
+            });
+          },
+        },
       },
-      updated: function () {
-       this.addTooltips();
+      computed: {
+        itemsTotal: function () {
+          return this.items.reduce(function (acc, item) {
+            return acc + item.total;
+          }, 0);
+        },
+        carryForwardMileage: function () {
+          return this.previousMileage + this.items.reduce(function (acc, item) {
+            var amount;
+            if (item.glDescription === MILEAGE_GL_DESCRIPTION) {
+              amount = parseInt(item.numKm || 0);
+            } else {
+              amount = 0;
+            }
+
+            return acc + amount;
+          }, 0);
+        },
       },
     });

@@ -18,6 +18,7 @@ const index = require('./routes/index');
 const login = require('./routes/authenticate/login');
 const logout = require('./routes/authenticate/logout');
 const claims = require('./routes/claims');
+const users = require('./routes/users');
 const reports = require('./routes/admin/reports');
 const configuration = require('./routes/configuration');// Steven
 
@@ -31,8 +32,7 @@ const Employee = database.Employee;
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(sassMiddleware({
   src: path.join(__dirname, 'scss'),
   dest: path.join(__dirname, 'public'),
@@ -59,7 +59,6 @@ passport.use(new LocalStrategy({
     usernameField: 'email',
     passwordField: 'password'
   }, function(email, password, done) {
-    // TODO stored procedure
     Employee.findOne({
       where: {
         email: {
@@ -97,14 +96,38 @@ app.use(function (req, res, next) {
   if (req.user) {
     next();
   } else {
+    req.session.returnTo = req.path;
+
     res.redirect('/login');
   }
 });
 
 // login protected routes
+// REST API routes
+
+// non-REST API routes
+app.use(function (req, res, next) {
+  // get recent claims
+  Employee.build({
+    id: req.user.id,
+  }).getExpenseClaims({
+    order: [
+      [
+        'createdAt',
+        'DESC',
+      ],
+    ],
+    limit: 10,
+  }).then((expenseClaims) => {
+    res.locals.recentExpenseClaims = expenseClaims;
+
+    next();
+  });
+});
 app.use('/', index);
 app.use('/logout', logout);
 app.use('/claims', claims);
+app.use('/users', users);
 app.use('/reports', reports);
 
 // configuration Steven

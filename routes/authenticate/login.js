@@ -20,9 +20,10 @@ router.get('/', function(req, res, next) {
 
 // POST /login
 router.post('/', passport.authenticate('local', {
-  successRedirect: '/',
   failureRedirect: '/login',
   failureFlash: true,
-}));
+}), function (req, res) {
+  res.redirect(req.session.returnTo || '/');
+});
 
 module.exports = router;
