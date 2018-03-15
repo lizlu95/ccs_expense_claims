@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
     var Configuration = sequelize.define('Configuration', {
         name: DataTypes.STRING,
-        value: DataTypes.INTEGER
+        value: DataTypes.STRING
     }, {
         underscored: true,
         tableName: 'configurations',
