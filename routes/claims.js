@@ -415,17 +415,17 @@ router.post('/:id/forward', function (req, res, next) {
         }).then(function (employeeExpenseClaim) {
           var notifier = new Notifier(req);
 
-          // TODO notify
-        //  notifier.notifyExpenseClaimSubmitted(employeeId, managerId)
-        //    .then((info) => {
-        //      callback(null, expenseClaim);
-        //    })
-        //    .catch((err) => {
-        //      // TODO flash message forward based on err
-        //      callback(null, expenseClaim);
-        //    });
-          // TODO remove line below once notify
-          callback(null);
+          // TODO notify -- both submitted && manager
+         notifier.notifyExpenseClaimForwarded(employeeId, managerId)
+           .then((info) => {
+             callback(null, expenseClaim);
+           })
+           .catch((err) => {
+             // TODO flash message forward based on err
+             callback(null, expenseClaim);
+           });
+         // TODO remove line below once notify
+         // callback(null);
         }).catch(function(err) {
           callback(err);
         });
@@ -481,6 +481,7 @@ var findForwardees = function (expenseClaimId) {
           }
         }
       ).then(function (items) {
+        // TODO: Add field for total of a claim?
         for (var expenseClaimItem of items) {
           total += expenseClaimItem.total;
         }
