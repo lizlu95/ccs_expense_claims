@@ -183,7 +183,7 @@ router.get('/:id', function (req, res, next) {
         {
           where: {
             expenseClaimId: {
-              [Op.eq]: expenseClaimId
+              [Op.eq]: expenseClaim.id
             }
           }
         }
