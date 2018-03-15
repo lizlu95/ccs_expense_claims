@@ -176,6 +176,47 @@ router.get('/:id', function (req, res, next) {
         }
       });
     },
+    (expenseClaim, callback) => {
+      res.locals.isActiveManager = expenseClaim.activeManager.id === req.user.id;
+
+      ExpenseClaimItem.findAll(
+        {
+          where: {
+            expenseClaimId: {
+              [Op.eq]: expenseClaimId
+            }
+          }
+        }
+      ).then(function (items) {
+        var total;
+        for (var expenseClaimItem of items) {
+          total += expenseClaimItem.total;
+        }
+        ApprovalLimit.findAll(
+          {
+            where: {
+              employeeId: {
+                [Op.eq]: req.user.id,
+              },
+              costCentreId: {
+                [Op.eq]: expenseClaim.costCentreId
+              },
+              limit: {
+                [Op.gte]: total
+              }
+            }
+          }
+        ).then(function (approvalLimit) {
+          if (!_.isEmpty(approvalLimit)) {
+            res.locals.managerCanApprove = true;
+          } else {
+            res.locals.managerCanApprove = false;
+          }
+
+          callback(null, expenseClaim);
+        });
+      });
+    },
   ], function (err) {
     if (err) {
       err = {
