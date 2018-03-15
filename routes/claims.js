@@ -6,7 +6,7 @@ const s = require('underscore.string');
 const moment = require('moment');
 const sequelize = require('../models/index').sequelize;
 const Op = require('sequelize').Op;
-const multipartMiddleware = require('connect-multiparty')();
+
 const s3 = require('../s3');
 
 const Notifier = require('../mixins/notifier');
@@ -21,6 +21,7 @@ const GL = database.GL;
 const Company = database.Company;
 const Receipt = database.Receipt;
 const ApprovalLimit = database.ApprovalLimit;
+const Configuration = database.Configuration;
 
 /* GET /claims */
 router.get('', function (req, res, next) {
@@ -29,13 +30,6 @@ router.get('', function (req, res, next) {
   var employee = Employee.build({
     id: req.user.id,
   });
-
-  var expenseClaimStatuses = [
-    ExpenseClaim.STATUS.PENDING,
-    ExpenseClaim.STATUS.APPROVED,
-    ExpenseClaim.STATUS.REJECTED,
-    ExpenseClaim.STATUS.FORWARDED,
-  ];
 
   res.locals.expenseClaims = {};
   async.waterfall([
@@ -117,6 +111,15 @@ router.get('/new', function (req, res, next) {
         callback(null);
       });
     },
+    function (callback) {
+      Configuration.findAll().then((configurations) => {
+        res.locals.configurations = _.object(_.map(configurations, (configuration) => {
+          return [configuration.name, configuration.value];
+        }));
+
+        callback(null);
+      });
+    },
   ], function (err) {
     if (err) {
       next(err);
@@ -131,6 +134,9 @@ router.get('/:id', function (req, res, next) {
   var expenseClaimId = req.params.id;
 
   res.locals.title = 'Claim ' + expenseClaimId;
+  res.locals.s3BucketName = s3.config.params.Bucket;
+  res.locals.s3Region = s3.config.region;
+
   // TODO
   async.waterfall([
     function (callback) {
@@ -167,6 +173,13 @@ router.get('/:id', function (req, res, next) {
             return !employeeExpenseClaim.isOwner &&
               employeeExpenseClaim.isActive;
           }).Employee;
+
+          // mark as forwarded for non-active managers
+          if (expenseClaim.activeManager.id !== req.user.id &&
+              expenseClaim.submitter.id !== req.user.id &&
+              expenseClaim.status === ExpenseClaim.STATUS.PENDING) {
+            expenseClaim.status = ExpenseClaim.STATUS.FORWARDED;
+          }
 
           res.locals.expenseClaim = expenseClaim;
 
@@ -232,8 +245,7 @@ router.get('/:id', function (req, res, next) {
 });
 
 /* POST /claims */
-router.post('', multipartMiddleware, function (req, res, next) {
-  // TODO cleanup temp files after connect-multiparty
+router.post('', function (req, res, next) {
   async.waterfall([
     function (callback) {
       CostCentre.findOne({
@@ -281,9 +293,7 @@ router.post('', multipartMiddleware, function (req, res, next) {
       });
     },
     function (company, gls, costCentre, callback) {
-      var items = _.map(req.body.items, function (item, index) {
-        return _.extend(item, req.files.items[index]);
-      });
+      var items = req.body.items;
 
       var employeeId = req.user.id;
       // TODO make sure employee without manager is a manager of self
@@ -306,18 +316,14 @@ router.post('', multipartMiddleware, function (req, res, next) {
           total: parseInt(item.total) || 0,
         };
 
-        // TODO receipt path
-        if (item.receipt.file.size !== 0) {
-          // save temporary file
-
+        if (item.receipt && item.receipt.key.length > 0) {
           _.extend(model, {
             Receipt: {
-              path: item.receipt.file.path,
+              key: item.receipt.key,
+              type: item.receipt.type,
             },
           });
         };
-
-        // remove temporary file
 
         return model;
       });
@@ -340,7 +346,7 @@ router.post('', multipartMiddleware, function (req, res, next) {
 
         var expenseClaim = {
           status: ExpenseClaim.STATUS.DEFAULT,
-          bankAccount: req.body.bankAccount,
+          bankNumber: req.body.bankNumber,
           costCentreId: costCentre.id,
           companyId: company.id,
           ExpenseClaimItems: expenseClaimItems,
@@ -359,9 +365,9 @@ router.post('', multipartMiddleware, function (req, res, next) {
             }],
             transaction: t,
           }).then(function (expenseClaim) {
-            var notifier = new Notifier();
+            var notifier = new Notifier(req);
 
-            notifier.notifyExpenseClaimSubmitted(employeeId, managerId)
+            notifier.notifyExpenseClaimSubmitted(employeeId, managerId, expenseClaim.id)
               .then((info) => {
                 callback(null, expenseClaim);
               })

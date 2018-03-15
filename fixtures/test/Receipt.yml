@@ -2,8 +2,8 @@ fixtures:
   - model: Receipt
     data:
       id: 1
-      path: /tmp/2.jpg
+      key: users/1/2.jpg
   - model: Receipt
     data:
       id: 2
-      path: /tmp/1.jpg
+      key: users/1/2.jpg

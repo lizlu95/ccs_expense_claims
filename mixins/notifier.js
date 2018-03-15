@@ -9,9 +9,9 @@ const database = require('../models/index');
 const Employee = database.Employee;
 
 class Notifier {
-  constructor() {
-    // TODO make this system configurable
-    this.fromEmail = 'no-reply@ccs-expense-claims.herokuapp.com';
+  constructor(req) {
+    this.baseUrl = req.protocol + '://' + req.get('host');
+    this.fromEmail = process.env.ECA_SMTP_FROM_EMAIL;
 
     var isSecure = process.env.ECA_SMTP_SECURE === 'true';
     this.transporter = nodemailer.createTransport({
@@ -25,11 +25,17 @@ class Notifier {
     });
   }
 
-  notifyExpenseClaimSubmitted(submitterId, approverId, callback) {
+  notifyExpenseClaimSubmitted(submitterId, approverId, expenseClaimId, callback) {
     var submitterSubject = 'Expense Claim Approval Submitted';
-    var submitterMessage = 'Hello, please find your submitted request link below.';
+    var submitterMessage = 'Hello, please find your submitted request at ' +
+        this.baseUrl +
+        '/claims/' +
+        expenseClaimId;
     var approverSubject = 'Expense Claim Approval Requested';
-    var approverMessage = 'Hello, please find the attached link below.';
+    var approverMessage = 'Hello, your review has been requested for the expense claim at ' +
+        this.baseUrl +
+        '/claims/' +
+        expenseClaimId;
 
     return new Promise(_.bind((resolve, reject) => {
       async.series({

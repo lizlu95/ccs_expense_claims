@@ -51,3 +51,23 @@ a {
   font-size: 1rem;
   height: 40px;
 }
+
+.custom-file-label {
+  overflow: hidden;
+
+  &.disabled {
+    background: $disabled-grey;
+  }
+}
+
+.custom-file-input:disabled {
+  opacity: 0 !important;
+}
+
+.tab-content {
+  &.clickable {
+    td {
+      cursor: pointer;
+    }
+  }
+}

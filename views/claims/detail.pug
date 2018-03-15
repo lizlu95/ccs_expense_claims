@@ -10,7 +10,18 @@ mixin progressBar(status)
       when 'rejected'
         .progress-bar.bg-danger(role='progressbar' style='width: 100%;' aria-valuenow='Rejected' aria-valuemin='0' aria-valuemax='100') Rejected
       when 'forwarded'
-        .progress-bar.progress-bar-striped.progress-bar-animated.bg-info(role='progressbar' style='width: 75%;' aria-valuenow='Forwarded' aria-valuemin='0' aria-valuemax='100') Forwarded
+        .progress-bar.progress-bar-striped.bg-info(role='progressbar' style='width: 100%;' aria-valuenow='Forwarded' aria-valuemin='0' aria-valuemax='100') Forwarded
+
+mixin receiptRow(expenseClaimItem)
+  if (expenseClaimItem.Receipt && expenseClaimItem.Receipt.key)
+    td
+      - var resourceUrl = `https://s3-${s3Region}.amazonaws.com/${s3BucketName}/${encodeURIComponent(expenseClaimItem.Receipt.key)}`
+      if (expenseClaimItem.Receipt.type === 'application/pdf')
+        iframe(src=`https://docs.google.com/gview?url=${resourceUrl}&embedded=true` style='' frameborder='0')
+      else
+        img.img-receipt.img-fluid(src=resourceUrl crossorigin='anonymous')
+  else
+    td
 
 mixin expenseClaimLog(employeeExpenseClaim)
   if employeeExpenseClaim.isOwner
@@ -46,26 +57,30 @@ block inner-content
     .col-12
       .row.mb-1
         .col-12
-          h4 Information
+          h2 Information
       .row.mb-3
         .col-12
           label Status
           +progressBar(expenseClaim.status)
       .row.mb-4
-        .col-md-4
+        .col-md-6
           label(for='employee-id') Submitter
-          input#employee-id.form-control(type='text' value=expenseClaim.submitter.name readonly=true)
-        .col-md-4
+          input#name.form-control(type='text' value=expenseClaim.submitter.name readonly=true)
+        .col-md-6
           label(for='approver-id') Approver
-          input#approver-id.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
-        .col-md-4
-          label(for='id') Cost Centre
-          input#id.form-control(type='text' value=expenseClaim.CostCentre.number readonly=true)
+          input#name.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
+      .row
+        .col-md-6
+          label(for='cost-centre-number') Cost Centre
+          input#cost-centre-number.form-control(type='text' value=expenseClaim.CostCentre.number readonly=true)
+        .col-md-6
+          label(for='bank-account-number') Bank Account
+          input#name.form-control(type='text' value=expenseClaim.bankNumber readonly=true)
   .row.mb-4
     .col-12
       .row.mb-1
         .col-12
-          h4 Items
+          h2 Items
       .row
         .col-12
           .table-responsive
@@ -75,23 +90,25 @@ block inner-content
                   th #
                   th Date
                   th Expense Category
-                  th # Km Travelled
+                  th km
+                  th Receipt
                   th GL
                   th Total
               tbody(id='claim-items')
                 each expenseClaimItem in expenseClaim.ExpenseClaimItems
                   tr
-                    td=expenseClaimItem.id
-                    td=expenseClaimItem.createdAt
-                    td=expenseClaimItem.GL.description
-                    td=expenseClaimItem.numKm
-                    td=expenseClaimItem.GL.number
-                    td=expenseClaimItem.total
+                    td= expenseClaimItem.id
+                    td= expenseClaimItem.createdAt
+                    td= expenseClaimItem.GL.description
+                    td= expenseClaimItem.numKm
+                    +receiptRow(expenseClaimItem)
+                    td= expenseClaimItem.GL.number
+                    td= expenseClaimItem.total
   .row.mb-4
     .col-12
       .row.mb-1
         .col-12
-          h4 History
+          h2 History
       .row.mb-3
         .col-12
           .table-responsive
@@ -111,5 +128,22 @@ block inner-content
       +updateButtons(employee)
     form(method='get' action='/claims/' + expenseClaim.id + '/forwardees')
       +forwardButtons(employee)
+
+block scripts
+  script.
+    $(document).ready(function () {
+      $('.img-receipt')
+        .wrap('<span style="display:inline-block"></span>')
+        .css('display', 'block')
+        .parent()
+        .zoom({
+          on: 'grab',
+          callback: function () {
+            $(this).parent().css({
+              'cursor': 'pointer',
+            });
+          },
+        });
+    });
 
 

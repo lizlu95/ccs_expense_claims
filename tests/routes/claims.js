@@ -10,6 +10,8 @@ const YAML = require('yamljs');
 const sinon = require('sinon');
 const Promise = require('promise');
 
+const s3 = require('../../s3');
+
 const Notifier = require('../../mixins/notifier');
 
 const models = require('../../models/index');
@@ -36,7 +38,7 @@ const CLAIMS_ROUTES = [
   CLAIMS_NEW_ROUTE,
 ];
 
-describe('home page', function () {
+describe('claims router', function () {
   beforeEach(function (done) {
     manager.load(done);
   });
@@ -108,7 +110,7 @@ describe('home page', function () {
             //   - one item with GL associated with Receipt
             //   - one item with GL associated with numKm
             var costCentreNumber = costCentreOne['number'];
-            var bankAccount = '';
+            var bankNumber = '';
             var companyName = companyOne['name'];
             var items = [
               {
@@ -118,8 +120,8 @@ describe('home page', function () {
                   description: 'HOTEL (Room only, NO FOOD)',
                 },
                 receipt: {
-                  path: 'fixtures/files/flowers.jpg',
-                  size: 100,
+                  key: 'users/' + employeeOne.id.toString() + '/flowers.jpg',
+                  type: 'image/jpeg',
                 },
                 numKm: 0,
                 description: 'My First Expense Claim Item',
@@ -132,8 +134,8 @@ describe('home page', function () {
                   description: 'MILEAGE (kilometres traveled using personal vehicle)',
                 },
                 receipt: {
-                  path: 'fixtures/files/empty.txt',
-                  size: 0,
+                  key: '',
+                  type: '',
                 },
                 numKm: 100,
                 description: 'My Second Expense Claim Item',
@@ -142,21 +144,26 @@ describe('home page', function () {
             ];
             agent
               .post(CLAIMS_LIST_ROUTE)
-              .field('costCentreNumber', costCentreNumber)
-              .field('bankAccount', bankAccount)
-              .field('companyName', companyName)
-              .attach('items[0][receipt][file]', items[0].receipt.path)
-              .field('items[0][date]', items[0].date)
-              .field('items[0][glDescription]', items[0].gl.description)
-              .field('items[0][numKm]', items[0].numKm)
-              .field('items[0][description]', items[0].description)
-              .field('items[0][total]', items[0].total)
-              .attach('items[1][receipt][file]', items[1].receipt.path)
-              .field('items[1][date]', items[1].date)
-              .field('items[1][glDescription]', items[1].gl.description)
-              .field('items[1][numKm]', items[1].numKm)
-              .field('items[1][description]', items[1].description)
-              .field('items[1][total]', items[1].total)
+              .type('form')
+              .send({
+                costCentreNumber: costCentreNumber,
+                bankNumber: bankNumber,
+                companyName: companyName,
+                'items[0][receipt][key]': items[0].receipt.key,
+                'items[0][receipt][type]': items[0].receipt.type,
+                'items[0][date]': items[0].date,
+                'items[0][glDescription]': items[0].gl.description,
+                'items[0][numKm]': items[0].numKm,
+                'items[0][description]': items[0].description,
+                'items[0][total]': items[0].total,
+                'items[1][receipt][key]': items[1].receipt.key,
+                'items[1][receipt][type]': items[0].receipt.type,
+                'items[1][date]': items[1].date,
+                'items[1][glDescription]': items[1].gl.description,
+                'items[1][numKm]': items[1].numKm,
+                'items[1][description]': items[1].description,
+                'items[1][total]': items[1].total,
+              })
               .expect(302)
               .expect('Location', '/claims/' + nextExpenseClaimId)
               .end(function (err, res) {
@@ -241,10 +248,11 @@ describe('home page', function () {
                         receiptExpenseClaimItem.getReceipt().then((receipt) => {
                           if (receipt) {
                             var receiptItem = items[0];
-                            if (receiptItem.size === receipt.size) {
+                            if (receiptItem.receipt.key === receipt.key &&
+                               receiptItem.receipt.type === receipt.type) {
                               callback(null);
                             } else {
-                              callback('Found receipt item associated with expense claim item with wrong size!');
+                              callback('Found receipt associated with expense claim item with wrong key or content type.');
                             }
                           } else {
                             callback('Did not find associated receipt for expense claim item with receipt!');
@@ -289,9 +297,10 @@ describe('home page', function () {
           function (lastExpenseClaimId, callback) {
             agent
               .post(CLAIMS_LIST_ROUTE)
-              .attach('items[0][receipt][file]', 'fixtures/files/flowers.jpg')
-              .field('costCentreNumber', '0754')
-              .field('bankAccount', '')
+              .type('form')
+              .send('items[0][receipt][key]', '')
+              .send('costCentreNumber', '0754')
+              .send('bankNumber', '')
               .expect(409)
               .end(function (err, res) {
                 callback(err);
@@ -316,7 +325,7 @@ describe('home page', function () {
     helper.withAuthenticate(agent, [
       (agent, callback) => {
         var costCentreNumber = costCentreOne['number'];
-        var bankAccount = '';
+        var bankNumber = '';
         var companyName = companyOne['name'];
         var items = [
           {
@@ -326,8 +335,8 @@ describe('home page', function () {
               description: 'HOTEL (Room only, NO FOOD)',
             },
             receipt: {
-              path: 'fixtures/files/flowers.jpg',
-              size: 100,
+              key: 'users/' + submitter.id.toString() + '/flowers.jpg',
+              type: 'image/jpeg',
             },
             numKm: 0,
             description: 'My First Expense Claim Item',
@@ -336,25 +345,47 @@ describe('home page', function () {
         ];
         agent
           .post(CLAIMS_LIST_ROUTE)
-          .field('costCentreNumber', costCentreNumber)
-          .field('bankAccount', bankAccount)
-          .field('companyName', companyName)
-          .attach('items[0][receipt][file]', items[0].receipt.path)
-          .field('items[0][date]', items[0].date)
-          .field('items[0][glDescription]', items[0].gl.description)
-          .field('items[0][numKm]', items[0].numKm)
-          .field('items[0][description]', items[0].description)
-          .field('items[0][total]', items[0].total)
+          .type('form')
+          .send({
+            costCentreNumber: costCentreNumber,
+            bankNumber: bankNumber,
+            companyName: companyName,
+            'items[0][receipt][key]': items[0].receipt.key,
+            'items[0][receipt][type]': items[0].receipt.type,
+            'items[0][date]': items[0].date,
+            'items[0][glDescription]': items[0].gl.description,
+            'items[0][numKm]': items[0].numKm,
+            'items[0][description]': items[0].description,
+            'items[0][total]': items[0].total,
+          })
           .expect(302)
           .expect('Location', /claims\//)
           .end((err, res) => {
             if (err) {
               callback(err);
             } else {
-              assert.isTrue(notifyExpenseClaimSubmittedStub.calledWithExactly(submitter.id, approver.id));
-              assert.isTrue(notifyExpenseClaimSubmittedStub.calledOnce);
+              async.waterfall([
+                (callback) => {
+                  ExpenseClaim.findAll({
+                    limit: 1,
+                    order: [ [ 'id', 'DESC' ] ],
+                  }).then(function (expenseClaims) {
+                    if (!_.isEmpty(expenseClaims)) {
+                      callback(null, expenseClaims[0]);
+                    } else {
+                      callback('Could not find latest expense claim.');
+                    }
+                  });
+                },
+                (expenseClaim, callback) => {
+                  assert.isTrue(notifyExpenseClaimSubmittedStub.calledWithExactly(submitter.id, approver.id, expenseClaim.id));
+                  assert.isTrue(notifyExpenseClaimSubmittedStub.calledOnce);
 
-              callback(null);
+                  callback(null);
+                },
+              ], (err) => {
+                callback(null);
+              });
             }
           });
       },
