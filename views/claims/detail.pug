@@ -33,19 +33,16 @@ mixin expenseClaimLog(employeeExpenseClaim)
       td #{employeeExpenseClaim.Employee.name} was assigned to claim.
 
 mixin updateButtons(employee)
-  .row.mb-4
+  if managerCanApprove
     .col-2.mb-3
-      if managerCanApprove
-        button#approved.btn.btn-primary.btn-lg.btn-success(type='submit' name='status' value='approved') Approve
-    .col-2.mb-3
-      button#rejected.btn.btn-primary.btn-lg.btn-danger(type='submit' name='status' value='rejected') Reject
-    .col-2.mb-3
+      button#approved.btn.btn-primary.btn-lg.btn-success(type='submit' name='status' value='approved') Approve
+  .col-2.mb-3
+    button#rejected.btn.btn-primary.btn-lg.btn-danger(type='submit' name='status' value='rejected') Reject
 
 mixin forwardButtons(employee)
-  .row.mb-4
-    .col-2.mb-3
-      if !managerCanApprove
-        button#forwarded.btn.btn-primary.btn-lg.btn-info(type='submit') Forward
+  .col-2.mb-3
+    if !managerCanApprove
+      button#forwarded.btn.btn-primary.btn-lg.btn-info(type='submit') Forward
 
 
 block inner-content
@@ -124,10 +121,11 @@ block inner-content
                     td= employeeExpenseClaim.createdAt
 
   if isActiveManager
-    form(method='post', action='/claims/' + expenseClaim.id)
-      +updateButtons(employee)
-    form(method='get' action='/claims/' + expenseClaim.id + '/forwardees')
-      +forwardButtons(employee)
+    .row.mb-4
+      form(method='post', action='/claims/' + expenseClaim.id)
+        +updateButtons(employee)
+      form(method='get' action='/claims/' + expenseClaim.id + '/forwardees')
+        +forwardButtons(employee)
 
 block scripts
   script.
