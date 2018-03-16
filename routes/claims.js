@@ -201,10 +201,11 @@ router.get('/:id', function (req, res, next) {
           }
         }
       ).then(function (items) {
-        var total;
+        var total = 0;
         for (var expenseClaimItem of items) {
           total += expenseClaimItem.total;
         }
+
         ApprovalLimit.findAll(
           {
             where: {
