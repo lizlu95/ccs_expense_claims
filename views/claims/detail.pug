@@ -87,6 +87,7 @@ block inner-content
                   th #
                   th Date
                   th Expense Category
+                  th Description
                   th km
                   th Receipt
                   th GL
@@ -97,6 +98,7 @@ block inner-content
                     td= expenseClaimItem.id
                     td= expenseClaimItem.createdAt
                     td= expenseClaimItem.GL.description
+                    td= expenseClaimItem.description
                     td= expenseClaimItem.numKm
                     +receiptRow(expenseClaimItem)
                     td= expenseClaimItem.GL.number
