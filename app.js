@@ -12,6 +12,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const sassMiddleware = require('node-sass-middleware');
 const flash = require('connect-flash');
+const _ = require('underscore');
 
 // routes
 const index = require('./routes/index');
@@ -20,13 +21,14 @@ const logout = require('./routes/authenticate/logout');
 const claims = require('./routes/claims');
 const users = require('./routes/users');
 const reports = require('./routes/admin/reports');
-const configuration = require('./routes/configuration');// Steven
+const configuration = require('./routes/configuration');
 
 const app = module.exports = express();
 
 // models
 const database = require('./models/index');
 const Employee = database.Employee;
+const Configuration = database.Configuration;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -94,7 +96,24 @@ app.use('/login', login);
 
 app.use(function (req, res, next) {
   if (req.user) {
-    next();
+    Configuration.findOne({
+      where: {
+        name: {
+          [Op.eq]: 'admin_employee_ids',
+        },
+      },
+    }).then((adminEmployeeIdsConfiguration) => {
+      if (adminEmployeeIdsConfiguration) {
+        req.user.isAdmin = _.find(JSON.parse(adminEmployeeIdsConfiguration.value), (adminEmployeeId) => {
+          return adminEmployeeId === req.user.id;
+        }) || false;
+        res.locals.isAdmin = req.user.isAdmin;
+      } else {
+        res.locals.isAdmin = false;
+      }
+
+      next();
+    });
   } else {
     req.session.returnTo = req.path;
 
@@ -127,10 +146,21 @@ app.use(function (req, res, next) {
 app.use('/', index);
 app.use('/logout', logout);
 app.use('/claims', claims);
+
+// admin only routes
+app.use(function (req, res, next) {
+  if (req.user.isAdmin) {
+    next();
+  } else {
+    var err = {
+      status: 401,
+    };
+
+    next(err);
+  }
+});
 app.use('/users', users);
 app.use('/reports', reports);
-
-// configuration Steven
 app.use('/system/configuration', configuration);
 
 // catch 404 and forward to error handler
