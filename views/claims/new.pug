@@ -145,7 +145,7 @@ block inner-content
                   .input-group
                     .input-group-prepend
                       .input-group-text $
-                    input#total.form-control(name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
+                    input#total.form-control(:name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
         .row
           .col-12
             div#add-item.btn.btn-warning.btn-block.btn-lg(@click='addItem()') Add Item
