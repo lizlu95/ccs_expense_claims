@@ -194,6 +194,13 @@ router.get('/:id', function (req, res, next) {
           },
           CostCentre,
         ],
+        order: [
+          [
+            EmployeeExpenseClaim,
+            'createdAt',
+            'ASC',
+          ],
+        ],
       }).then((expenseClaim) => {
         if (expenseClaim) {
           // include submitter and active manager
