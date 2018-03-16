@@ -464,13 +464,13 @@ router.post('/:id/forward', function (req, res, next) {
           var notifier = new Notifier(req);
 
           // TODO notify -- both submitted && manager
-         notifier.notifyExpenseClaimForwarded(employeeId, managerId)
+          notifier.notifyExpenseClaimForwarded(req.user.id, req.body.forwardee, expenseClaimId)
            .then((info) => {
-             callback(null, expenseClaim);
+             callback(null);
            })
            .catch((err) => {
              // TODO flash message forward based on err
-             callback(null, expenseClaim);
+             callback(null);
            });
          // TODO remove line below once notify
          // callback(null);

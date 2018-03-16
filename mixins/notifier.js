@@ -57,32 +57,38 @@ class Notifier {
     }, this));
   }
 
+  notifyExpenseClaimForwarded(submitterId, approverId, expenseClaimId, callback) {
+    var submitterSubject = 'Expense Claim Approval Forwarded';
+    var submitterMessage = 'Hello, your expense claim at ' +
+        this.baseUrl +
+        '/claims/' +
+        expenseClaimId +
+        'has successfully been forwarded';
+    var approverSubject = 'Expense Claim Approval Requested';
+    var approverMessage = 'Hello, your review has been requested for the expense claim at ' +
+        this.baseUrl +
+        '/claims/' +
+        expenseClaimId;
 
-    notifyExpenseClaimForwarded(submitterId, approverId, callback) {
-        var submitterSubject = 'Expense Claim Approval Forwarded';
-        var submitterMessage = 'Hello, please find your submitted request link below.';
-        var approverSubject = 'Expense Claim Approval Requested';
-        var approverMessage = 'Hello, please find the attached link below.';
+    return new Promise(_.bind((resolve, reject) => {
+      async.series({
+        submitter: (callback) => {
+          _notifyById.apply(this, [submitterId, submitterSubject, submitterMessage, callback]);
+        },
+        approver: (callback) => {
+          _notifyById.apply(this, [approverId, approverSubject, approverMessage, callback]);
+        },
+      }, (err, errs) => {
+        // object of errs for submitter/approver
+        // e.g. { submitter: err, approver: err }
+        resolve(errs);
 
-        return new Promise(_.bind((resolve, reject) => {
-            async.series({
-                submitter: (callback) => {
-                    _notifyById.apply(this, [submitterId, submitterSubject, submitterMessage, callback]);
-                },
-                approver: (callback) => {
-                    _notifyById.apply(this, [approverId, approverSubject, approverMessage, callback]);
-                },
-            }, (err, errs) => {
-                // object of errs for submitter/approver
-                // e.g. { submitter: err, approver: err }
-                resolve(errs);
-
-                if (callback) {
-                    callback(errs);
-                }
-            });
-        }, this));
-    }
+        if (callback) {
+          callback(errs);
+        }
+      });
+    }, this));
+  }
 }
 
 
