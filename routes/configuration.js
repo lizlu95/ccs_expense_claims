@@ -1,297 +1,345 @@
 const express = require('express');
 const router = express.Router();
-const database = require('../models/index');
-const Configuration = database.Configuration;
-const Employee = database.Employee;
-
-/* add more if want add more column of table into PUG */
-const Setting_Keys_Pug = ['name', 'value'];
-const User_Keys_Pug = ['id', 'email', 'name'];
+const models = require('../models/index');
+const Configuration = models.Configuration;
+const Employee = models.Employee;
+const _ = require('underscore');
+const async = require('async');
+const Op = require('sequelize').Op;
 
 const NEW_SETTING_VALUE_NAME_JS = 'newSettingsValue';
 const Admin_Arr_Name_MYSQL = 'admin_employee_ids';
 
-let settings, users, selectedIDs, adminArr, selectedUsers;
-
+let selectedIDs;
 /* GET /system/configuration
    read data from database */
-router.get('/', function (req, res, next) {
-    getValues().then(function (result) {
-        res.locals.title = 'System Configuration';
-        res.render('admin/sysConfig',
-            {
-                settingsPug: result.settings,
-                newSettingValuePug: NEW_SETTING_VALUE_NAME_JS,
-                usersPug: result.selectedUsers,
-                // maxPug: MAX_LIMIT,
-                // minPug: MIN_LIMIT
-            }
-        );
-    }).catch(function (error) {
-        next(error)
-    })
-});
-
-getValues = function () {
-    return new Promise(function (fulfill, reject) {
-        if (typeof selectedIDs === 'undefined') {
-            Configuration.findAll().then(function (configurations) {
-                settings = [];
-                for (let configuration of configurations) {
-                    if (!isAdminArr(configuration)) {
-                        settings.push(getValue(configuration, Setting_Keys_Pug))
+router.get('/', (req, res, next) => {
+    let admins;
+    async.waterfall([
+        (callback) => {
+            res.locals.title = 'System Configuration';
+            res.locals.newSettingValuePug = NEW_SETTING_VALUE_NAME_JS;
+            callback(null);
+        },
+        (callback) => {
+            Configuration.findAll().then((configurations) => {
+                let settings = [];
+                for (let x of configurations) {
+                    if (x.name === Admin_Arr_Name_MYSQL) {
+                        admins = JSON.parse(x.value);
                     } else {
-                        Employee.findAll().then(function (employees) {
-                            users = [];
-                            selectedIDs = [];
-                            adminArr = JSON.parse(configuration.dataValues.value);
-                            for (let employee of employees) {
-                                let user = getValue(employee, User_Keys_Pug);
-                                let id = user.id;
-                                user.isAdmin = adminArr.includes(id);
-                                users.push(user);
-                                selectedIDs.push(id);
-                            }
-                            fulfill({
-                                settings: settings,
-                                selectedUsers: users
-                            })
-                        }).catch(function (error) {
-                            reject(error)
-                        })
+                        settings.push(x);
                     }
                 }
-            }).catch(function (error) {
-                reject(error)
-            })
+                res.locals.settingsPug = _.map(settings, (configuration) => {
+                    return {
+                        name: configuration.name,
+                        value: configuration.value
+                    };
+                });
+                callback(null);
+            });
+        },
+        (callback) => {
+            if (typeof selectedIDs === 'undefined') {
+                // first time load page
+                Employee.findAll().then((users) => {
+                    res.locals.usersPug = _.map(users, (user) => {
+                        return {
+                            id: user.id,
+                            email: user.email,
+                            name: user.name,
+                            isAdmin: admins.includes(user.id)
+                        };
+                    });
+                    callback(null);
+                });
+            } else {
+                Employee.findAll({
+                    where: {
+                        id: {
+                            [Op.in]: selectedIDs,
+                        },
+                    },
+                }).then((users) => {
+                    res.locals.usersPug = _.map(users, (user) => {
+                        return {
+                            id: user.id,
+                            email: user.email,
+                            name: user.name,
+                            isAdmin: admins.includes(user.id)
+                        };
+                    });
+                    callback(null);
+                });
+            }
+        }
+    ], (err) => {
+        if (err) {
+            next(err);
         } else {
-            selectedUsers = [];
-            for (let x of users) {
-                if (selectedIDs.includes(x.id)) {
-                    selectedUsers.push(x);
-                }
-            }
-            fulfill({
-                settings: settings,
-                selectedUsers: selectedUsers
-            })
-        }
-    })
-};
-
-getValue = function (data, arr) {
-    let result = {};
-    for (let x of arr) {
-        result[x] = data.dataValues[x]
-    }
-    return result
-};
-
-isAdminArr = function (configuration) {
-    return configuration.dataValues.name === Admin_Arr_Name_MYSQL
-};
-
-/* POST /system/configuration/settings
-   update database */
-router.post('/settings', function (req, res, next) {
-    updateSettings(req).then(function () {
-        res.redirect('/system/configuration')
-    }).catch(function (error) {
-        next(error)
-    })
-});
-
-/* updateValue() return a promise, should wrap in Promise.all */
-updateSettings = function (req) {
-    return new Promise(function (fulfill, reject) {
-        let pArr = [];
-        let newValue = req.body[NEW_SETTING_VALUE_NAME_JS];
-        let kArr = Object.keys(req.body);
-        let index = kArr.indexOf(NEW_SETTING_VALUE_NAME_JS);
-        if (index !== -1) {
-            kArr.splice(index, 1);
-        }
-        for (let x in kArr) {
-            pArr.push(updateSetting(x, kArr[x], newValue[x]));
-        }
-        Promise.all(pArr).then(function () {
-            fulfill();
-        }).catch(function (error) {
-            reject(error)
-        })
-    })
-};
-
-/* update value for one system configuration */
-updateSetting = function (index, name, value) {
-    let promise;
-    if (value === '') {
-        /* no change request for these configuration */
-        promise = new Promise(function (fulfill) {
-            fulfill(name + ' does not change')
-        })
-    } else {
-        /*  one change request
-            Configurations.update return a promise */
-        promise = Configuration.update({
-            name: name,
-            value: value
-        }, {
-            where: {
-                name: name
-            }
-        })
-    }
-    promise.then(function (result) {
-        if (typeof result === 'object') {
-            settings[index].value = value;
+            res.render('admin/sysConfig');
         }
     });
-    return promise
-};
+});
 
 /* POST /system/configuration/settings
    update database */
-router.post('/users', function (req, res, next) {
-    updateUser(req).then(function () {
+router.post('/settings', (req, res, next) => {
+    let pArr = [];
+    let newValue = req.body[NEW_SETTING_VALUE_NAME_JS];
+    let kArr = Object.keys(req.body);
+    let index = kArr.indexOf(NEW_SETTING_VALUE_NAME_JS);
+    if (index !== -1) {
+        kArr.splice(index, 1);
+    }
+    for (let x in kArr) {
+        pArr.push(updateSetting(kArr[x], newValue[x]));
+    }
+    Promise.all(pArr).then(() => {
         res.redirect('/system/configuration')
-    }).catch(function (error) {
+    }).catch((error) => {
         next(error)
     })
 });
 
-updateUser = function (req) {
-    let promise;
+/* update value for one system configuration */
+updateSetting = (name, value) => {
+    return new Promise((fulfill, reject) => {
+        if (value === '') {
+            /* no change request for these configuration */
+            fulfill(name + ' does not change')
+        } else {
+            /*  one change request
+                Configurations.update return a promise */
+            Configuration.update({
+                name: name,
+                value: value
+            }, {
+                where: {
+                    name: name
+                }
+            }).then(() => {
+                fulfill(name + ': ' + value)
+            }).catch((error) => {
+                reject(error);
+            })
+        }
+    })
+};
+
+/* POST /system/configuration/settings
+   update database */
+router.post('/users', (req, res, next) => {
     let body = req.body;
     let bodyArr = Object.keys(body);
     if (bodyArr.includes('all')) {
-        selectedIDs = [];
-        for (let x of users) {
-            selectedIDs.push(x.id)
-        }
-        promise = new Promise(function (fulfill) {
-            fulfill('All')
+        Employee.findAll().then((users) => {
+            selectedIDs = [];
+            for (let x of users) {
+                selectedIDs.push(x.id);
+            }
+            res.redirect('/system/configuration')
+        }).catch((error) => {
+            next(error);
         })
     } else if (bodyArr.includes('admin')) {
-        selectedIDs = [];
-        for (let x of adminArr) {
-            selectedIDs.push(x)
-        }
-        promise = new Promise(function (fulfill) {
-            fulfill('Admin')
+        Configuration.findOne({
+            where: {
+                name: {
+                    [Op.eq]: Admin_Arr_Name_MYSQL,
+                },
+            },
+        }).then((configuration) => {
+            selectedIDs = JSON.parse(configuration.value);
+            res.redirect('/system/configuration')
+        }).catch((error) => {
+            next(error);
         })
     } else if (bodyArr.includes('notAdmin')) {
-        selectedIDs = [];
-        for (let x of users) {
-            let id = x.id;
-            if (!adminArr.includes(id)) {
-                selectedIDs.push(id)
+        let notSelected;
+        async.waterfall([
+            (callback) => {
+                Configuration.findOne({
+                    where: {
+                        name: {
+                            [Op.eq]: Admin_Arr_Name_MYSQL,
+                        },
+                    },
+                }).then((configuration) => {
+                    notSelected = JSON.parse(configuration.value);
+                    callback(null);
+                })
+            },
+            (callback) => {
+                Employee.findAll().then((users) => {
+                    selectedIDs = [];
+                    for (let x of users) {
+                        if (!notSelected.includes(x.id)) {
+                            selectedIDs.push(x.id);
+                        }
+                    }
+                    callback(null);
+                });
             }
-        }
-        promise = new Promise(function (fulfill) {
-            fulfill('Not Admin')
-        })
+        ], (err) => {
+            if (err) {
+                next(err);
+            } else {
+                res.redirect('/system/configuration')
+            }
+        });
     } else if (bodyArr.includes('move')) {
+        let admins;
         let numAdmin = 0;
         let numNotAdmin = 0;
         let moveArr = [];
         let notMoveArr = [];
-        for (let x of bodyArr) {
-            if (body[x] === 'on') {
-                let index = Number(x);
-                if (adminArr.includes(index)) {
-                    moveArr.push(index);
-                    numAdmin++
+        async.waterfall([
+            (callback) => {
+                Configuration.findOne({
+                    where: {
+                        name: {
+                            [Op.eq]: Admin_Arr_Name_MYSQL,
+                        },
+                    },
+                }).then((configuration) => {
+                    admins = JSON.parse(configuration.value);
+                    callback(null);
+                })
+            },
+            (callback) => {
+                for (let x of bodyArr) {
+                    if (body[x] === 'on') {
+                        let index = Number(x);
+                        if (admins.includes(index)) {
+                            moveArr.push(index);
+                            numAdmin++
+                        } else {
+                            notMoveArr.push(index);
+                            numNotAdmin++
+                        }
+                    }
+                }
+                if (numNotAdmin === 0 && numAdmin > 0) {
+                    for (let x of moveArr) {
+                        let index = admins.indexOf(x);
+                        if (index !== -1) {
+                            admins.splice(index, 1);
+                        }
+                    }
+                    let adminsStr = '[' + admins.toString() + ']';
+                    Configuration.update({
+                        name: Admin_Arr_Name_MYSQL,
+                        value: adminsStr
+                    }, {
+                        where: {
+                            name: Admin_Arr_Name_MYSQL
+                        }
+                    }).then(function () {
+                        callback(null)
+                    })
                 } else {
-                    notMoveArr.push(index);
-                    numNotAdmin++
+                    callback(null)
                 }
             }
-        }
-        if (numNotAdmin === 0 && numAdmin > 0) {
-            for (let x of moveArr) {
-                let index = adminArr.indexOf(x);
-                if (index !== -1) {
-                    adminArr.splice(index, 1);
-                }
+        ], (err) => {
+            if (err) {
+                next(err);
+            } else {
+                res.redirect('/system/configuration')
             }
-            let adminArrStr = '[' + adminArr.toString() + ']';
-            promise = Configuration.update({
-                name: Admin_Arr_Name_MYSQL,
-                value: adminArrStr
-            }, {
-                where: {
-                    name: Admin_Arr_Name_MYSQL
-                }
-            })
-        } else {
-            promise = new Promise(function (fulfill) {
-                fulfill('Move: ' + notMoveArr.toString()  + ' is Not Admin already')
-            })
-        }
+        });
     } else if (bodyArr.includes('add')) {
+        let admins;
         let numAdmin = 0;
         let numNotAdmin = 0;
         let addArr = [];
         let notAddArr = [];
-        for (let x of bodyArr) {
-            if (body[x] === 'on') {
-                let index = Number(x);
-                if (!adminArr.includes(index)) {
-                    addArr.push(index);
-                    numNotAdmin++
+        async.waterfall([
+            (callback) => {
+                Configuration.findOne({
+                    where: {
+                        name: {
+                            [Op.eq]: Admin_Arr_Name_MYSQL,
+                        },
+                    },
+                }).then((configuration) => {
+                    admins = JSON.parse(configuration.value);
+                    callback(null);
+                })
+            },
+            (callback) => {
+                for (let x of bodyArr) {
+                    if (body[x] === 'on') {
+                        let index = Number(x);
+                        if (!admins.includes(index)) {
+                            addArr.push(index);
+                            numNotAdmin++
+                        } else {
+                            notAddArr.push(index);
+                            numAdmin++
+                        }
+                    }
+                }
+                if (numNotAdmin > 0 && numAdmin === 0) {
+                    for (let x of addArr) {
+                        admins.push(x);
+                    }
+                    let adminsStr = '[' + admins.toString() + ']';
+                    Configuration.update({
+                        name: Admin_Arr_Name_MYSQL,
+                        value: adminsStr
+                    }, {
+                        where: {
+                            name: Admin_Arr_Name_MYSQL
+                        }
+                    }).then(function () {
+                        callback(null)
+                    })
                 } else {
-                    notAddArr.push(index);
-                    numAdmin++
+                    callback(null)
                 }
             }
-        }
-        if (numNotAdmin > 0 && numAdmin === 0) {
-            for (let x of addArr) {
-                adminArr.push(x);
+        ], (err) => {
+            if (err) {
+                next(err);
+            } else {
+                res.redirect('/system/configuration')
             }
-            let adminArrStr = '[' + adminArr.toString() + ']';
-            promise = Configuration.update({
-                name: Admin_Arr_Name_MYSQL,
-                value: adminArrStr
-            }, {
-                where: {
-                    name: Admin_Arr_Name_MYSQL
-                }
-            })
-        } else {
-            promise = new Promise(function (fulfill) {
-                fulfill('Add: ' + notAddArr.toString() + ' is Admin already')
-            })
-        }
+        });
     } else if (bodyArr.includes('find')) {
+        let idArr;
         try {
-            let idArr = JSON.parse('[' + body.filter + ']');
-            selectedIDs = [];
-            for (let x of users) {
-                let id = x.id;
-                if (idArr.includes(id)) {
-                    selectedIDs.push(id)
-                }
-            }
-            promise = new Promise(function (fulfill) {
-                fulfill('Find: ' + idArr.toString())
-            })
+            idArr = JSON.parse('[' + body.filter + ']');
         } catch (error) {
-            promise = new Promise(function (fulfill) {
-                fulfill('Find: ' + body.filter + 'is not valid')
+            res.redirect('/system/configuration')
+        } finally {
+            Employee.findAll().then((users) => {
+                let usersID = [];
+                let notUsersID;
+                for (let x of users) {
+                    usersID.push(x.id);
+                }
+                let isContain;
+                for (let x of idArr) {
+                    isContain = usersID.includes(x);
+                    if (!isContain) {
+                        notUsersID = x;
+                        break;
+                    }
+                }
+                if (isContain) {
+                    selectedIDs = idArr;
+                    res.redirect('/system/configuration')
+                } else {
+                    res.redirect('/system/configuration')
+                }
+            }).catch((error) => {
+                next(error);
             })
         }
     }
-    promise.then(function (result) {
-        if (typeof result === 'object') {
-            // mean the database is update, so users need update
-            for (let x of users) {
-                x.isAdmin = adminArr.includes(x.id)
-            }
-        }
-    });
-    return promise
-};
+});
 
 module.exports = router;
