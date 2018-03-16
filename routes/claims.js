@@ -472,8 +472,6 @@ router.post('/:id/forward', function (req, res, next) {
              // TODO flash message forward based on err
              callback(null);
            });
-         // TODO remove line below once notify
-         // callback(null);
         }).catch(function(err) {
           callback(err);
         });
