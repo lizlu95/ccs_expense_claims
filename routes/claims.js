@@ -63,6 +63,9 @@ router.get('', function (req, res, next) {
 
 /* GET /claims/new */
 router.get('/new', function (req, res, next) {
+  var employee = Employee.build({
+    id: req.user.id,
+  });
   async.waterfall([
     function (callback) {
       res.locals.title = 'New Claim';
@@ -82,9 +85,7 @@ router.get('/new', function (req, res, next) {
       });
     },
     function (callback) {
-      Employee.build({
-        id: req.user.id,
-      }).getPreviousMileage().then((previousMileage) => {
+      employee.getPreviousMileage().then((previousMileage) => {
         res.locals.previousMileage = previousMileage;
 
         callback(null);
@@ -117,9 +118,40 @@ router.get('/new', function (req, res, next) {
           return [configuration.name, configuration.value];
         }));
 
-        callback(null);
+        var maxPerDiem = _.find(res.locals.configurations, (value, name) => {
+          return name === 'max_per_diem_amount';
+        });
+
+        callback(null, maxPerDiem);
       });
     },
+    (maxPerDiem, callback) => {
+      employee.getExpenseClaims({
+        where: {
+          createdAt: {
+            [Op.between]: [moment().startOf('day').toDate(), moment().toDate()],
+          },
+        },
+      }).then((expenseClaims) => {
+        var expenseClaimIds = _.map(expenseClaims, (expenseClaim) => {
+          return expenseClaim.id;
+        });
+        ExpenseClaimItem.findAll({
+          where: {
+            expenseClaimId: {
+              [Op.in]: expenseClaimIds,
+            },
+          },
+        }).then((expenseClaimItems) => {
+          var dailyTotal = _.reduce(expenseClaimItems, (acc, expenseClaimItem) => {
+            return acc + (expenseClaimItem.total || 0);
+          }, 0);
+          res.locals.maxPerDiemRemaining = maxPerDiem - dailyTotal;
+
+          callback(null);
+        });
+      });
+    }
   ], function (err) {
     if (err) {
       next(err);
