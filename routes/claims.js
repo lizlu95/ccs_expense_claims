@@ -549,25 +549,6 @@ var findForwardees = function (expenseClaimId) {
         });
       });
     });
-    /*.then(function (abc) {
-      console.log(abc)
-      console.log("here ")
-      ApprovalLimit.findAll(
-      {
-      where: {
-      costCentreId: {
-      [Op.eq]: abc.costCentreId
-      },
-      limit: {
-      [Op.gte]: total
-      }
-      }
-      }
-      ).then(function (value) {
-      //console.log(value);
-      fulfill(value);
-      })
-      })*/;
   });
 };
 

@@ -5,7 +5,6 @@ const _ = require('underscore');
 
 // GET /login
 router.get('/', function(req, res, next) {
-  //console.log(req);
   if (req.user) {
     res.redirect('/');
   } else {
