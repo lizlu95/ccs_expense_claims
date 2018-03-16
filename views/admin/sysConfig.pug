@@ -55,9 +55,9 @@ block inner-content
                       td #{user.email}
                       td #{user.name}
                       if user.isAdmin
-                        td.bg-success Admin
+                        td.table-success Admin
                       else
-                        td.bg-warning Not Admin
+                        td.table-warning Not Admin
         .row
           .col-md-6
             button.w-100(type='submit' name='add' class='btn btn-success') Add
