@@ -56,7 +56,36 @@ class Notifier {
       });
     }, this));
   }
+
+
+    notifyExpenseClaimForwarded(submitterId, approverId, callback) {
+        var submitterSubject = 'Expense Claim Approval Forwarded';
+        var submitterMessage = 'Hello, please find your submitted request link below.';
+        var approverSubject = 'Expense Claim Approval Requested';
+        var approverMessage = 'Hello, please find the attached link below.';
+
+        return new Promise(_.bind((resolve, reject) => {
+            async.series({
+                submitter: (callback) => {
+                    _notifyById.apply(this, [submitterId, submitterSubject, submitterMessage, callback]);
+                },
+                approver: (callback) => {
+                    _notifyById.apply(this, [approverId, approverSubject, approverMessage, callback]);
+                },
+            }, (err, errs) => {
+                // object of errs for submitter/approver
+                // e.g. { submitter: err, approver: err }
+                resolve(errs);
+
+                if (callback) {
+                    callback(errs);
+                }
+            });
+        }, this));
+    }
 }
+
+
 
 function _notify(to, subject, message, callback) {
   let mailOptions = {

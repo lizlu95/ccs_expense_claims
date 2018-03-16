@@ -32,6 +32,19 @@ mixin expenseClaimLog(employeeExpenseClaim)
     else
       td #{employeeExpenseClaim.Employee.name} was assigned to claim.
 
+mixin updateButtons(employee)
+  if managerCanApprove
+    .col-2.mb-3
+      button#approved.btn.btn-primary.btn-lg.btn-success(type='submit' name='status' value='approved') Approve
+  .col-2.mb-3
+    button#rejected.btn.btn-primary.btn-lg.btn-danger(type='submit' name='status' value='rejected') Reject
+
+mixin forwardButtons(employee)
+  .col-2.mb-3
+    if !managerCanApprove
+      button#forwarded.btn.btn-primary.btn-lg.btn-info(type='submit') Forward
+
+
 block inner-content
   .row.mb-4
     .col-12
@@ -106,6 +119,14 @@ block inner-content
                   tr
                     +expenseClaimLog(employeeExpenseClaim)
                     td= employeeExpenseClaim.createdAt
+
+  if isActiveManager
+    .row.mb-4
+      form(method='post', action='/claims/' + expenseClaim.id)
+        +updateButtons(employee)
+      form(method='get' action='/claims/' + expenseClaim.id + '/forwardees')
+        +forwardButtons(employee)
+
 block scripts
   script.
     $(document).ready(function () {
@@ -122,4 +143,5 @@ block scripts
           },
         });
     });
+
 

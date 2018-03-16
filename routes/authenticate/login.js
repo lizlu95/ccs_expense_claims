@@ -5,6 +5,7 @@ const _ = require('underscore');
 
 // GET /login
 router.get('/', function(req, res, next) {
+  //console.log(req);
   if (req.user) {
     res.redirect('/');
   } else {
@@ -13,7 +14,6 @@ router.get('/', function(req, res, next) {
     if (!_.isEmpty(error)) {
       res.locals.error = error;
     }
-
     res.render('authenticate/login');
   }
 });

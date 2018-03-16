@@ -1,0 +1,14 @@
+extends ../dashboard
+
+block inner-content
+  h1 Forwardees
+  .row.mb-4
+    .col-3.mb-3
+      form(method='post', action='/claims/' + expenseClaimId + '/forward')
+        label(for='forwarded') Forwardee
+        select#forwarded.custom-select(name='forwardee' required)
+          option(value='') Choose..
+            each id in forwardeeIds
+              option(value= id)= id
+        .col-2.mb-3
+          button.btn.btn-primary.btn-lg(type='submit') Submit
