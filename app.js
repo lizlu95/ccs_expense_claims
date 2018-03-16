@@ -145,6 +145,7 @@ app.use(function (req, res, next) {
 });
 app.use('/', index);
 app.use('/logout', logout);
+app.use('/users', users);
 app.use('/claims', claims);
 
 // admin only routes
@@ -159,7 +160,6 @@ app.use(function (req, res, next) {
     next(err);
   }
 });
-app.use('/users', users);
 app.use('/reports', reports);
 app.use('/system/configuration', configuration);
 
