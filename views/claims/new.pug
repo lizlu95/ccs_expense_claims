@@ -212,8 +212,8 @@ block scripts
     ];
     var MB_SIZE_IN_B = 1024000;
     var PER_MILEAGE_VALUES = {
-      INITIAL: parseInt(#{configurations.per_mileage_value_initial}) || '',
-      OVERFLOW: parseInt(#{configurations.per_mileage_value_overflow}) || '',
+      INITIAL: parseFloat(#{configurations.per_mileage_value_initial}) || '',
+      OVERFLOW: parseFloat(#{configurations.per_mileage_value_overflow}) || '',
     };
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
