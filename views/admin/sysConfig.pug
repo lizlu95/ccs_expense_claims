@@ -16,10 +16,10 @@ block inner-content
           input.form-control(type='number' name=setting.name value=setting.value readonly=true)
         .col-3.mb-3
           input.form-control(type='number' name=newSettingValuePug)
-    .row
+    .row.mb-4
       .col-2.mb-3
         button.btn.btn-primary(type='submit') Save
-  h2.mb-3 User
+  h2.mb-3 Administrators
   .row.mb-3
     .col-md-12.col-lg-12
       form(method='post', action='/system/configuration/users')
@@ -44,7 +44,7 @@ block inner-content
                     th Employee ID
                     th Email
                     th Name
-                    th User Type
+                    th Type
                 tbody
                   -
                   each user in usersPug
@@ -57,9 +57,9 @@ block inner-content
                       if user.isAdmin
                         td.table-success Admin
                       else
-                        td.table-warning Not Admin
+                        td.table-warning User
         .row
           .col-md-6
-            button.w-100(type='submit' name='add' class='btn btn-success') Add
+            button.w-100(type='submit' name='add' class='btn btn-success') Promote
           .col-md-6
-            button.w-100(type='submit' name='move' class='btn btn-danger') Remove
+            button.w-100(type='submit' name='move' class='btn btn-danger') Demote
