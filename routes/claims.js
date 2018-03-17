@@ -406,7 +406,6 @@ router.post('', function (req, res, next) {
             transaction: t,
           }).then(function (expenseClaim) {
             var notifier = new Notifier(req);
-
             notifier.notifyExpenseClaimSubmitted(employeeId, managerId, expenseClaim.id)
               .then((info) => {
                 callback(null, expenseClaim);
@@ -460,7 +459,29 @@ router.post('/:id', function (req, res, next) {
     }));
 
     Promise.all(pArr).then(function (nothing) {
-      fulfill(nothing);
+      ExpenseClaim.findOne({
+        where: {
+          id: {
+            [Op.eq]: expenseClaimId,
+          },
+        },
+      }).then((expenseClaim) => {
+        EmployeeExpenseClaim.findOne({
+          where: {
+            expenseClaimId: {
+              [Op.eq]: expenseClaimId,
+            },
+            isOwner: {
+              [Op.eq]: 1,
+            },
+          },
+        }).then((employeeExpenseClaim) => {
+          var notifier = new Notifier(req);
+          notifier.notifyExpenseClaimStatusChange(employeeExpenseClaim.employeeId, req.user.id, expenseClaimId, expenseClaim.status);
+
+          fulfill(nothing);
+        });
+      });
     });
   }).then(function () {
     res.redirect('/claims/' + expenseClaimId);
@@ -500,17 +521,25 @@ router.post('/:id/forward', function (req, res, next) {
             transaction: t,
           });
         }).then(function (employeeExpenseClaim) {
-          var notifier = new Notifier(req);
-
-          // TODO notify -- both submitted && manager
-          notifier.notifyExpenseClaimForwarded(req.user.id, req.body.forwardee, expenseClaimId)
-           .then((info) => {
-             callback(null);
-           })
-           .catch((err) => {
-             // TODO flash message forward based on err
-             callback(null);
-           });
+          EmployeeExpenseClaim.findOne({
+            where: {
+              expenseClaimId: {
+                [Op.eq]: expenseClaimId,
+              },
+              isOwner: {
+                [Op.eq]: 1,
+              },
+            },
+          }).then((employeeExpenseClaim) => {
+            var notifier = new Notifier(req);
+            notifier.notifyExpenseClaimForwarded(employeeExpenseClaim.employeeId, req.user.id, req.body.forwardee, expenseClaimId)
+              .then((info) => {
+                callback(null);
+              })
+              .catch((err) => {
+                callback(null);
+              });
+          });
         }).catch(function(err) {
           callback(err);
         });
