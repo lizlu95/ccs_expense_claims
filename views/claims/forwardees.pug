@@ -8,7 +8,7 @@ block inner-content
         label(for='forwarded') Forwardee
         select#forwarded.custom-select(name='forwardee' required)
           option(value='') Choose..
-            each id in forwardeeIds
-              option(value= id)= id
+            each forwardee in forwardees
+              option(value= forwardee.employeeId)= forwardee.employeeName
         .col-2.mb-3
           button.btn.btn-primary.btn-lg(type='submit') Submit

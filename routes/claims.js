@@ -564,19 +564,22 @@ router.get('/:id/forwardees', function (req, res, next) {
   var expenseClaimId = req.params.id;
   res.locals.title = 'Claim ' + expenseClaimId.toString() + ' Forwardees';
 
-  findForwardees(expenseClaimId).then(function (forwardees) {
-    let forwardeeIds = [];
-    for (let forwardee of forwardees) {
-      forwardeeIds.push(forwardee.employeeId);
+  findApprovalLimits(expenseClaimId, req.user.id).then(function (approvalLimits) {
+    let forwardees = [];
+    for (let approvalLimit of approvalLimits) {
+      forwardees.push({
+        employeeId: approvalLimit.employeeId,
+        employeeName: approvalLimit.Employee.name,
+      });
     }
-    res.locals.forwardeeIds = forwardeeIds;
+    res.locals.forwardees = forwardees;
     res.locals.expenseClaimId = expenseClaimId;
 
     res.render('claims/forwardees');
   });
 });
 
-var findForwardees = function (expenseClaimId) {
+var findApprovalLimits = function (expenseClaimId, forwardingEmployeeId) {
   var total = 0;
   return new Promise(function (fulfill, reject) {
     ExpenseClaim.findOne({
@@ -605,10 +608,16 @@ var findForwardees = function (expenseClaimId) {
               costCentreId: {
                 [Op.eq]: result.costCentreId
               },
+              employeeId: {
+                [Op.ne]: forwardingEmployeeId,
+              },
               limit: {
                 [Op.gte]: total
               }
-            }
+            },
+            include: [
+              Employee,
+            ],
           }
         ).then(function (value) {
           fulfill(value);
