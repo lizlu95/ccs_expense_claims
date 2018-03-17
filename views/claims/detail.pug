@@ -14,12 +14,12 @@ mixin progressBar(status)
 
 mixin receiptRow(expenseClaimItem)
   if (expenseClaimItem.Receipt && expenseClaimItem.Receipt.key)
-    td
+    td.flexContainer
       - var resourceUrl = `https://s3-${s3Region}.amazonaws.com/${s3BucketName}/${encodeURIComponent(expenseClaimItem.Receipt.key)}`
       if (expenseClaimItem.Receipt.type === 'application/pdf')
         iframe(src=`https://docs.google.com/gview?url=${resourceUrl}&embedded=true` style='' frameborder='0')
       else
-        img.img-receipt.img-fluid(src=resourceUrl crossorigin='anonymous')
+        img.flexItem.img-receipt.img-fluid(src=resourceUrl crossorigin='anonymous')
   else
     td
 
