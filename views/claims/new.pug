@@ -419,9 +419,9 @@ block scripts
       },
       computed: {
         itemsTotal: function () {
-          return this.items.reduce(function (acc, item) {
+          return Math.round(this.items.reduce(function (acc, item) {
             return acc + item.total;
-          }, 0);
+          }, 0) * 100) / 100;
         },
         carryForwardMileage: function () {
           return this.previousMileage + this.items.reduce(function (acc, item) {
