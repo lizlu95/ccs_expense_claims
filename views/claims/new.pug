@@ -218,7 +218,7 @@ block scripts
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
       data: {
-        previousMileage: parseInt(#{previousMileage}),
+        previousMileage: parseFloat(#{previousMileage}),
         costCentreNumber: '',
         bankNumber: '',
         items: [{
@@ -427,7 +427,7 @@ block scripts
           return this.previousMileage + this.items.reduce(function (acc, item) {
             var amount;
             if (item.glDescription === MILEAGE_GL_DESCRIPTION) {
-              amount = parseInt(item.numKm || 0);
+              amount = parseFloat(item.numKm || 0);
             } else {
               amount = 0;
             }
