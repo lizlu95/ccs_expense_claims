@@ -28,8 +28,10 @@ block inner-content
                       td= user.id
                       td= user.email
                       td= user.name
-                      td= user.managerId
-                      td= user.manager.name
+                      td
+                        a(href=`/users/${user.managerId}`)= user.managerId
+                      td
+                        a(href=`/users/${user.managerId}`)= user.manager.name
                       if user.isAdmin
                         td.table-success Admin
                       else
