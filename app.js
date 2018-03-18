@@ -20,6 +20,7 @@ const login = require('./routes/authenticate/login');
 const logout = require('./routes/authenticate/logout');
 const claims = require('./routes/claims');
 const users = require('./routes/users');
+const limits = require('./routes/limits');
 const reports = require('./routes/admin/reports');
 const configuration = require('./routes/configuration');
 
@@ -146,6 +147,7 @@ app.use(function (req, res, next) {
 app.use('/', index);
 app.use('/logout', logout);
 app.use('/users', users);
+app.use('/limits', limits);
 app.use('/claims', claims);
 
 // admin only routes

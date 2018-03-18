@@ -1,0 +1,31 @@
+extends dashboard
+
+block inner-content
+  h1.mb-4.text-center Limits
+  .row.mb-3
+    .col-md-12.col-lg-12
+      form(action='/limits')
+        .row.mb-4
+          .col-lg-6
+            input.w-100.form-control(type='text' name='filter' placeholder='id1,id2,id3...')
+          .col-lg-6
+            button.w-100(type='submit' class='btn btn-success') Search
+        div.tab-content.mb-3
+          div.tab-pane.show.active(id='limit')
+            .table-responsive
+              table(class='table table-striped table-hover' cellpadding='5')
+                thead
+                  tr
+                    th ID
+                    th Name
+                    th Email
+                    th Cost Centre
+                    th Limit
+                tbody
+                  each approvalLimit in approvalLimits
+                    tr
+                      td= approvalLimit.Employee.id
+                      td= approvalLimit.Employee.email
+                      td= approvalLimit.Employee.name
+                      td= approvalLimit.CostCentre.number
+                      td= approvalLimit.limit
