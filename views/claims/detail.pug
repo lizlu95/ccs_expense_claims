@@ -62,10 +62,12 @@ block inner-content
       .row.mb-4
         .col-md-6
           label(for='employee-id') Submitter
-          input#name.form-control(type='text' value=expenseClaim.submitter.name readonly=true)
+          a(href=`/users/${expenseClaim.submitter.id}`)
+            input.clickable#name.form-control(type='text' value=expenseClaim.submitter.name readonly=true)
         .col-md-6
           label(for='approver-id') Approver
-          input#name.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
+          a(href=`/users/${expenseClaim.activeManager.id}`)
+            input.clickable#name.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
       .row
         .col-md-6
           label(for='cost-centre-number') Cost Centre
