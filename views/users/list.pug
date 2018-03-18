@@ -19,6 +19,8 @@ block inner-content
                     th ID
                     th Email
                     th Name
+                    th Manager ID
+                    th Manager Name
                     th Type
                 tbody
                   each user in users
@@ -26,6 +28,8 @@ block inner-content
                       td= user.id
                       td= user.email
                       td= user.name
+                      td= user.managerId
+                      td= user.manager.name
                       if user.isAdmin
                         td.table-success Admin
                       else

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const s3 = require('../s3');
 const Op = require('sequelize').Op;
+const _ = require('underscore');
 
 const database = require('../models/index');
 const Employee = database.Employee;
@@ -33,7 +33,6 @@ router.get('/:id/signature', function (req, res, next) {
 
 /* GET /users */
 router.get('', function (req, res, next) {
-  debugger;
   var conditions = {};
   if (req.query.filter) {
     conditions = {
@@ -44,6 +43,12 @@ router.get('', function (req, res, next) {
       },
     };
   }
+  _.extend(conditions, {
+    include: [{
+      model: Employee,
+      as: 'manager',
+    }],
+  });
   Employee.findAll(conditions).then((employees) => {
     res.locals.users = employees;
 
