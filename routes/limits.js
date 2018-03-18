@@ -10,6 +10,8 @@ const CostCentre = database.CostCentre;
 
 /* GET /limits */
 router.get('', function (req, res, next) {
+  res.locals.title = 'Limits';
+
   var conditions = {};
   if (req.query.filter) {
     conditions = {
