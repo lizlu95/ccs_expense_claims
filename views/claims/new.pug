@@ -59,7 +59,7 @@ block inner-content
                   span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
                 .col-md-4
                   label(for='date') Date
-                  input.date.form-control(:name="'items[' + index + '][date]'" type='date' v-model='item.date' value='' required)
+                  input.date.form-control(:name="'items[' + index + '][date]'" :data-index='index' type='text' v-datepicker='index' value='' required)
                   .invalid-feedback
                     | Please enter a valid date.
                   .valid-feedback
@@ -436,4 +436,16 @@ block scripts
           }, 0);
         },
       },
+      directives: {
+        datepicker: {
+          bind: function (el, bindings, vnode) {
+            $(el).datepicker({
+              dateFormat: 'yy-mm-dd',
+              onClose: function (text) {
+                vnode.context.items[parseInt($(el).data('index'))].date = text;
+              },
+            });
+          },
+        },
+      }
     });

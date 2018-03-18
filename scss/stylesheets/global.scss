@@ -75,3 +75,7 @@ a {
 .clickable {
   cursor: pointer;
 }
+
+.ui-datepicker {
+  z-index: 999 !important;
+}
