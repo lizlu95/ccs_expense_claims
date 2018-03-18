@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Op = require('sequelize').Op;
+const s3 = require('../s3');
 const _ = require('underscore');
 
 const database = require('../models/index');
