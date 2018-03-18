@@ -309,12 +309,8 @@ router.post('/users', (req, res, next) => {
             }
         });
     } else if (bodyArr.includes('find')) {
-        let idArr;
         try {
-            idArr = JSON.parse('[' + body.filter + ']');
-        } catch (error) {
-            res.redirect('/system/configuration')
-        } finally {
+            let idArr = JSON.parse('[' + body.filter + ']');
             Employee.findAll().then((users) => {
                 let usersID = [];
                 let notUsersID;
@@ -338,6 +334,8 @@ router.post('/users', (req, res, next) => {
             }).catch((error) => {
                 next(error);
             })
+        } catch (error) {
+            res.redirect('/system/configuration')
         }
     }
 });
