@@ -1,0 +1,32 @@
+extends ../dashboard
+
+block inner-content
+  h1.mb-4.text-center Users
+  .row.mb-3
+    .col-md-12.col-lg-12
+      form(action='/users')
+        .row.mb-4
+          .col-lg-6
+            input.w-100.form-control(type='text' name='filter' placeholder='id1,id2,id3...')
+          .col-lg-6
+            button.w-100(type='submit' class='btn btn-success') Search
+        div.tab-content.mb-3
+          div.tab-pane.show.active(id='user')
+            .table-responsive
+              table(class='table table-striped table-hover' cellpadding='5')
+                thead
+                  tr
+                    th ID
+                    th Email
+                    th Name
+                    th Type
+                tbody
+                  each user in users
+                    tr
+                      td= user.id
+                      td= user.email
+                      td= user.name
+                      if user.isAdmin
+                        td.table-success Admin
+                      else
+                        td.table-warning User
