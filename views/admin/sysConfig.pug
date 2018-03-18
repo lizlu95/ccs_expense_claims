@@ -13,9 +13,9 @@ block inner-content
       .row
         .col-3.mb-3 #{setting.name}
         .col-3.mb-3
-          input.form-control(type='number' name=setting.name value=setting.value readonly=true)
+          input.form-control(name=setting.name value=setting.value readonly=true)
         .col-3.mb-3
-          input.form-control(type='number' name=newSettingValuePug)
+          input.form-control(name=newSettingValuePug)
     .row.mb-4
       .col-2.mb-3
         button.btn.btn-primary(type='submit') Save
