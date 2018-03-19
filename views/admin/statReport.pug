@@ -11,7 +11,7 @@ block inner-content
       .row
         .col-4.mb-2
           label(for='submitters') Submitter
-          input#submitters.form-control(type="text" list="submitters" name='submitter_name' value=submitterName)
+          input#submitters.form-control(type="text" list="submitters" placeholder='id,name,..' name='submitter_name' value=submitterName)
         .col-2.mt-4
           .custom-control.custom-checkbox
             input#allsub.custom-control-input(
@@ -24,7 +24,7 @@ block inner-content
       .row
         .col-4.mb-2
           label(for='approvers') Approver
-          input#approvers.form-control(type="text" list="approvers" name='approver_name' value=approverName)
+          input#approvers.form-control(type="text" list="approvers" placeholder='id,name,..' name='approver_name' value=approverName)
         .col-2.mt-4
           .custom-control.custom-checkbox
             input#allapp.custom-control-input(
@@ -37,7 +37,7 @@ block inner-content
       .row
         .col-4.mb-2
           label(for='costCentres') Cost Centres
-          input#costCentres.form-control(type="text" list="costCentres" name='cost_centre' value=costCentreName)
+          input#costCentres.form-control(type="text" list="costCentres" placeholder='id,number,..' name='cost_centre' value=costCentreName)
         .col-2.mt-4
           .custom-control.custom-checkbox
             input#allcc.custom-control-input(
@@ -50,10 +50,10 @@ block inner-content
       .row
         .col-4.mb-3
           label(for='fdate') From
-          input.date#fdate.form-control(type='text' name='report_start_date' value=reportStartDate)
+          input.date#fdate.form-control(type='text' name='report_start_date' placeholder='yyyy-mm-dd' value=reportStartDate)
         .col-4.mb-3
-          label(for='tdate') Up To
-          input.date#tdate.form-control(type='text' name='report_end_date' value=reportEndDate)
+          label(for='tdate') To
+          input.date#tdate.form-control(type='text' name='report_end_date' placeholder='yyyy-mm-dd' value=reportEndDate)
         .col-2.mt-4
           .custom-control.custom-checkbox
             input#alld.custom-control-input(

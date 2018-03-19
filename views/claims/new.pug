@@ -59,7 +59,7 @@ block inner-content
                   span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
                 .col-md-4
                   label(for='date') Date
-                  input.date.form-control(:name="'items[' + index + '][date]'" :data-index='index' type='text' v-datepicker='index' value='' required)
+                  input.date.form-control(:name="'items[' + index + '][date]'" :data-index='index' type='text' v-datepicker='index' value='' placeholder='yyyy-mm-dd' required)
                   .invalid-feedback
                     | Please enter a valid date.
                   .valid-feedback
