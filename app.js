@@ -92,6 +92,12 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
+app.use(function (req, res, next) {
+  res.locals.currentYear = (new Date()).getFullYear().toString();
+
+  next();
+});
+
 // globally accessible routes
 app.use('/login', login);
 

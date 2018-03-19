@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  div#expense-claim-app.h-100
+  div#expense-claim-app
     nav.navbar.sticky-top.background-alternate.flex-md-nowrap.p-0
       a.navbar-brand.background-dark.text-white.col-xl-3.mr-0(href='/')
         .row.align-items-center
@@ -14,7 +14,7 @@ block content
     .container-fluid
       .row.h-100
         nav.col-xl-3.bg-light.sidebar
-          .sidebar-sticky.pt-4
+          .sidebar-sticky.pt-3
             ul.nav.flex-column
               li.nav-item
                 a.nav-link(href='/claims')
@@ -68,7 +68,12 @@ block content
                     polyline(points='10 9 9 9 8 9')
                   span= expenseClaim.id
         main.col-xl-9(role='main')
-          .container.my-45
+          .container.my-3
             block inner-content
+  .footer.background-footer.text-center
+    .container
+      .row
+        .col-12
+          Copyright Coast Capital Savings &#169; #{currentYear}
 
 block scripts
