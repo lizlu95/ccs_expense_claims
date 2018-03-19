@@ -7,3 +7,18 @@
 .custom-file-input {
   opacity: 0;
 }
+
+.flexContainer {
+  display: -webkit-flex;
+  display: flex;
+  -ms-flex-direction: row;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  width: 300px;
+}
+
+.flexItem {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}

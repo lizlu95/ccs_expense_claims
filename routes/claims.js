@@ -20,6 +20,7 @@ const CostCentre = database.CostCentre;
 const GL = database.GL;
 const Company = database.Company;
 const Receipt = database.Receipt;
+const ApprovalLimit = database.ApprovalLimit;
 const Configuration = database.Configuration;
 
 /* GET /claims */
@@ -62,6 +63,9 @@ router.get('', function (req, res, next) {
 
 /* GET /claims/new */
 router.get('/new', function (req, res, next) {
+  var employee = Employee.build({
+    id: req.user.id,
+  });
   async.waterfall([
     function (callback) {
       res.locals.title = 'New Claim';
@@ -81,9 +85,7 @@ router.get('/new', function (req, res, next) {
       });
     },
     function (callback) {
-      Employee.build({
-        id: req.user.id,
-      }).getPreviousMileage().then((previousMileage) => {
+      employee.getPreviousMileage().then((previousMileage) => {
         res.locals.previousMileage = previousMileage;
 
         callback(null);
@@ -116,9 +118,40 @@ router.get('/new', function (req, res, next) {
           return [configuration.name, configuration.value];
         }));
 
-        callback(null);
+        var maxPerDiem = _.find(res.locals.configurations, (value, name) => {
+          return name === 'max_per_diem_amount';
+        });
+
+        callback(null, maxPerDiem);
       });
     },
+    (maxPerDiem, callback) => {
+      employee.getExpenseClaims({
+        where: {
+          createdAt: {
+            [Op.between]: [moment().startOf('day').toDate(), moment().toDate()],
+          },
+        },
+      }).then((expenseClaims) => {
+        var expenseClaimIds = _.map(expenseClaims, (expenseClaim) => {
+          return expenseClaim.id;
+        });
+        ExpenseClaimItem.findAll({
+          where: {
+            expenseClaimId: {
+              [Op.in]: expenseClaimIds,
+            },
+          },
+        }).then((expenseClaimItems) => {
+          var dailyTotal = _.reduce(expenseClaimItems, (acc, expenseClaimItem) => {
+            return acc + (expenseClaimItem.total || 0);
+          }, 0);
+          res.locals.maxPerDiemRemaining = maxPerDiem - dailyTotal;
+
+          callback(null);
+        });
+      });
+    }
   ], function (err) {
     if (err) {
       next(err);
@@ -133,7 +166,6 @@ router.get('/:id', function (req, res, next) {
   var expenseClaimId = req.params.id;
 
   res.locals.title = 'Claim ' + expenseClaimId;
-
   res.locals.s3BucketName = s3.config.params.Bucket;
   res.locals.s3Region = s3.config.region;
 
@@ -162,6 +194,13 @@ router.get('/:id', function (req, res, next) {
           },
           CostCentre,
         ],
+        order: [
+          [
+            EmployeeExpenseClaim,
+            'createdAt',
+            'ASC',
+          ],
+        ],
       }).then((expenseClaim) => {
         if (expenseClaim) {
           // include submitter and active manager
@@ -187,6 +226,48 @@ router.get('/:id', function (req, res, next) {
         } else {
           callback('Expense claim not found!');
         }
+      });
+    },
+    (expenseClaim, callback) => {
+      res.locals.isActiveManager = expenseClaim.activeManager.id === req.user.id;
+
+      ExpenseClaimItem.findAll(
+        {
+          where: {
+            expenseClaimId: {
+              [Op.eq]: expenseClaim.id
+            }
+          }
+        }
+      ).then(function (items) {
+        var total = 0;
+        for (var expenseClaimItem of items) {
+          total += expenseClaimItem.total;
+        }
+
+        ApprovalLimit.findAll(
+          {
+            where: {
+              employeeId: {
+                [Op.eq]: req.user.id,
+              },
+              costCentreId: {
+                [Op.eq]: expenseClaim.costCentreId
+              },
+              limit: {
+                [Op.gte]: total
+              }
+            }
+          }
+        ).then(function (approvalLimit) {
+          if (!_.isEmpty(approvalLimit)) {
+            res.locals.managerCanApprove = true;
+          } else {
+            res.locals.managerCanApprove = false;
+          }
+
+          callback(null, expenseClaim);
+        });
       });
     },
   ], function (err) {
@@ -325,7 +406,6 @@ router.post('', function (req, res, next) {
             transaction: t,
           }).then(function (expenseClaim) {
             var notifier = new Notifier(req);
-
             notifier.notifyExpenseClaimSubmitted(employeeId, managerId, expenseClaim.id)
               .then((info) => {
                 callback(null, expenseClaim);
@@ -353,5 +433,198 @@ router.post('', function (req, res, next) {
     }
   });
 });
+
+/* POST /claims/:id */
+// TODO PUT
+router.post('/:id', function (req, res, next) {
+  var expenseClaimId = req.params.id;
+  // TODO make it a transaction then notify
+  var status = req.body.status;
+
+  res.locals.title = 'Claim ' + expenseClaimId;
+
+  var updateAttributes = {};
+  if (!_.isUndefined(status)) {
+    updateAttributes['status'] = status;
+  };
+
+  new Promise(function (fulfill, reject) {
+    let pArr = [];
+    pArr.push(ExpenseClaim.update(updateAttributes, {
+      where: {
+        id: {
+          [Op.eq]: expenseClaimId
+        }
+      }
+    }));
+
+    Promise.all(pArr).then(function (nothing) {
+      ExpenseClaim.findOne({
+        where: {
+          id: {
+            [Op.eq]: expenseClaimId,
+          },
+        },
+      }).then((expenseClaim) => {
+        EmployeeExpenseClaim.findOne({
+          where: {
+            expenseClaimId: {
+              [Op.eq]: expenseClaimId,
+            },
+            isOwner: {
+              [Op.eq]: 1,
+            },
+          },
+        }).then((employeeExpenseClaim) => {
+          var notifier = new Notifier(req);
+          notifier.notifyExpenseClaimStatusChange(employeeExpenseClaim.employeeId, req.user.id, expenseClaimId, expenseClaim.status);
+
+          fulfill(nothing);
+        });
+      });
+    });
+  }).then(function () {
+    res.redirect('/claims/' + expenseClaimId);
+  });
+});
+
+router.post('/:id/forward', function (req, res, next) {
+  var expenseClaimId = req.params.id;
+
+  async.waterfall([
+    (callback) => {
+      // only transact if current manager is removed and new manager is added
+      sequelize.transaction(function (t) {
+        return EmployeeExpenseClaim.update({
+          isActive: false,
+        }, {
+          where: {
+            expenseClaimId: {
+              [Op.eq]: expenseClaimId,
+            },
+            isOwner: {
+              [Op.eq]: 0,
+            },
+            isActive: {
+              [Op.eq]: 1,
+            },
+          },
+          transaction: t,
+        }).then(function (employeeExpenseClaim) {
+          var newEmployeeExpenseClaim = {
+            employeeId: req.body.forwardee,
+            expenseClaimId: expenseClaimId,
+            isOwner: false,
+            isActive: true,
+          };
+          return EmployeeExpenseClaim.create(newEmployeeExpenseClaim, {
+            transaction: t,
+          });
+        }).then(function (employeeExpenseClaim) {
+          EmployeeExpenseClaim.findOne({
+            where: {
+              expenseClaimId: {
+                [Op.eq]: expenseClaimId,
+              },
+              isOwner: {
+                [Op.eq]: 1,
+              },
+            },
+          }).then((employeeExpenseClaim) => {
+            var notifier = new Notifier(req);
+            notifier.notifyExpenseClaimForwarded(employeeExpenseClaim.employeeId, req.user.id, req.body.forwardee, expenseClaimId)
+              .then((info) => {
+                callback(null);
+              })
+              .catch((err) => {
+                callback(null);
+              });
+          });
+        }).catch(function(err) {
+          callback(err);
+        });
+      });
+    },
+  ], (err) => {
+    if (err) {
+      err = {
+        message: 'Failed to create expense claim!',
+        status: 409,
+      };
+
+      next(err);
+    } else {
+      res.redirect('/claims/' + expenseClaimId);
+    }
+  });
+});
+
+/* GET /claims/:id/forwardees */
+router.get('/:id/forwardees', function (req, res, next) {
+  var expenseClaimId = req.params.id;
+  res.locals.title = 'Claim ' + expenseClaimId.toString() + ' Forwardees';
+
+  findApprovalLimits(expenseClaimId, req.user.id).then(function (approvalLimits) {
+    let forwardees = [];
+    for (let approvalLimit of approvalLimits) {
+      forwardees.push({
+        employeeId: approvalLimit.employeeId,
+        employeeName: approvalLimit.Employee.name,
+      });
+    }
+    res.locals.forwardees = forwardees;
+    res.locals.expenseClaimId = expenseClaimId;
+
+    res.render('claims/forwardees');
+  });
+});
+
+var findApprovalLimits = function (expenseClaimId, forwardingEmployeeId) {
+  var total = 0;
+  return new Promise(function (fulfill, reject) {
+    ExpenseClaim.findOne({
+      where: {
+        id: {
+          [Op.eq]: expenseClaimId
+        }
+      }
+    }).then(function (result) {
+      ExpenseClaimItem.findAll(
+        {
+          where: {
+            expenseClaimId: {
+              [Op.eq]: expenseClaimId
+            }
+          }
+        }
+      ).then(function (items) {
+        // TODO: Add field for total of a claim?
+        for (var expenseClaimItem of items) {
+          total += expenseClaimItem.total;
+        }
+        ApprovalLimit.findAll(
+          {
+            where: {
+              costCentreId: {
+                [Op.eq]: result.costCentreId
+              },
+              employeeId: {
+                [Op.ne]: forwardingEmployeeId,
+              },
+              limit: {
+                [Op.gte]: total
+              }
+            },
+            include: [
+              Employee,
+            ],
+          }
+        ).then(function (value) {
+          fulfill(value);
+        });
+      });
+    });
+  });
+};
 
 module.exports = router;

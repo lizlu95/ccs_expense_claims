@@ -14,12 +14,12 @@ mixin progressBar(status)
 
 mixin receiptRow(expenseClaimItem)
   if (expenseClaimItem.Receipt && expenseClaimItem.Receipt.key)
-    td
+    td.flexContainer
       - var resourceUrl = `https://s3-${s3Region}.amazonaws.com/${s3BucketName}/${encodeURIComponent(expenseClaimItem.Receipt.key)}`
       if (expenseClaimItem.Receipt.type === 'application/pdf')
         iframe(src=`https://docs.google.com/gview?url=${resourceUrl}&embedded=true` style='' frameborder='0')
       else
-        img.img-receipt.img-fluid(src=resourceUrl crossorigin='anonymous')
+        img.flexItem.img-receipt.img-fluid(src=resourceUrl crossorigin='anonymous')
   else
     td
 
@@ -31,6 +31,19 @@ mixin expenseClaimLog(employeeExpenseClaim)
       td #{employeeExpenseClaim.Employee.name} forwarded the claim.
     else
       td #{employeeExpenseClaim.Employee.name} was assigned to claim.
+
+mixin updateButtons(employee)
+  if managerCanApprove
+    .col-2.mb-3
+      button#approved.btn.btn-primary.btn-lg.btn-success(type='submit' name='status' value='approved') Approve
+  .col-2.mb-3
+    button#rejected.btn.btn-primary.btn-lg.btn-danger(type='submit' name='status' value='rejected') Reject
+
+mixin forwardButtons(employee)
+  .col-2.mb-3
+    if !managerCanApprove
+      button#forwarded.btn.btn-primary.btn-lg.btn-info(type='submit') Forward
+
 
 block inner-content
   .row.mb-4
@@ -49,10 +62,12 @@ block inner-content
       .row.mb-4
         .col-md-6
           label(for='employee-id') Submitter
-          input#name.form-control(type='text' value=expenseClaim.submitter.name readonly=true)
+          a(href=`/users/${expenseClaim.submitter.id}`)
+            input.clickable#name.form-control(type='text' value=expenseClaim.submitter.name readonly=true)
         .col-md-6
           label(for='approver-id') Approver
-          input#name.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
+          a(href=`/users/${expenseClaim.activeManager.id}`)
+            input.clickable#name.form-control(type='text' value=expenseClaim.activeManager.name readonly=true)
       .row
         .col-md-6
           label(for='cost-centre-number') Cost Centre
@@ -74,6 +89,7 @@ block inner-content
                   th #
                   th Date
                   th Expense Category
+                  th Description
                   th km
                   th Receipt
                   th GL
@@ -84,6 +100,7 @@ block inner-content
                     td= expenseClaimItem.id
                     td= expenseClaimItem.createdAt
                     td= expenseClaimItem.GL.description
+                    td= expenseClaimItem.description
                     td= expenseClaimItem.numKm
                     +receiptRow(expenseClaimItem)
                     td= expenseClaimItem.GL.number
@@ -106,6 +123,14 @@ block inner-content
                   tr
                     +expenseClaimLog(employeeExpenseClaim)
                     td= employeeExpenseClaim.createdAt
+
+  if isActiveManager
+    .row.mb-4
+      form(method='post', action='/claims/' + expenseClaim.id)
+        +updateButtons(employee)
+      form(method='get' action='/claims/' + expenseClaim.id + '/forwardees')
+        +forwardButtons(employee)
+
 block scripts
   script.
     $(document).ready(function () {
@@ -122,4 +147,5 @@ block scripts
           },
         });
     });
+
 

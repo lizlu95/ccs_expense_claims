@@ -59,7 +59,7 @@ block inner-content
                   span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
                 .col-md-4
                   label(for='date') Date
-                  input.date.form-control(:name="'items[' + index + '][date]'" type='date' v-model='item.date' value='' required)
+                  input.date.form-control(:name="'items[' + index + '][date]'" :data-index='index' type='text' v-datepicker='index' value='' required)
                   .invalid-feedback
                     | Please enter a valid date.
                   .valid-feedback
@@ -145,7 +145,7 @@ block inner-content
                   .input-group
                     .input-group-prepend
                       .input-group-text $
-                    input#total.form-control(name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
+                    input#total.form-control(:name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
         .row
           .col-12
             div#add-item.btn.btn-warning.btn-block.btn-lg(@click='addItem()') Add Item
@@ -176,7 +176,11 @@ block inner-content
                 .input-group-prepend
                   .input-group-text $
                 input#total.form-control(type='number' :value='itemsTotal' readonly=true)
-                input#total-max.form-control(type='hidden' :value='itemsTotal')
+                input#total-max.form-control(type='float' :value='itemsTotal' max=maxPerDiemRemaining style='display: none;')
+                .invalid-feedback
+                  | Please ensure your total amount is less than $#{maxPerDiemRemaining}.
+                .valid-feedback
+                  | Looks good!
         .row
           .col-12
             button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
@@ -208,13 +212,13 @@ block scripts
     ];
     var MB_SIZE_IN_B = 1024000;
     var PER_MILEAGE_VALUES = {
-      INITIAL: parseInt(#{configurations.per_mileage_value_initial}) || '',
-      OVERFLOW: parseInt(#{configurations.per_mileage_value_overflow}) || '',
+      INITIAL: parseFloat(#{configurations.per_mileage_value_initial}) || '',
+      OVERFLOW: parseFloat(#{configurations.per_mileage_value_overflow}) || '',
     };
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
       data: {
-        previousMileage: parseInt(#{previousMileage}),
+        previousMileage: parseFloat(#{previousMileage}),
         costCentreNumber: '',
         bankNumber: '',
         items: [{
@@ -415,15 +419,15 @@ block scripts
       },
       computed: {
         itemsTotal: function () {
-          return this.items.reduce(function (acc, item) {
+          return Math.round(this.items.reduce(function (acc, item) {
             return acc + item.total;
-          }, 0);
+          }, 0) * 100) / 100;
         },
         carryForwardMileage: function () {
           return this.previousMileage + this.items.reduce(function (acc, item) {
             var amount;
             if (item.glDescription === MILEAGE_GL_DESCRIPTION) {
-              amount = parseInt(item.numKm || 0);
+              amount = parseFloat(item.numKm || 0);
             } else {
               amount = 0;
             }
@@ -432,4 +436,16 @@ block scripts
           }, 0);
         },
       },
+      directives: {
+        datepicker: {
+          bind: function (el, bindings, vnode) {
+            $(el).datepicker({
+              dateFormat: 'yy-mm-dd',
+              onClose: function (text) {
+                vnode.context.items[parseInt($(el).data('index'))].date = text;
+              },
+            });
+          },
+        },
+      }
     });

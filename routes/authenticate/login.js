@@ -13,7 +13,6 @@ router.get('/', function(req, res, next) {
     if (!_.isEmpty(error)) {
       res.locals.error = error;
     }
-
     res.render('authenticate/login');
   }
 });

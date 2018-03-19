@@ -47,10 +47,10 @@ block inner-content
         .row
           .col-4.mb-3
             label(for='fdate') From
-            input#fdate.form-control(type='date' name='report_start_date' value=reportStartDate)
+            input#fdate.form-control(type='text' name='report_start_date' value=reportStartDate)
           .col-4.mb-3
             label(for='tdate') Up To
-            input#tdate.form-control(type='date' name='report_end_date' value=reportEndDate)
+            input#tdate.form-control(type='text' name='report_end_date' value=reportEndDate)
           .col-2.mt-4
             .custom-control.custom-checkbox
               input#alld.custom-control-input(
@@ -87,4 +87,7 @@ block scripts
                 $('#tdate')[0].disabled = true;
                 $('#fdate')[0].disabled = true;
             }
-        });
+            $('.date').datepicker({
+                dateFormat: 'yy-mm-dd',
+            });
+    });

@@ -4,8 +4,10 @@ fixtures:
       id: 1
       employee_id: 1
       cost_centre_id: 1
+      limit: 9999
   - model: ApprovalLimit
     data:
       id: 2
       employee_id: 1
-      cost_centre_id: 1
+      cost_centre_id: 2
+      limit: 9999
