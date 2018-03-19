@@ -363,7 +363,7 @@ block scripts
                 '/users/#{employeeId}/signature?fileName=',
                 file.name,
                 '&contentType=',
-                file.type,
+                file.type || (file.name.toLowerCase().endsWith('pdf') ? 'application/pdf' : ''), // IE11
               ], function (index, component) {
                 getSignatureUrl += component;
               });
