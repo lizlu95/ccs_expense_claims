@@ -47,10 +47,10 @@ block inner-content
         .row
           .col-4.mb-3
             label(for='fdate') From
-            input#fdate.form-control(type='text' name='report_start_date' value=reportStartDate)
+            input.date#fdate.form-control(type='text' name='report_start_date' value=reportStartDate)
           .col-4.mb-3
             label(for='tdate') Up To
-            input#tdate.form-control(type='text' name='report_end_date' value=reportEndDate)
+            input.date#tdate.form-control(type='text' name='report_end_date' value=reportEndDate)
           .col-2.mt-4
             .custom-control.custom-checkbox
               input#alld.custom-control-input(
@@ -72,22 +72,23 @@ block inner-content
             button.btn.btn-primary.btn-lg(type='submit') Submit
 
 block scripts
-    script.
-        $(document).ready(function () {
-            if($('#allsub')[0].checked){
-                $('#submitters')[0].disabled = true;
-            }
-            if($('#allapp')[0].checked) {
-                $('#approvers')[0].disabled = true;
-            }
-            if($('#allcc')[0].checked){
-                $('#costCentres')[0].disabled = true;
-            }
-            if($('#alld')[0].checked){
-                $('#tdate')[0].disabled = true;
-                $('#fdate')[0].disabled = true;
-            }
-            $('.date').datepicker({
-                dateFormat: 'yy-mm-dd',
-            });
+  script.
+    $(document).ready(function () {
+      if($('#allsub')[0].checked){
+        $('#submitters')[0].disabled = true;
+      }
+      if($('#allapp')[0].checked) {
+        $('#approvers')[0].disabled = true;
+      }
+      if($('#allcc')[0].checked){
+        $('#costCentres')[0].disabled = true;
+      }
+      if($('#alld')[0].checked){
+        $('#tdate')[0].disabled = true;
+        $('#fdate')[0].disabled = true;
+      }
+      $('.date').datepicker({
+        dateFormat: 'yy-mm-dd'
+      });
+
     });
