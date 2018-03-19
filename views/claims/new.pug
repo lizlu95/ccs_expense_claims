@@ -357,13 +357,14 @@ block scripts
             } else {
               // TODO disable during processing with a try catch
               this.setItemReceiptStatus(item, 'pending');
+              var fileType = file.type || (file.name.toLowerCase().endsWith('pdf') ? 'application/pdf' : ''); // IE11
               // take care of the (possibly new) image
               var getSignatureUrl = '';
               $.each([
                 '/users/#{employeeId}/signature?fileName=',
                 file.name,
                 '&contentType=',
-                file.type || (file.name.toLowerCase().endsWith('pdf') ? 'application/pdf' : ''), // IE11
+                fileType,
               ], function (index, component) {
                 getSignatureUrl += component;
               });
@@ -371,7 +372,7 @@ block scripts
               axios.get(getSignatureUrl)
                 .then(_.bind(function (res) {
                   var fileKey = 'users/#{employeeId}/' + file.name;
-                  var contentType = file.type;
+                  var contentType = fileType;
                   var s3Options = {
                     headers: {
                       'Content-Type': contentType,
