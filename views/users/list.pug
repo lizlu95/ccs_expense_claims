@@ -29,7 +29,10 @@ block inner-content
                       td= user.email
                       td= user.name
                       td= user.managerId
-                      td= user.manager.name
+                      if user.manager
+                        td= user.manager.name
+                      else
+                        td
                       if user.isAdmin
                         td.table-success Admin
                       else
