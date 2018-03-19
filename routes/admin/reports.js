@@ -35,7 +35,6 @@ router.get('', function (req, res, next) {
 //      submitter_name    (optional)
 //      approver_name     (optional)
 router.post('', function(req, res, next){
-    console.log(req.body);
     // TODO deal with non-statistics reports
     async.waterfall([
         function(callback){
@@ -43,8 +42,12 @@ router.post('', function(req, res, next){
             var approverId = null;
 
             // TODO better name search
-            Employee.findOne({where: {name: {[Op.like]: '%' + req.body.submitter_name + '%'}}})
-                .then((submitter) => {
+            Employee.findOne({
+                where: {
+                    [Op.or]: [
+                        {id: {[Op.like]: '%' + req.body.submitter_name + '%'}},
+                        {name: {[Op.like]: '%' + req.body.submitter_name + '%'}}]}
+            }).then((submitter) => {
                     if(submitter && req.body.submitter_name){
                         res.locals.submitterName = submitter.name;
                         submitterId = submitter.id;
@@ -52,8 +55,12 @@ router.post('', function(req, res, next){
                         res.locals.allSubmitters = true;
                     }
 
-                    Employee.findOne({where: {name: {[Op.like]: '%' + req.body.approver_name + '%'}}})
-                        .then((approver) => {
+                    Employee.findOne({
+                        where: {
+                            [Op.or]: [
+                                {id: {[Op.like]: '%' + req.body.approver_name + '%'}},
+                                {name: {[Op.like]: '%' + req.body.approver_name + '%'}}]}
+                    }).then((approver) => {
                             if(approver && req.body.approver_name){
                                 res.locals.approverName = approver.name;
                                 approverId = approver.id;
