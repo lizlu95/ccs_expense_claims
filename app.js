@@ -20,6 +20,7 @@ const login = require('./routes/authenticate/login');
 const logout = require('./routes/authenticate/logout');
 const claims = require('./routes/claims');
 const users = require('./routes/users');
+const settings = require('./routes/settings');
 const limits = require('./routes/limits');
 const reports = require('./routes/admin/reports');
 const configuration = require('./routes/configuration');

@@ -1,0 +1,18 @@
+extends dashboard
+
+block inner-content
+  h1.mb-4.text-center Settings
+  .row
+    .col-12
+      form(method='POST' action='/settings')
+        .row.mb-4
+          h2 Password
+          .col-md-6
+            label(for='password-initial') Confirm
+            input#password-initial.form-control(type='password' name='passwordInitial')
+          .col-md-6
+            label(for='password-confirm') Initial
+            input#password-confirm.form-control(type='password' name='passwordConfirm')
+        .row.mb-4
+          .col-12
+            button.w-100(type='submit' class='btn btn-success') Submit
