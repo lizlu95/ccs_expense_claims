@@ -103,7 +103,7 @@ router.get('/new', function (req, res, next) {
 router.post('', function (req, res, next) {
   var newEmployeeId = req.body.id;
   sequelize.transaction(function (t) {
-    Employee.create({
+    return Employee.create({
       id: newEmployeeId,
       name: req.body.name,
       managerId: req.body.managerId,
@@ -111,35 +111,36 @@ router.post('', function (req, res, next) {
     }, {
       transaction: t,
     }).then((employee) => {
-      if (employee) {
-        if (req.body.isAdmin) {
-          Configuration.findOne({
-            where: {
-              name: {
-                [Op.eq]: 'admin_employee_ids',
-              },
+      if (req.body.isAdmin) {
+        return Configuration.findOne({
+          where: {
+            name: {
+              [Op.eq]: 'admin_employee_ids',
             },
-          }).then((configuration) => {
-            configuration.updateAttributes({
-              value: '[' + JSON.parse(configuration.value).push(newEmployeeId).toString() + ']',
-            }, {
-              transaction: t,
-            }).success(() => {
-              res.redirect('/users/' + newEmployeeId);
-            });
+          },
+        }).then((configuration) => {
+          configuration.updateAttributes({
+            value: '[' + JSON.parse(configuration.value).push(newEmployeeId).toString() + ']',
+          }, {
+            transaction: t,
           });
-        } else {
-          res.redirect('/users/' + newEmployeeId);
-        }
+        });
       } else {
-        var err = {
-          message: 'Could not create user.',
-          error: 500,
-        };
-
-        next(err);
+        return Promise.resolve();
       }
     });
+  }).then((employee) => {
+    if (employee) {
+      res.redirect('/users/' + newEmployeeId);
+    } else {
+      var err = {
+        message: 'Could not create user.',
+        error: 500,
+      };
+
+      next(err);
+    }
   });
+});
 
 module.exports = router;
