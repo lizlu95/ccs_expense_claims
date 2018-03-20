@@ -92,6 +92,13 @@ router.get('/:id', function (req, res, next) {
   });
 });
 
+/* GET /users/new */
+router.get('/new', function (req, res, next) {
+  res.locals.title = 'New User';
+
+  res.render('users/new');
+});
+
 /* POST /users */
 router.post('', function (req, res, next) {
   var newEmployeeId = req.body.id;

@@ -1,0 +1,31 @@
+extends ../dashboard
+
+block inner-content
+  h1.mb-4.text-center New User
+  .row
+    .col-12
+      form(method='POST' action='/users')
+        .row.mb-4
+          .col-md-6
+            label(for='employee-id') ID
+            input#employee-id.form-control(type='number' name='id')
+          .col-md-6
+            label(for='employee-name') Name
+            input#employee-name.form-control(type='text' name='name')
+        .row.mb-4
+          .col-md-6
+            label(for='manager-id') Manager ID
+            input#manager-id.form-control(type='number' name='managerId')
+          .col-md-6
+            label(for='employee-email') Email
+            input#employee-email.form-control(type='text' name='email')
+        .row.mb-4
+          .col-md-6
+            label(for='employee-password') Password
+            input#employee-password.form-control(type='password' name='password')
+          .col-md-6
+            label(for='employee-admin') Password
+            input#employee-admin.form-control(type='checkbox' name='isAdmin')
+        .row.mb-4
+          .col-12
+            button.w-100(type='submit' class='btn btn-success') Add
