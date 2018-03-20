@@ -4,6 +4,7 @@ const Op = require('sequelize').Op;
 const s3 = require('../s3');
 const _ = require('underscore');
 const sequelize = require('sequelize');
+const async = require('async');
 
 const database = require('../models/index');
 const Employee = database.Employee;
@@ -102,12 +103,14 @@ router.get('/new', function (req, res, next) {
 /* POST /users */
 router.post('', function (req, res, next) {
   var newEmployeeId = req.body.id;
+  var temporaryPassword = req.body.password;
   sequelize.transaction(function (t) {
     return Employee.create({
       id: newEmployeeId,
       name: req.body.name,
       managerId: req.body.managerId,
       email: req.body.email,
+      password: temporaryPassword,
     }, {
       transaction: t,
     }).then((employee) => {
@@ -131,7 +134,21 @@ router.post('', function (req, res, next) {
     });
   }).then((employee) => {
     if (employee) {
-      res.redirect('/users/' + newEmployeeId);
+      async.waterfall([
+        (callback) => {
+          var notifier = new Notifier(req);
+          notifier.notifyNewEmployee(newEmployeeId, temporaryPassword)
+            .then((info) => {
+              callback(null);
+            })
+            .catch((err) => {
+              callback(null);
+            });
+        },
+      ], (err) => {
+        // success regardless of success of email
+        res.redirect('/users/' + newEmployeeId);
+      });
     } else {
       var err = {
         message: 'Could not create user.',

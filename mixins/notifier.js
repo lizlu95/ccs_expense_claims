@@ -25,6 +25,29 @@ class Notifier {
     });
   }
 
+  notifyNewEmployee(employeeId, password, callback) {
+    var subject = 'New Expense Claim Account';
+    var message = 'Hello, a new employee account has been created for you with the password ' +
+        password +
+        ' which you can login with and change your password at ' +
+        this.baseUrl +
+        '/settings';
+
+    return new Promise(_.bind((resolve, reject) => {
+      async.series({
+        employee: (callback) => {
+          _notifyById.apply(this, [employeeId, subject, message, callback]);
+        },
+      }, (err, errs) => {
+        resolve(errs);
+
+        if (callback) {
+          callback(errs);
+        }
+      });
+    }, this));
+  }
+
   notifyExpenseClaimSubmitted(submitterId, approverId, expenseClaimId, callback) {
     var submitterSubject = 'Expense Claim ' + expenseClaimId + ' Approval Submitted';
     var submitterMessage = 'Hello, please find your submitted request at ' +
