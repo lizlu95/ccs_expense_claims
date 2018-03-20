@@ -3,6 +3,7 @@ const router = express.Router();
 const Op = require('sequelize').Op;
 const _ = require('underscore');
 const sequelize = require('sequelize');
+const async = require('async');
 
 const database = require('../models/index');
 const Employee = database.Employee;
@@ -17,41 +18,40 @@ router.get('', function (req, res, next) {
 /* POST /settings */
 router.post('', function (req, res, next) {
   if (req.body.passwordInitial && req.body.passwordConfirm &&
-     req.body.passwordInitial === req.body.passwordConfirm) {
+      req.body.passwordInitial === req.body.passwordConfirm) {
     Employee.findOne({
       where: {
         id: req.user.id,
       },
     }).then((employee) => {
       if (employee) {
-        employee.updateAttributes({
-          password: req.body.passwordInitial,
-        }).then(() => {
-          res.redirect('/settings');
-        }).catch(() => {
-          var err = {
-            message: 'Failed to update password',
-            status: 500,
-          };
+        async.waterfall([
+          (callback) => {
+            employee.updateAttributes({
+              password: req.body.passwordInitial,
+            }).then(() => {
+              res.locals.success = 'Password successfully updated.';
 
-          next(err);
+              callback(null);
+            }).catch(() => {
+              res.locals.error = 'Password failed to update.';
+
+              callback(null);
+            });
+          },
+        ], (err) => {
+          res.render('settings');
         });
       } else {
-        var err = {
-          message: 'Failed to update password',
-          status: 500,
-        };
+        res.locals.error = 'Failed to find current employee.';
 
-        next(err);
+        res.render('settings');
       }
     });
   } else {
-    var err = {
-      message: 'Passwords did not match, please try again.',
-      status: 500,
-    };
+    res.locals.error = 'Passwords did not match, please try again.',
 
-    next(err);
+    res.render('settings');
   }
 });
 
