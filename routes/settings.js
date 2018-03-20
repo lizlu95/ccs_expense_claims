@@ -15,7 +15,7 @@ router.get('', function (req, res, next) {
 });
 
 /* POST /settings */
-router.post('', function (res, req, next) {
+router.post('', function (req, res, next) {
   if (req.body.passwordInitial && req.body.passwordConfirm &&
      req.body.passwordInitial === req.body.passwordConfirm) {
     Employee.findOne({
