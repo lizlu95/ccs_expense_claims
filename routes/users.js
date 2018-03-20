@@ -150,13 +150,14 @@ router.post('', function (req, res, next) {
         res.redirect('/users/' + newEmployeeId);
       });
     } else {
-      var err = {
-        message: 'Could not create user.',
-        error: 500,
-      };
+      res.locals.error = 'Could not create user.';
 
-      next(err);
+      res.render('users/new');
     }
+  }).catch((err) => {
+    res.locals.error = 'Could not create user.';
+
+    res.render('users/new');
   });
 });
 
