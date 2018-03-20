@@ -154,6 +154,7 @@ app.use(function (req, res, next) {
 app.use('/', index);
 app.use('/logout', logout);
 app.use('/users', users);
+app.use('/settings', settings);
 app.use('/limits', limits);
 app.use('/claims', claims);
 
