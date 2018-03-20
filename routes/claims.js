@@ -477,9 +477,13 @@ router.post('/:id', function (req, res, next) {
           },
         }).then((employeeExpenseClaim) => {
           var notifier = new Notifier(req);
-          notifier.notifyExpenseClaimStatusChange(employeeExpenseClaim.employeeId, req.user.id, expenseClaimId, expenseClaim.status);
-
-          fulfill(nothing);
+          notifier.notifyExpenseClaimStatusChange(employeeExpenseClaim.employeeId, req.user.id, expenseClaimId, expenseClaim.status)
+            .then(() => {
+              fulfill(nothing);
+            })
+            .catch(() => {
+              fulfill(nothing);
+            });
         });
       });
     });
