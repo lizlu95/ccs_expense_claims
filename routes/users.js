@@ -3,11 +3,13 @@ const router = express.Router();
 const Op = require('sequelize').Op;
 const s3 = require('../s3');
 const _ = require('underscore');
+const sequelize = require('sequelize');
 
 const database = require('../models/index');
 const Employee = database.Employee;
 const ApprovalLimit = database.ApprovalLimit;
 const CostCentre = database.CostCentre;
+const Configuration = database.Configuration;
 
 /* GET /users/:id/signature */
 router.get('/:id/signature', function (req, res, next) {
@@ -92,24 +94,45 @@ router.get('/:id', function (req, res, next) {
 
 /* POST /users */
 router.post('', function (req, res, next) {
-  Employee.create({
-    id: req.body.id,
-    name: req.body.name,
-    managerId: req.body.managerId,
-    email: req.body.email,
-    password: req.body.password,
-  }).then((employee) => {
-    if (employee) {
-      res.redirect('/users');
-    } else {
-      var err = {
-        message: 'Could not create user.',
-        error: 500,
-      };
+  var newEmployeeId = req.body.id;
+  sequelize.transaction(function (t) {
+    Employee.create({
+      id: newEmployeeId,
+      name: req.body.name,
+      managerId: req.body.managerId,
+      email: req.body.email,
+    }, {
+      transaction: t,
+    }).then((employee) => {
+      if (employee) {
+        if (req.body.isAdmin) {
+          Configuration.findOne({
+            where: {
+              name: {
+                [Op.eq]: 'admin_employee_ids',
+              },
+            },
+          }).then((configuration) => {
+            configuration.updateAttributes({
+              value: '[' + JSON.parse(configuration.value).push(newEmployeeId).toString() + ']',
+            }, {
+              transaction: t,
+            }).success(() => {
+              res.redirect('/users/' + newEmployeeId);
+            });
+          });
+        } else {
+          res.redirect('/users/' + newEmployeeId);
+        }
+      } else {
+        var err = {
+          message: 'Could not create user.',
+          error: 500,
+        };
 
-      next(err);
-    }
+        next(err);
+      }
+    });
   });
-});
 
 module.exports = router;
