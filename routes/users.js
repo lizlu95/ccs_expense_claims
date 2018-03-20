@@ -64,6 +64,13 @@ router.get('', function (req, res, next) {
   });
 });
 
+/* GET /users/new */
+router.get('/new', function (req, res, next) {
+  res.locals.title = 'New User';
+
+  res.render('users/new');
+});
+
 /* GET /users/:id */
 router.get('/:id', function (req, res, next) {
   res.locals.title = 'User ' + req.params.id;
@@ -91,13 +98,6 @@ router.get('/:id', function (req, res, next) {
 
     res.render('users/detail');
   });
-});
-
-/* GET /users/new */
-router.get('/new', function (req, res, next) {
-  res.locals.title = 'New User';
-
-  res.render('users/new');
 });
 
 /* POST /users */
