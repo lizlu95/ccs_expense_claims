@@ -25,7 +25,7 @@ router.post('', function (req, res, next) {
     }).then((employee) => {
       if (employee) {
         employee.updateAttributes({
-          password: req.body.password,
+          password: req.body.passwordInitial,
         }).then(() => {
           res.redirect('/settings');
         }).catch(() => {
