@@ -90,4 +90,26 @@ router.get('/:id', function (req, res, next) {
   });
 });
 
+/* POST /users */
+router.post('', function (req, res, next) {
+  Employee.create({
+    id: req.body.id,
+    name: req.body.name,
+    managerId: req.body.managerId,
+    email: req.body.email,
+    password: req.body.password,
+  }).then((employee) => {
+    if (employee) {
+      res.redirect('/users');
+    } else {
+      var err = {
+        message: 'Could not create user.',
+        error: 500,
+      };
+
+      next(err);
+    }
+  });
+});
+
 module.exports = router;
