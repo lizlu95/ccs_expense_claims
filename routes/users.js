@@ -112,9 +112,22 @@ router.get('/:id', function (req, res, next) {
     ],
   }).then((employee) => {
     if (employee) {
-      res.locals.user = employee;
+      Configuration.findOne({
+        where: {
+          name: {
+            [Op.eq]: 'admin_employee_ids',
+          },
+        },
+      }).then((configuration) => {
+        if (configuration) {
+          var adminIds = JSON.parse(configuration.value);
+          employee.isAdmin = _.contains(adminIds, employee.id);
 
-      res.render('users/detail');
+          res.locals.user = employee;
+        }
+
+        res.render('users/detail');
+      });
     } else {
       var err = {
         message: 'User not found.',
