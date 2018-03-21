@@ -4,28 +4,66 @@ block inner-content
   h1.mb-4.text-center New User
   .row
     .col-12
-      form(method='POST' action='/users')
+      form.needs-validation(novalidate method='POST' action='/users')
         .row.mb-4
           .col-md-6
             label(for='employee-id') ID
             input#employee-id.form-control(type='number' name='id' required)
+            .invalid-feedback
+              | Please enter a valid employee ID.
+            .valid-feedback
+              | Looks good!
           .col-md-6
             label(for='employee-name') Name
             input#employee-name.form-control(type='text' name='name' required)
+            .invalid-feedback
+              | Please enter a valid employee name.
+            .valid-feedback
+              | Looks good!
         .row.mb-4
           .col-md-6
             label(for='manager-id') Manager ID
             input#manager-id.form-control(type='number' name='managerId' required)
+            .invalid-feedback
+              | Please enter a valid manager ID.
+            .valid-feedback
+              | Looks good!
           .col-md-6
             label(for='employee-email') Email
             input#employee-email.form-control(type='text' name='email' required)
+            .invalid-feedback
+              | Please enter a valid email.
+            .valid-feedback
+              | Looks good!
         .row.mb-4
           .col-md-6
             label(for='employee-password') Password
             input#employee-password.form-control(type='password' name='password' required)
+            .invalid-feedback
+              | Please enter a valid password.
+            .valid-feedback
+              | Looks good!
           .col-md-6
             label(for='employee-admin') Admin
             input#employee-admin.form-control(type='checkbox' name='isAdmin')
         .row.mb-4
           .col-12
             button.btn-lg.w-100(type='submit' class='btn btn-success') Submit
+block scripts
+  script.
+    (function() {
+      'use strict';
+
+      window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();

@@ -4,7 +4,7 @@ block inner-content
   h1.mb-4.text-center Settings
   .row
     .col-12
-      form(method='POST' action='/settings')
+      form.needs-validation(novalidate method='POST' action='/settings')
         .row.mb-4
           .col-12
             h2 Password
@@ -12,9 +12,35 @@ block inner-content
           .col-md-6
             label(for='password-initial') Initial
             input#password-initial.form-control(type='password' name='passwordInitial' required)
+            .invalid-feedback
+              | Please enter a valid password.
+            .valid-feedback
+              | Looks good!
           .col-md-6
             label(for='password-confirm') Confirm
             input#password-confirm.form-control(type='password' name='passwordConfirm' required)
+            .invalid-feedback
+              | Please enter a valid password.
+            .valid-feedback
+              | Looks good!
         .row.mb-4
           .col-12
             button.btn-lg.w-100(type='submit' class='btn btn-success') Submit
+block scripts
+  script.
+    (function() {
+      'use strict';
+
+      window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();
