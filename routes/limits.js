@@ -31,7 +31,7 @@ router.get('', function (req, res, next) {
   ApprovalLimit.findAll(conditions).then((approvalLimits) => {
     res.locals.approvalLimits = approvalLimits;
 
-    res.render('limits');
+    res.render('limits/list');
   });
 });
 

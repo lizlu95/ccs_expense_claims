@@ -1,13 +1,13 @@
 extends ../dashboard
 
 block inner-content
-  .row.mb-5
+  .row.mb-4
     .col-12.text-center
       h1 New Claim
   form.needs-validation(novalidate action='/claims' method='POST')
-    .row.mb-5
+    .row.mb-4
       .col-12
-        .row.mb-1
+        .row.mb-3
           .col-12
             h2 Information
         .row.mb-3
@@ -45,9 +45,9 @@ block inner-content
                 | Please enter a 14 digit bank account.
               .valid-feedback
                 | Looks good!
-    .row.mb-5
+    .row.mb-4
       .col-12
-        .row.mb-1
+        .row.mb-3
           .col-12
             h2 Items
         .row
@@ -146,7 +146,7 @@ block inner-content
                     .input-group-prepend
                       .input-group-text $
                     input#total.form-control(:name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
-        .row
+        .row.mt-3
           .col-12
             div#add-item.btn.btn-warning.btn-block.btn-lg(@click='addItem()') Add Item
     .row.mb-1.mb-5
@@ -181,7 +181,7 @@ block inner-content
                   | Please ensure your total amount is less than $#{maxPerDiemRemaining}.
                 .valid-feedback
                   | Looks good!
-        .row
+        .row.pt-3
           .col-12
             button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
 
