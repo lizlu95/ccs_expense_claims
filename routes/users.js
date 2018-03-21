@@ -132,8 +132,7 @@ router.post('', function (req, res, next) {
         return Promise.resolve();
       }
     });
-  }).then((employee) => {
-    if (employee) {
+  }).then(() => {
       async.waterfall([
         (callback) => {
           var notifier = new Notifier(req);
@@ -149,14 +148,13 @@ router.post('', function (req, res, next) {
         // success regardless of success of email
         res.redirect('/users/' + newEmployeeId);
       });
-    } else {
+  }).catch(() => {
       var err = {
         message: 'Could not create user.',
         error: 500,
       };
 
       next(err);
-    }
   });
 });
 
