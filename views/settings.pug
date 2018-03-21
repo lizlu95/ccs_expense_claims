@@ -11,10 +11,10 @@ block inner-content
         .row.mb-4
           .col-md-6
             label(for='password-initial') Initial
-            input#password-initial.form-control(type='password' name='passwordInitial')
+            input#password-initial.form-control(type='password' name='passwordInitial' required)
           .col-md-6
             label(for='password-confirm') Confirm
-            input#password-confirm.form-control(type='password' name='passwordConfirm')
+            input#password-confirm.form-control(type='password' name='passwordConfirm' required)
         .row.mb-4
           .col-12
-            button.w-100(type='submit' class='btn btn-success') Submit
+            button.btn-lg.w-100(type='submit' class='btn btn-success') Submit
