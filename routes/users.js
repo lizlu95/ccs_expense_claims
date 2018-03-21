@@ -103,7 +103,7 @@ router.get('/:id', function (req, res, next) {
     } else {
       var err = {
         message: 'User not found.',
-        error: 404,
+        status: 404,
       };
 
       next(err);
