@@ -3,7 +3,7 @@ const router = express.Router();
 const Op = require('sequelize').Op;
 const s3 = require('../s3');
 const _ = require('underscore');
-const sequelize = require('sequelize');
+const sequelize = require('../models/index').sequelize;
 const async = require('async');
 
 const database = require('../models/index');
