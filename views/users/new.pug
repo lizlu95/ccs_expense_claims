@@ -8,21 +8,21 @@ block inner-content
         .row.mb-4
           .col-md-6
             label(for='employee-id') ID
-            input#employee-id.form-control(type='number' name='id')
+            input#employee-id.form-control(type='number' name='id' required)
           .col-md-6
             label(for='employee-name') Name
-            input#employee-name.form-control(type='text' name='name')
+            input#employee-name.form-control(type='text' name='name' required)
         .row.mb-4
           .col-md-6
             label(for='manager-id') Manager ID
-            input#manager-id.form-control(type='number' name='managerId')
+            input#manager-id.form-control(type='number' name='managerId' required)
           .col-md-6
             label(for='employee-email') Email
-            input#employee-email.form-control(type='text' name='email')
+            input#employee-email.form-control(type='text' name='email' required)
         .row.mb-4
           .col-md-6
             label(for='employee-password') Password
-            input#employee-password.form-control(type='password' name='password')
+            input#employee-password.form-control(type='password' name='password' required)
           .col-md-6
             label(for='employee-admin') Admin
             input#employee-admin.form-control(type='checkbox' name='isAdmin')
