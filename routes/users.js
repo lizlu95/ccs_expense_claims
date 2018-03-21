@@ -6,6 +6,8 @@ const _ = require('underscore');
 const sequelize = require('../models/index').sequelize;
 const async = require('async');
 
+const Notifier = require('../mixins/notifier');
+
 const database = require('../models/index');
 const Employee = database.Employee;
 const ApprovalLimit = database.ApprovalLimit;
