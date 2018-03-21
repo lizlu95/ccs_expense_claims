@@ -30,8 +30,8 @@ block inner-content
                     th Limit
                 tbody
                   each approvalLimit in approvalLimits
-                    tr
-                      if approvalLimit.Employee
+                    if approvalLimit.Employee
+                      tr
                         td= approvalLimit.Employee.id
                         td= approvalLimit.Employee.email
                         td= approvalLimit.Employee.name
