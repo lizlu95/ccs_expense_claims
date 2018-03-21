@@ -21,7 +21,9 @@ router.post('', function (req, res, next) {
       req.body.passwordInitial === req.body.passwordConfirm) {
     Employee.findOne({
       where: {
-        id: req.user.id,
+        id: {
+          [Op.eq]: req.user.id,
+        },
       },
     }).then((employee) => {
       if (employee) {
