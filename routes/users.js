@@ -96,9 +96,18 @@ router.get('/:id', function (req, res, next) {
       },
     ],
   }).then((employee) => {
-    res.locals.user = employee;
+    if (employee) {
+      res.locals.user = employee;
 
-    res.render('users/detail');
+      res.render('users/detail');
+    } else {
+      var error = {
+        message: 'User not found.',
+        error: 404,
+      };
+
+      next(err);
+    }
   });
 });
 
