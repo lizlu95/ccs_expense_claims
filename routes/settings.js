@@ -51,7 +51,7 @@ router.post('', function (req, res, next) {
       }
     });
   } else {
-    req.flash('error', 'Failed to update password');
+    req.flash('error', 'Please ensure passwords match.');
 
     res.redirect('/settings');
   }
