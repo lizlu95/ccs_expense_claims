@@ -23,8 +23,11 @@ block inner-content
                   td= user.name
                   td
                     a(href=`/users/${user.managerId}`)= user.managerId
-                  td
-                    a(href=`/users/${user.managerId}`)= user.manager.name
+                  if user.manager
+                    td
+                      a(href=`/users/${user.managerId}`)= user.manager.name
+                  else
+                    td
                   if user.isAdmin
                     td.table-success Admin
                   else
