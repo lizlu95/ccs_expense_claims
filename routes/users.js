@@ -125,7 +125,7 @@ router.post('', function (req, res, next) {
           },
         }).then((configuration) => {
           return configuration.updateAttributes({
-            value: '[' + JSON.parse(configuration.value).push(newEmployeeId).toString() + ']',
+            value: '[' + JSON.parse(configuration.value).concat(newEmployeeId).toString() + ']',
           }, {
             transaction: t,
           });
