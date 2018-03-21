@@ -31,8 +31,9 @@ block inner-content
                 tbody
                   each approvalLimit in approvalLimits
                     tr
-                      td= approvalLimit.Employee.id
-                      td= approvalLimit.Employee.email
-                      td= approvalLimit.Employee.name
-                      td= approvalLimit.CostCentre.number
-                      td= approvalLimit.limit
+                      if approvalLimit.Employee
+                        td= approvalLimit.Employee.id
+                        td= approvalLimit.Employee.email
+                        td= approvalLimit.Employee.name
+                        td= approvalLimit.CostCentre.number
+                        td= approvalLimit.limit
