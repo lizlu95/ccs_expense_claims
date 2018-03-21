@@ -1,25 +1,28 @@
 extends ../dashboard
 
 block inner-content
-  h2 Configurations
-  .container
-    .row
-      p.col-3.mt-4 Name
-      p.col-3.mt-4 Current Value
-      p.col-3.mt-4 New Value
+  .row.mb-4
+    .col-12
+      h1.text-center Configurations
+  .row.font-weight-bold.mb-3
+    p.col-md-3 Name
+    p.col-md-4 Current Value
+    p.col-md-5 New Value
   form(method='post', action='/system/configuration/settings')
     -
     each setting in settingsPug
-      .row
-        .col-3.mb-3 #{setting.name}
-        .col-3.mb-3
+      .row.mb-3
+        .col-md-3 #{setting.name}
+        .col-md-4
           input.form-control(name=setting.name value=setting.value readonly=true)
-        .col-3.mb-3
+        .col-md-5
           input.form-control(type='number' step='0.01' name=newSettingValuePug)
     .row.mb-4
-      .col-2.mb-3
-        button.btn.btn-primary(type='submit') Save
-  h2.mb-3 Administrators
+      .col-2
+        button.w-100.btn.btn-lg.btn-primary(type='submit') Save
+  .row.mb-4
+    .col-12
+      h2.text-center.mb-3 Administrators
   .row.mb-3
     .col-md-12.col-lg-12
       form(method='post', action='/system/configuration/users')
@@ -30,11 +33,11 @@ block inner-content
             button.w-100(type='submit' name='find' class='btn btn-success') Search
         .row.mb-4
           .col-md-4
-            button.w-100(type='submit' name='all' class='btn btn-primary') All
+            button.btn-lg.w-100(type='submit' name='all' class='btn btn-primary') All
           .col-md-4
-            button.w-100(type='submit' name='admin' class='btn btn-primary') Admin
+            button.btn-lg.w-100(type='submit' name='admin' class='btn btn-primary') Admin
           .col-md-4
-            button.w-100(type='submit' name='notAdmin' class='btn btn-primary') User
+            button.btn-lg.w-100(type='submit' name='notAdmin' class='btn btn-primary') User
         div.tab-content.mb-3
           div.tab-pane.show.active(id='user')
             .table-responsive
@@ -60,6 +63,6 @@ block inner-content
                         td.table-warning User
         .row
           .col-md-6
-            button.w-100(type='submit' name='add' class='btn btn-success') Promote
+            button.w-100(type='submit' name='add' class='btn btn-lg btn-success') Promote
           .col-md-6
-            button.w-100(type='submit' name='move' class='btn btn-danger') Demote
+            button.w-100(type='submit' name='move' class='btn btn-lg btn-danger') Demote
