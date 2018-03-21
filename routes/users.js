@@ -101,7 +101,7 @@ router.get('/:id', function (req, res, next) {
 
       res.render('users/detail');
     } else {
-      var error = {
+      var err = {
         message: 'User not found.',
         error: 404,
       };
