@@ -72,13 +72,13 @@ block content
             if error
               .row.mb-4
                 .col-12
-                  .alert.alert-danger(role='alert')
-                    p= error
+                  .alert.alert-danger.text-center(role='alert')
+                    span= error
             if success
               .row.mb-4
                 .col-12
-                  .alert.alert-success(role='alert')
-                    p= success
+                  .alert.alert-success.text-center(role='alert')
+                    span= success
             block inner-content
   .footer.background-footer.text-center
     .container

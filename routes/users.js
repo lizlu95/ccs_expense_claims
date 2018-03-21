@@ -184,16 +184,15 @@ router.post('', function (req, res, next) {
             });
         },
       ], (err) => {
+        req.flash('success', 'User successfully created.');
+
         // success regardless of success of email
         res.redirect('/users/' + newEmployeeId);
       });
   }).catch(() => {
-      var err = {
-        message: 'Could not create user.',
-        error: 500,
-      };
+    req.flash('error', 'Could not create user.');
 
-      next(err);
+    res.redirect('/users/' + newEmployeeId);
   });
 });
 

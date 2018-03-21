@@ -104,6 +104,10 @@ app.use(function (req, res, next) {
   if (!_.isEmpty(error)) {
     res.locals.error = error;
   }
+  var success = req.flash('success');
+  if (!_.isEmpty(success)) {
+    res.locals.success = success;
+  }
 
   next();
 });
