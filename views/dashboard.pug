@@ -69,6 +69,16 @@ block content
                   span= expenseClaim.id
         main.col-xl-9(role='main')
           .container.my-46
+            if error
+              .row.mb-4
+                .col-12
+                  .alert.alert-danger(role='alert')
+                    p= error
+            if success
+              .row.mb-4
+                .col-12
+                  .alert.alert-success(role='alert')
+                    p= success
             block inner-content
   .footer.background-footer.text-center
     .container

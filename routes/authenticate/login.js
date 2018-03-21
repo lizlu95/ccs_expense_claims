@@ -9,10 +9,7 @@ router.get('/', function(req, res, next) {
     res.redirect('/');
   } else {
     res.locals.title = 'Log In';
-    var error = req.flash('error');
-    if (!_.isEmpty(error)) {
-      res.locals.error = error;
-    }
+
     res.render('authenticate/login');
   }
 });

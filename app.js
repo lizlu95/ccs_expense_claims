@@ -99,6 +99,15 @@ app.use(function (req, res, next) {
   next();
 });
 
+app.use(function (req, res, next) {
+  var error = req.flash('error');
+  if (!_.isEmpty(error)) {
+    res.locals.error = error;
+  }
+
+  next();
+});
+
 // globally accessible routes
 app.use('/login', login);
 
