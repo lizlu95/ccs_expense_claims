@@ -30,11 +30,11 @@ router.post('', function (req, res, next) {
             employee.updateAttributes({
               password: req.body.passwordInitial,
             }).then(() => {
-              res.locals.success = 'Successfully updated password.';
+              req.flash('success', 'Successfully updated password.');
 
               callback(null);
             }).catch(() => {
-              res.locals.error = 'Failed to update password';
+              req.flash('error', 'Failed to update password');
 
               callback(null);
             });
@@ -43,21 +43,15 @@ router.post('', function (req, res, next) {
           res.redirect('/settings');
         });
       } else {
-        var err = {
-          message: 'Failed to update password',
-          status: 500,
-        };
+        req.flash('error', 'Failed to update password');
 
-        next(err);
+        res.redirect('/settings');
       }
     });
   } else {
-    var err = {
-      message: 'Passwords did not match, please try again.',
-      status: 500,
-    };
+    req.flash('error', 'Failed to update password');
 
-    next(err);
+    res.redirect('/settings');
   }
 });
 
