@@ -1,0 +1,24 @@
+extends ../dashboard
+
+block inner-content
+  h1.mb-4.text-center New Limit
+  .row
+    .col-12
+      form(method='POST' action='/limits')
+        .row.mb-4
+          .col-md-6
+            label(for='employee-id') Employee ID
+            input#employee-id.form-control(type='number' name='employeeId' required)
+          .col-md-6
+            label(for='cost-centre') Cost Centre
+            select#cost-centre.custom-select(name='costCentreId' required)
+              option(value='') Choose..
+              each costCentre in costCentres
+                option(value= costCentre.id)= costCentre.number
+        .row.mb-4
+          .col-md-6
+            label(for='limit') Limit
+            input#limit.form-control(type='number' name='limit' required)
+        .row.mb-4
+          .col-12
+            button.btn-lg.w-100(type='submit' class='btn btn-success') Submit

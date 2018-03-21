@@ -35,4 +35,35 @@ router.get('', function (req, res, next) {
   });
 });
 
+/* GET /limits/new */
+router.get('/new', function (req, res, next) {
+  res.locals.title = 'New Limit';
+
+  CostCentre.findAll().then((costCentres) => {
+    res.locals.costCentres = costCentres;
+
+    res.render('limits/new');
+  });
+});
+
+/* POST /limits/new */
+router.post('', function (req, res, next) {
+  ApprovalLimit.create({
+    employeeId: req.body.employeeId,
+    costCentreId: req.body.costCentreId,
+    limit: req.body.limit,
+  }).then((approvalLimit) => {
+    if (approvalLimit) {
+      res.redirect('/limits');
+    } else {
+      var err = {
+        message: 'Could not create approval limit.',
+        status: 500,
+      };
+
+      next(err);
+    }
+  });
+});
+
 module.exports = router;
