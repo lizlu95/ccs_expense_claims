@@ -60,9 +60,24 @@ router.get('', function (req, res, next) {
     }],
   });
   Employee.findAll(conditions).then((employees) => {
-    res.locals.users = employees;
+    Configuration.findOne({
+      where: {
+        name: {
+          [Op.eq]: 'admin_employee_ids',
+        },
+      },
+    }).then((configuration) => {
+      if (configuration) {
+        var adminIds = JSON.parse(configuration.value);
+        _.each(employees, (employee) => {
+          employee.isAdmin = _.contains(adminIds, employee.id);
+        });
 
-    res.render('users/list');
+        res.locals.users = employees;
+      }
+
+      res.render('users/list');
+    });
   });
 });
 
