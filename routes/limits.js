@@ -54,14 +54,13 @@ router.post('', function (req, res, next) {
     limit: req.body.limit,
   }).then((approvalLimit) => {
     if (approvalLimit) {
-      res.redirect('/limits');
-    } else {
-      var err = {
-        message: 'Could not create approval limit.',
-        status: 500,
-      };
+      req.flash('success', 'Approval limit successfully created.');
 
-      next(err);
+      res.redirect('/limits/' + approvalLimit.id);
+    } else {
+      req.flash('error', 'Could not create approval limit.');
+
+      res.redirect('/limits');
     }
   });
 });
