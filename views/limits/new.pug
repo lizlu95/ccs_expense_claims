@@ -1,0 +1,54 @@
+extends ../dashboard
+
+block inner-content
+  h1.mb-4.text-center New Limit
+  .row
+    .col-12
+      form.needs-validation(novalidate method='POST' action='/limits')
+        .row.mb-4
+          .col-md-6
+            label(for='employee-id') Employee ID
+            input#employee-id.form-control(type='number' name='employeeId' required)
+            .invalid-feedback
+              | Please enter a valid employee ID.
+            .valid-feedback
+              | Looks good!
+          .col-md-6
+            label(for='cost-centre') Cost Centre
+            select#cost-centre.custom-select(name='costCentreId' required)
+              option(value='') Choose..
+              each costCentre in costCentres
+                option(value= costCentre.id)= costCentre.number
+            .invalid-feedback
+              | Please select a cost centre.
+            .valid-feedback
+              | Looks good!
+        .row.mb-4
+          .col-md-6
+            label(for='limit') Limit
+            input#limit.form-control(type='number' name='limit' required)
+            .invalid-feedback
+              | Please enter a valid limit.
+            .valid-feedback
+              | Looks good!
+        .row.mb-4
+          .col-12
+            button.btn-lg.w-100(type='submit' class='btn btn-success') Submit
+block scripts
+  script.
+    (function() {
+      'use strict';
+
+      window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+          form.addEventListener('submit', function(event) {
+            if (form.checkValidity() === false) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      }, false);
+    })();

@@ -2,28 +2,18 @@ fixtures:
   - model: Configuration
     data:
       name: max_per_diem_amount
-      value: 1000
   - model: Configuration
     data:
       name: per_mileage_value_initial
-      value: 1
   - model: Configuration
     data:
-<<<<<<< HEAD
       name: per_mileage_value_overflow
-=======
-      name: KM_rates_less_than_5000
->>>>>>> show_all_data
-      value: 2
   - model: Configuration
     data:
-      name: KM_rates_great_than_5000
-      value: 3
+      name: max_per_meal_amount
   - model: Configuration
     data:
       name: per_mileage_value
-      value: 5
   - model: Configuration
     data:
       name: admin_employee_ids
-      value: "[]"

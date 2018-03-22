@@ -1,62 +1,97 @@
 extends ../dashboard
 
 block inner-content
-  form(method='post', action='/reports')
-    h1 Statistic Reports
-      h3 Filters
-      .container
-        .row
-          .col-4.mb-2
-            label(for='submitters') Submitters
-            input.form-control(type="text" list="submitters" name='sub')
-            datalist#submitters
-              option(value='') Choose...
-              option Name
-          .col-2.mt-4
-            .custom-control.custom-radio
-              input#allsub.custom-control-input(name='allsub' type='checkbox')
-              label.custom-control-label(for='allsub') All Submitters
-        .row
-          .col-4.mb-2
-            label(for='approvers') Approvers
-            input.form-control(type="text" list="approvers" name='app')
-            datalist#approvers
-              option(value='') Choose...
-              option Name
-          .col-2.mt-4
-            .custom-control.custom-radio
-              input#allapp.custom-control-input(name='allapp' type='checkbox')
-              label.custom-control-label(for='allapp') All Approvers
-        .row
-          .col-4.mb-2
-            label(for='costCentres') Cost Centres
-            input.form-control(type="text" list="costCentres" name='cc')
-            datalist#costCentres
-              option(value='') Choose...
-              option cost centre
-          .col-2.mt-4
-            .custom-control.custom-radio
-              input#allcc.custom-control-input(name='allcc' type='checkbox')
-              label.custom-control-label(for='allcc') All Cost Centres
-        .row
-          .col-4.mb-3
-            label(for='fdate') From Date
-            input#fdate.form-control(type='date' value='' name='fdate')
-          .col-4.mb-3
-            label(for='tdate') To Date
-            input#tdate.form-control(type='date' value='' name='tdate')
-          .col-2.mt-4
-            .custom-control.custom-radio
-              input#alld.custom-control-input(name='alld' type='checkbox')
-              label.custom-control-label(for='alld') All Date
+  form(method='post', action='/reports?report_type=statistics')
+    h1.text-center.mb-4 Reports
+    h2.text-center.mb-3 Statistics
+    .container
+      .row
+        .col-12
+          h3 Filters
+      .row
+        .col-4.mb-2
+          label(for='submitters') Submitter
+          input#submitters.form-control(type="text" list="submitters" placeholder='id,name,..' name='submitter_name' value=submitterName)
+        .col-2.mt-4
+          .custom-control.custom-checkbox
+            input#allsub.custom-control-input(
+              name='all_submitters'
+              type='checkbox'
+              onclick='document.getElementById("submitters").disabled=this.checked;'
+              checked=allSubmitters
+            )
+            label.custom-control-label(for='allsub') All Submitters
+      .row
+        .col-4.mb-2
+          label(for='approvers') Approver
+          input#approvers.form-control(type="text" list="approvers" placeholder='id,name,..' name='approver_name' value=approverName)
+        .col-2.mt-4
+          .custom-control.custom-checkbox
+            input#allapp.custom-control-input(
+              name='all_approvers'
+              type='checkbox'
+              onclick='document.getElementById("approvers").disabled=this.checked;'
+              checked=allApprovers
+            )
+            label.custom-control-label(for='allapp') All Approvers
+      .row
+        .col-4.mb-2
+          label(for='costCentres') Cost Centres
+          input#costCentres.form-control(type="text" list="costCentres" placeholder='id,number,..' name='cost_centre' value=costCentreName)
+        .col-2.mt-4
+          .custom-control.custom-checkbox
+            input#allcc.custom-control-input(
+              name='all_cost_centres'
+              type='checkbox'
+              onclick='document.getElementById("costCentres").disabled=this.checked;'
+              checked=allCostCentres
+            )
+            label.custom-control-label(for='allcc') All Cost Centres
+      .row
+        .col-4.mb-3
+          label(for='fdate') From
+          input.date#fdate.form-control(type='text' name='report_start_date' placeholder='yyyy-mm-dd' value=reportStartDate)
+        .col-4.mb-3
+          label(for='tdate') To
+          input.date#tdate.form-control(type='text' name='report_end_date' placeholder='yyyy-mm-dd' value=reportEndDate)
+        .col-2.mt-4
+          .custom-control.custom-checkbox
+            input#alld.custom-control-input(
+              name='all_dates'
+              type='checkbox'
+              onclick='document.getElementById("tdate").disabled=this.checked; document.getElementById("fdate").disabled=this.checked;'
+              checked=allDates
+            )
+            label.custom-control-label(for='alld') All Date
 
-        hr.mb-4
-        p Number of submitted requests:
-        p Number of pending request(s):
-        p Number of approved request(s):
-        p Number of declined request(s):
+      hr.mb-4
+      p Number of submitted requests: #{submitted}
+      p Number of pending request(s): #{pending}
+      p Number of approved request(s): #{approved}
+      p Number of declined request(s): #{declined}
 
-        .row
-          .col-2.mb-3
-            button.btn.btn-primary.btn-lg(type='submit') Save
+      .row
+        .col-2.mb-3
+          button.btn.btn-primary.btn-lg(type='submit') Submit
 
+block scripts
+  script.
+    $(document).ready(function () {
+      if($('#allsub')[0].checked){
+        $('#submitters')[0].disabled = true;
+      }
+      if($('#allapp')[0].checked) {
+        $('#approvers')[0].disabled = true;
+      }
+      if($('#allcc')[0].checked){
+        $('#costCentres')[0].disabled = true;
+      }
+      if($('#alld')[0].checked){
+        $('#tdate')[0].disabled = true;
+        $('#fdate')[0].disabled = true;
+      }
+      $('.date').datepicker({
+        dateFormat: 'yy-mm-dd'
+      });
+
+    });

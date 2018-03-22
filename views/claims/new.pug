@@ -1,13 +1,13 @@
 extends ../dashboard
 
 block inner-content
-  .row.mb-5
+  .row.mb-4
     .col-12.text-center
       h1 New Claim
   form.needs-validation(novalidate action='/claims' method='POST')
-    .row.mb-5
+    .row.mb-4
       .col-12
-        .row.mb-1
+        .row.mb-3
           .col-12
             h2 Information
         .row.mb-3
@@ -45,9 +45,9 @@ block inner-content
                 | Please enter a 14 digit bank account.
               .valid-feedback
                 | Looks good!
-    .row.mb-5
+    .row.mb-4
       .col-12
-        .row.mb-1
+        .row.mb-3
           .col-12
             h2 Items
         .row
@@ -59,7 +59,7 @@ block inner-content
                   span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
                 .col-md-4
                   label(for='date') Date
-                  input.date.form-control(:name="'items[' + index + '][date]'" type='date' v-model='item.date' value='' required)
+                  input.date.form-control(:name="'items[' + index + '][date]'" :data-index='index' type='text' v-datepicker='index' value='' placeholder='yyyy-mm-dd' required)
                   .invalid-feedback
                     | Please enter a valid date.
                   .valid-feedback
@@ -99,7 +99,7 @@ block inner-content
                   .d-flex.justify-content-between.align-items-center
                     label(for='num-km') # km Travelled
                     // TODO make this dynamic based on configuration values
-                    span.badge.badge-secondary.badge-sm.num-km-info(data-toggle='tooltip' data-placement='top' title='' data-original-title=`$${configurations.per_mileage_value_initial} < 5000km, $${configurations.per_mileage_value_overflow} > 5000km`) ?
+                    span.badge.badge-secondary.badge-sm.num-km-info(data-toggle='tooltip' data-placement='top' title=`$${configurations.per_mileage_value_initial} < 5000km, $${configurations.per_mileage_value_overflow} > 5000km`) ?
                   .input-group
                     input.num-km.form-control(:name="'items[' + index + '][numKm]'" type='number' value='' v-model.number='item.numKm' min="0" step="0.01" @input='updateItemTotal(item)' required='required')
                     .input-group-append
@@ -117,7 +117,7 @@ block inner-content
                       i.fas.fa-check.text-success
                     label(v-show='isItemReceiptStatus(item, "error")')
                       i.fas.fa-exclamation.text-danger
-                  input#receipt-file.form-control.custom-file-input(type='file' @change='handleReceiptFile(item, $event)' v-on:click='handleReceiptFileClick(item, $event)')
+                  input#receipt-file.form-control.custom-file-input(type='file' @change='handleReceiptFile(item, $event)' v-on:click='handleReceiptFileClick(item, $event)' accept='image/*, application/pdf')
                   input#receipt-key.form-control(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model='item.receipt.key')
                   input#receipt-type.form-control(:name="'items[' + index + '][receipt][type]'" type='hidden' v-model='item.receipt.type')
                   label.custom-file-label(for='receipt-file' v-bind:class='{ "disabled" : isItemReceiptStatus(item, "pending") }') {{ formatFileKey(item.receipt.key) }}
@@ -145,8 +145,8 @@ block inner-content
                   .input-group
                     .input-group-prepend
                       .input-group-text $
-                    input#total.form-control(name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
-        .row
+                    input#total.form-control(:name="'items[' + index + '][total]'" type='number' :value='item.total' readonly=true)
+        .row.mt-3
           .col-12
             div#add-item.btn.btn-warning.btn-block.btn-lg(@click='addItem()') Add Item
     .row.mb-1.mb-5
@@ -176,8 +176,12 @@ block inner-content
                 .input-group-prepend
                   .input-group-text $
                 input#total.form-control(type='number' :value='itemsTotal' readonly=true)
-                input#total-max.form-control(type='hidden' :value='itemsTotal')
-        .row
+                input#total-max.form-control(type='float' :value='itemsTotal' max=maxPerDiemRemaining style='display: none;')
+                .invalid-feedback
+                  | Please ensure your total amount is less than $#{maxPerDiemRemaining}.
+                .valid-feedback
+                  | Looks good!
+        .row.pt-3
           .col-12
             button.btn.btn-success.btn-lg.btn-block(type='submit') Submit
 
@@ -208,13 +212,13 @@ block scripts
     ];
     var MB_SIZE_IN_B = 1024000;
     var PER_MILEAGE_VALUES = {
-      INITIAL: parseInt(#{configurations.per_mileage_value_initial}) || '',
-      OVERFLOW: parseInt(#{configurations.per_mileage_value_overflow}) || '',
+      INITIAL: parseFloat(#{configurations.per_mileage_value_initial}) || '',
+      OVERFLOW: parseFloat(#{configurations.per_mileage_value_overflow}) || '',
     };
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
       data: {
-        previousMileage: parseInt(#{previousMileage}),
+        previousMileage: parseFloat(#{previousMileage}),
         costCentreNumber: '',
         bankNumber: '',
         items: [{
@@ -346,7 +350,9 @@ block scripts
             this.validateReceipt(item, event);
           } else {
             var file = files[0];
-            if (file.size > MB_SIZE_IN_B * 2) {
+            var fileType = file.type || (file.name.toLowerCase().endsWith('pdf') ? 'application/pdf' : ''); // IE11
+            if (file.size > MB_SIZE_IN_B * 2 ||
+                (fileType !== 'application/pdf' && fileType.indexOf('image') === -1)) {
               this.setItemReceiptStatus(item, 'error');
 
               this.validateReceipt(item, event);
@@ -359,7 +365,7 @@ block scripts
                 '/users/#{employeeId}/signature?fileName=',
                 file.name,
                 '&contentType=',
-                file.type,
+                fileType,
               ], function (index, component) {
                 getSignatureUrl += component;
               });
@@ -367,7 +373,7 @@ block scripts
               axios.get(getSignatureUrl)
                 .then(_.bind(function (res) {
                   var fileKey = 'users/#{employeeId}/' + file.name;
-                  var contentType = file.type;
+                  var contentType = fileType;
                   var s3Options = {
                     headers: {
                       'Content-Type': contentType,
@@ -415,15 +421,15 @@ block scripts
       },
       computed: {
         itemsTotal: function () {
-          return this.items.reduce(function (acc, item) {
+          return Math.round(this.items.reduce(function (acc, item) {
             return acc + item.total;
-          }, 0);
+          }, 0) * 100) / 100;
         },
         carryForwardMileage: function () {
           return this.previousMileage + this.items.reduce(function (acc, item) {
             var amount;
             if (item.glDescription === MILEAGE_GL_DESCRIPTION) {
-              amount = parseInt(item.numKm || 0);
+              amount = parseFloat(item.numKm || 0);
             } else {
               amount = 0;
             }
@@ -432,4 +438,16 @@ block scripts
           }, 0);
         },
       },
+      directives: {
+        datepicker: {
+          bind: function (el, bindings, vnode) {
+            $(el).datepicker({
+              dateFormat: 'yy-mm-dd',
+              onClose: function (text) {
+                vnode.context.items[parseInt($(el).data('index'))].date = text;
+              },
+            });
+          },
+        },
+      }
     });

@@ -25,13 +25,36 @@ class Notifier {
     });
   }
 
+  notifyNewEmployee(employeeId, password, callback) {
+    var subject = 'New Expense Claim Account';
+    var message = 'Hello, a new employee account has been created for you with the password ' +
+        password +
+        ' which you can login with and change your password at ' +
+        this.baseUrl +
+        '/settings';
+
+    return new Promise(_.bind((resolve, reject) => {
+      async.series({
+        employee: (callback) => {
+          _notifyById.apply(this, [employeeId, subject, message, callback]);
+        },
+      }, (err, errs) => {
+        resolve(errs);
+
+        if (callback) {
+          callback(errs);
+        }
+      });
+    }, this));
+  }
+
   notifyExpenseClaimSubmitted(submitterId, approverId, expenseClaimId, callback) {
-    var submitterSubject = 'Expense Claim Approval Submitted';
+    var submitterSubject = 'Expense Claim ' + expenseClaimId + ' Approval Submitted';
     var submitterMessage = 'Hello, please find your submitted request at ' +
         this.baseUrl +
         '/claims/' +
         expenseClaimId;
-    var approverSubject = 'Expense Claim Approval Requested';
+    var approverSubject = 'Expense Claim ' + expenseClaimId + ' Approval Requested';
     var approverMessage = 'Hello, your review has been requested for the expense claim at ' +
         this.baseUrl +
         '/claims/' +
@@ -56,7 +79,85 @@ class Notifier {
       });
     }, this));
   }
+
+  notifyExpenseClaimStatusChange(submitterId, approverId, expenseClaimId, status, callback) {
+    var submitterSubject = 'Expense Claim ' + expenseClaimId + ' Status Change';
+    var submitterMessage = 'Hello, the status of your expense claim at ' +
+        this.baseUrl +
+        '/claims/' +
+        expenseClaimId +
+        'has changed to ' + status + '.';
+    var approverSubject = 'Expense Claim ' + expenseClaimId + ' Status Change';
+    var approverMessage = 'Hello, you have successfully changed the status of your managed expense claim at ' +
+        this.baseUrl +
+        '/claims/' +
+        expenseClaimId +
+        ' to ' + status + '.';
+
+    return new Promise(_.bind((resolve, reject) => {
+      async.series({
+        submitter: (callback) => {
+          _notifyById.apply(this, [submitterId, submitterSubject, submitterMessage, callback]);
+        },
+        approver: (callback) => {
+          _notifyById.apply(this, [approverId, approverSubject, approverMessage, callback]);
+        },
+      }, (err, errs) => {
+        // object of errs for submitter/approver
+        // e.g. { submitter: err, approver: err }
+        resolve(errs);
+
+        if (callback) {
+          callback(errs);
+        }
+      });
+    }, this));
+  }
+
+  notifyExpenseClaimForwarded(submitterId, forwarderId, forwardeeId, forwardeeName, expenseClaimId, callback) {
+    var submitterSubject = 'Expense Claim ' + expenseClaimId + ' Forwarded';
+    var submitterMessage = 'Hello, your expense claim at ' +
+        this.baseUrl +
+        '/claims/' +
+        expenseClaimId +
+        ' has been forwarded to ' + forwardeeName;
+    var forwarderSubject = 'Expense Claim ' + expenseClaimId + 'Forwarded';
+    var forwarderMessage = 'Hello, you have successfully forwarded the expense claim at ' +
+        this.baseUrl +
+        '/claims/' +
+        expenseClaimId +
+        ' to ' + forwardeeName + '.';
+    var forwardeeSubject = 'Expense Claim Approval Requested';
+    var forwardeeMessage = 'Hello, your review has been requested for the expense claim at ' +
+        this.baseUrl +
+        '/claims/' +
+        expenseClaimId;
+
+    return new Promise(_.bind((resolve, reject) => {
+      async.series({
+        submitter: (callback) => {
+          _notifyById.apply(this, [submitterId, submitterSubject, submitterMessage, callback]);
+        },
+        forwarder: (callback) => {
+          _notifyById.apply(this, [forwarderId, forwarderMessage, forwarderMessage, callback]);
+        },
+        forwardee: (callback) => {
+          _notifyById.apply(this, [forwardeeId, forwardeeMessage, forwardeeMessage, callback]);
+        },
+      }, (err, errs) => {
+        // object of errs for submitter/approver
+        // e.g. { submitter: err, approver: err }
+        resolve(errs);
+
+        if (callback) {
+          callback(errs);
+        }
+      });
+    }, this));
+  }
 }
+
+
 
 function _notify(to, subject, message, callback) {
   let mailOptions = {

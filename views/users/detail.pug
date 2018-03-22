@@ -1,0 +1,50 @@
+extends ../dashboard
+
+block inner-content
+  h1.mb-4.text-center User #{user.id}
+  .row.mb-3
+    .col-md-12.col-lg-12
+      div.tab-content.mb-3
+        div.tab-pane.show.active(id='user')
+          .table-responsive
+            table(class='table table-striped table-hover' cellpadding='5')
+              thead
+                tr
+                  th ID
+                  th Email
+                  th Name
+                  th Manager ID
+                  th Manager Name
+                  th Type
+              tbody
+                tr
+                  td= user.id
+                  td= user.email
+                  td= user.name
+                  td
+                    a(href=`/users/${user.managerId}`)= user.managerId
+                  if user.manager
+                    td
+                      a(href=`/users/${user.managerId}`)= user.manager.name
+                  else
+                    td
+                  if user.isAdmin
+                    td.table-success Admin
+                  else
+                    td.table-warning User
+  h2.mb-4.text-center Limits
+  .row.mb-3
+    .col-md-12.col-lg-12
+      div.tab-content.mb-3
+        div.tab-pane.show.active(id='limit')
+          .table-responsive
+            table(class='table table-striped table-hover' cellpadding='5')
+              thead
+                tr
+                  th Cost Centre
+                  th Limit
+              tbody
+                each approvalLimit in user.ApprovalLimits
+                  tr
+                    td= approvalLimit.CostCentre.number
+                    td= approvalLimit.limit

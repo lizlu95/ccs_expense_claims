@@ -17,12 +17,33 @@ a {
   margin-bottom: 2rem !important;
 }
 
+.pt-45 {
+  padding-top: 2rem !important;
+}
+
+.my-46 {
+  margin-top: 2rem !important;
+  margin-bottom: 6rem !important;
+}
+
+.mb-10 {
+  margin-bottom: 10rem !important;
+}
+
 .background-alternate {
 	background: $background-alternate;
 }
 
 .background-dark {
   background: $background-dark;
+}
+
+.background-footer {
+  background: $background-footer;
+}
+
+.footer {
+  padding: 6rem;
 }
 
 .align-items-center {
@@ -49,7 +70,7 @@ a {
 
 .progress {
   font-size: 1rem;
-  height: 40px;
+  height: 50px;
 }
 
 .custom-file-label {
@@ -70,4 +91,12 @@ a {
       cursor: pointer;
     }
   }
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.ui-datepicker {
+  z-index: 999 !important;
 }

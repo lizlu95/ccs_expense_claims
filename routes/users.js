@@ -1,6 +1,18 @@
 const express = require('express');
 const router = express.Router();
+const Op = require('sequelize').Op;
 const s3 = require('../s3');
+const _ = require('underscore');
+const sequelize = require('../models/index').sequelize;
+const async = require('async');
+
+const Notifier = require('../mixins/notifier');
+
+const database = require('../models/index');
+const Employee = database.Employee;
+const ApprovalLimit = database.ApprovalLimit;
+const CostCentre = database.CostCentre;
+const Configuration = database.Configuration;
 
 /* GET /users/:id/signature */
 router.get('/:id/signature', function (req, res, next) {
@@ -25,6 +37,163 @@ router.get('/:id/signature', function (req, res, next) {
       error: 'Invalid or missing parameters.'
     });
   }
+});
+
+/* GET /users */
+router.get('', function (req, res, next) {
+  res.locals.title = 'Users';
+
+  var conditions = {};
+  if (req.query.filter) {
+    conditions = {
+      where: {
+        id: {
+          [Op.in]: JSON.parse('[' + req.query.filter + ']'),
+        },
+      },
+    };
+  }
+  _.extend(conditions, {
+    include: [{
+      model: Employee,
+      as: 'manager',
+    }],
+  });
+  Employee.findAll(conditions).then((employees) => {
+    Configuration.findOne({
+      where: {
+        name: {
+          [Op.eq]: 'admin_employee_ids',
+        },
+      },
+    }).then((configuration) => {
+      if (configuration) {
+        var adminIds = JSON.parse(configuration.value);
+        _.each(employees, (employee) => {
+          employee.isAdmin = _.contains(adminIds, employee.id);
+        });
+
+        res.locals.users = employees;
+      }
+
+      res.render('users/list');
+    });
+  });
+});
+
+/* GET /users/new */
+router.get('/new', function (req, res, next) {
+  res.locals.title = 'New User';
+
+  res.render('users/new');
+});
+
+/* GET /users/:id */
+router.get('/:id', function (req, res, next) {
+  res.locals.title = 'User ' + req.params.id;
+
+  Employee.findOne({
+    where: {
+      id: {
+        [Op.eq]: req.params.id,
+      },
+    },
+    include: [
+      {
+        model: ApprovalLimit,
+        include: [
+          CostCentre,
+        ],
+      },
+      {
+        model: Employee,
+        as: 'manager',
+      },
+    ],
+  }).then((employee) => {
+    if (employee) {
+      Configuration.findOne({
+        where: {
+          name: {
+            [Op.eq]: 'admin_employee_ids',
+          },
+        },
+      }).then((configuration) => {
+        if (configuration) {
+          var adminIds = JSON.parse(configuration.value);
+          employee.isAdmin = _.contains(adminIds, employee.id);
+
+          res.locals.user = employee;
+        }
+
+        res.render('users/detail');
+      });
+    } else {
+      var err = {
+        message: 'User not found.',
+        status: 404,
+      };
+
+      next(err);
+    }
+  });
+});
+
+/* POST /users */
+router.post('', function (req, res, next) {
+  var newEmployeeId = req.body.id;
+  var temporaryPassword = req.body.password;
+  sequelize.transaction(function (t) {
+    return Employee.create({
+      id: newEmployeeId,
+      name: req.body.name,
+      managerId: req.body.managerId,
+      email: req.body.email,
+      password: temporaryPassword,
+    }, {
+      transaction: t,
+    }).then((employee) => {
+      if (req.body.isAdmin) {
+        return Configuration.findOne({
+          where: {
+            name: {
+              [Op.eq]: 'admin_employee_ids',
+            },
+          },
+        }).then((configuration) => {
+          return configuration.updateAttributes({
+            value: '[' + JSON.parse(configuration.value).concat(newEmployeeId).toString() + ']',
+          }, {
+            transaction: t,
+          });
+        });
+      } else {
+        return Promise.resolve();
+      }
+    });
+  }).then(() => {
+      async.waterfall([
+        (callback) => {
+          var notifier = new Notifier(req);
+          notifier.notifyNewEmployee(newEmployeeId, temporaryPassword)
+            .then((info) => {
+              callback(null);
+            })
+            .catch((err) => {
+              callback(null);
+            });
+        },
+      ], (err) => {
+        req.flash('success', 'User successfully created.');
+
+        // success regardless of success of email
+        res.redirect('/users/' + newEmployeeId);
+      });
+  }).catch(() => {
+    req.flash('error', 'Could not create user.');
+
+    res.redirect('/users/' + newEmployeeId);
+  });
 });
 
 module.exports = router;
