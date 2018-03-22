@@ -117,7 +117,7 @@ block inner-content
                       i.fas.fa-check.text-success
                     label(v-show='isItemReceiptStatus(item, "error")')
                       i.fas.fa-exclamation.text-danger
-                  input#receipt-file.form-control.custom-file-input(type='file' @change='handleReceiptFile(item, $event)' v-on:click='handleReceiptFileClick(item, $event)')
+                  input#receipt-file.form-control.custom-file-input(type='file' @change='handleReceiptFile(item, $event)' v-on:click='handleReceiptFileClick(item, $event)' accept='image/*, application/pdf')
                   input#receipt-key.form-control(:name="'items[' + index + '][receipt][key]'" type='hidden' v-model='item.receipt.key')
                   input#receipt-type.form-control(:name="'items[' + index + '][receipt][type]'" type='hidden' v-model='item.receipt.type')
                   label.custom-file-label(for='receipt-file' v-bind:class='{ "disabled" : isItemReceiptStatus(item, "pending") }') {{ formatFileKey(item.receipt.key) }}
