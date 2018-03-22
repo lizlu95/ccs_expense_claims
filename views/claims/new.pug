@@ -350,14 +350,15 @@ block scripts
             this.validateReceipt(item, event);
           } else {
             var file = files[0];
-            if (file.size > MB_SIZE_IN_B * 2) {
+            var fileType = file.type || (file.name.toLowerCase().endsWith('pdf') ? 'application/pdf' : ''); // IE11
+            if (file.size > MB_SIZE_IN_B * 2 ||
+                (fileType !== 'application/pdf' && fileType.indexOf('image') === -1)) {
               this.setItemReceiptStatus(item, 'error');
 
               this.validateReceipt(item, event);
             } else {
               // TODO disable during processing with a try catch
               this.setItemReceiptStatus(item, 'pending');
-              var fileType = file.type || (file.name.toLowerCase().endsWith('pdf') ? 'application/pdf' : ''); // IE11
               // take care of the (possibly new) image
               var getSignatureUrl = '';
               $.each([
