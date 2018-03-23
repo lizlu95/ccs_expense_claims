@@ -159,8 +159,8 @@ app.use(function (req, res, next) {
     ],
     limit: 10,
   }).then((expenseClaims) => {
-    res.locals.recentExpenseClaims = _.uniq(expenseClaims, (expenseClaim) => {
-      return expenseClaim.employeeId;
+    res.locals.recentExpenseClaims = _.uniq(expenseClaims, false, (expenseClaim) => {
+      return expenseClaim.id;
     });
 
     next();
