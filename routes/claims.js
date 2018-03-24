@@ -419,15 +419,23 @@ router.post('', function (req, res, next) {
             }],
             transaction: t,
           }).then(function (expenseClaim) {
-            var notifier = new Notifier(req);
-            notifier.notifyExpenseClaimSubmitted(employeeId, managerId, expenseClaim.id)
-              .then((info) => {
-                callback(null, expenseClaim);
-              })
-              .catch((err) => {
-                // TODO flash message forward based on err
-                callback(null, expenseClaim);
-              });
+            AutoSave.destroy({
+              where: {
+                employeeId: {
+                  [Op.eq]: req.user.id,
+                },
+              },
+            }).then(() => {
+              var notifier = new Notifier(req);
+              notifier.notifyExpenseClaimSubmitted(employeeId, managerId, expenseClaim.id)
+                .then((info) => {
+                  callback(null, expenseClaim);
+                })
+                .catch((err) => {
+                  // TODO flash message forward based on err
+                  callback(null, expenseClaim);
+                });
+            });
           }).catch(function(err) {
             callback(err);
           });

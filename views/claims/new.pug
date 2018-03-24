@@ -315,10 +315,10 @@ block scripts
           }
           item.receipt.maxAmount = receiptMaxAmount;
         },
-        validateReceipt: function (item, event) {
+        validateReceipt: function (item, $el) {
           // necessary due to Vue Vritual DOM removing validity states
           this.$nextTick(function () {
-            var $receiptEl = $(event.target).closest('.item').find('#receipt-file').first();
+            var $receiptEl = $el.find('#receipt-file').first();
             if ($receiptEl.length) {
               var validityMessage = '';
               if (!item.receipt.lost) {
@@ -360,11 +360,12 @@ block scripts
         },
         handleReceiptFile: function (item, event) {
           var $target = $(event.target);
+          var $item = $target.closest('.item');
           var files = $target.prop('files');
           if (!files.length) {
             this.setItemReceiptStatus(item);
 
-            this.validateReceipt(item, event);
+            this.validateReceipt(item, $item);
           } else {
             var file = files[0];
             var fileType = file.type || (file.name.toLowerCase().endsWith('pdf') ? 'application/pdf' : ''); // IE11
@@ -372,7 +373,7 @@ block scripts
                 (fileType !== 'application/pdf' && fileType.indexOf('image') === -1)) {
               this.setItemReceiptStatus(item, 'error');
 
-              this.validateReceipt(item, event);
+              this.validateReceipt(item, $item);
             } else {
               // TODO disable during processing with a try catch
               this.setItemReceiptStatus(item, 'pending');
@@ -401,18 +402,18 @@ block scripts
                     .then(_.bind(function (res) {
                       this.setItemReceiptStatus(item, 'success', fileKey, contentType);
 
-                      this.validateReceipt(item, event);
+                      this.validateReceipt(item, $item);
                     }, this))
                     .catch(_.bind(function (err) {
                       this.setItemReceiptStatus(item, 'error');
 
-                      this.validateReceipt(item, event);
+                      this.validateReceipt(item, $item);
                     }, this));
                 }, this))
                 .catch(_.bind(function (err) {
                   this.setItemReceiptStatus(item, 'error');
 
-                  this.validateReceipt(item, event);
+                  this.validateReceipt(item, $item);
                 }, this));
             }
           }
@@ -420,7 +421,6 @@ block scripts
         handleGlChange: function (item, event) {
           this.updateItemTotal(item);
           this.updateReceiptMaxAmount(item);
-          this.validateReceipt(item, event);
           this.addTooltip(item, event);
         },
         autoSave: _.debounce(function () {
@@ -459,21 +459,17 @@ block scripts
           },
         },
         items: {
-          handler: function () {
-            this.state = 'Unsaved';
-            // wait for DOM changes to propagate
-            this.$nextTick(function () {
-              var $item = $('.item').last();
-              $item.find('#receipt-file').first()[0].setCustomValidity('No file < 2MB and receipt not lost.');
-            });
-          },
-        },
-        items: {
           immediate: true,
           deep: true,
           handler: function () {
             this.state = 'Unsaved';
             this.autoSave();
+            // wait for DOM changes to propagate
+            this.$nextTick(function () {
+              $('.item').each(_.bind(function (index, el) {
+                this.validateReceipt(this.items[index], $(el));
+              }, this));
+            });
           },
         },
       },
