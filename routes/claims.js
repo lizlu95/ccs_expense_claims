@@ -22,6 +22,7 @@ const Company = database.Company;
 const Receipt = database.Receipt;
 const ApprovalLimit = database.ApprovalLimit;
 const Configuration = database.Configuration;
+const AutoSave = database.AutoSave;
 
 /* GET /claims */
 router.get('', function (req, res, next) {
@@ -58,6 +59,19 @@ router.get('', function (req, res, next) {
     } else {
       res.render('claims/list');
     }
+  });
+});
+
+/* GET /claims/save */
+router.get('/save', function (req, res, next) {
+  AutoSave.findOne({
+    where: {
+      employeeId: {
+        [Op.eq]: req.user.id,
+      },
+    },
+  }).then((autoSave) => {
+    res.json(autoSave);
   });
 });
 
@@ -431,6 +445,23 @@ router.post('', function (req, res, next) {
     } else {
       res.redirect('/claims/' + expenseClaim.id);
     }
+  });
+});
+
+/* POST /save */
+router.post('/save', function (req, res, next) {
+  AutoSave.findOrCreate({
+    where: {
+      employeeId: req.user.id,
+    },
+  }).then((autoSave) => {
+    autoSave[0].updateAttributes({
+      data: req.body.expenseClaimData,
+    }).then((autoSave) => {
+      res.status(200).end();
+    }).catch(() => {
+      res.status(404).end();
+    });
   });
 });
 

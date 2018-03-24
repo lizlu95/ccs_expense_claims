@@ -4,6 +4,8 @@ block inner-content
   .row.mb-4
     .col-12.text-center
       h1 New Claim
+  div(v-if='loading')
+    p Processing
   form.needs-validation(novalidate action='/claims' method='POST')
     .row.mb-4
       .col-12
@@ -30,7 +32,7 @@ block inner-content
               | Looks good!
           .col-md-4
             label(for='cost-centre') Cost Centre
-            select#cost-centre.custom-select(name='costCentreNumber' required)
+            select#cost-centre.custom-select(name='costCentreNumber' v-model='costCentreNumber' required)
               option(value='') Choose..
               each costCentre in costCentres
                 option(value= costCentre)= costCentre
@@ -59,7 +61,7 @@ block inner-content
                   span.badge.badge-warning.badge-pill.badge-lg {{ index + 1 }}
                 .col-md-4
                   label(for='date') Date
-                  input.date.form-control(:name="'items[' + index + '][date]'" :data-index='index' type='text' v-datepicker='index' value='' placeholder='yyyy-mm-dd' required)
+                  input.date.form-control(:name="'items[' + index + '][date]'" :data-index='index' type='text' v-datepicker='index' v-model='item.date' placeholder='yyyy-mm-dd' required)
                   .invalid-feedback
                     | Please enter a valid date.
                   .valid-feedback
@@ -218,6 +220,8 @@ block scripts
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
       data: {
+        loading: false,
+        processing: false,
         previousMileage: parseFloat(#{previousMileage}),
         costCentreNumber: '',
         bankNumber: '',
@@ -438,9 +442,32 @@ block scripts
           }, 0);
         },
       },
-      updated: _.debounce(function () {
-        debugger;
-      }, 5000),
+      updated: _.bind(_.debounce(_.bind(function () {
+        this.processing = true;
+        axios.post('/claims/save', {
+          expenseClaimData: JSON.stringify(expenseClaimApp.$data),
+        })
+        .then(function (result) {
+        })
+        .catch(function (error) {
+        });
+      }, this), 1000), this),
+      mounted: function () {
+        this.loading = true;
+        axios.get('/claims/save')
+        .then(_.bind(function (result) {
+          if (result.data) {
+            var data = JSON.parse(result.data.data);
+            this.$data.items = data.items;
+            this.$data.costCentreNumber = data.costCentreNumber;
+            this.$data.bankNumber = data.bankNumber;
+          }
+          this.loading = false;
+        }, this))
+        .catch(function (error) {
+          this.loading = false;
+        });
+      },
       directives: {
         datepicker: {
           bind: function (el, bindings, vnode) {
