@@ -438,6 +438,9 @@ block scripts
           }, 0);
         },
       },
+      updated: _.debounce(function () {
+        debugger;
+      }, 5000),
       directives: {
         datepicker: {
           bind: function (el, bindings, vnode) {
