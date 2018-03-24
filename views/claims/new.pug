@@ -4,11 +4,6 @@ block inner-content
   .row.mb-4
     .col-12.text-center
       h1 New Claim
-  div.text-center.text-muted(v-show='loading')
-    .d-inline.mr-1
-      i.fas.fa-sync.fa-spin
-    span.d-inline
-      | Processing..
   form.needs-validation(novalidate action='/claims' method='POST')
     .row.mb-4
       .col-12
@@ -18,11 +13,17 @@ block inner-content
               h2 Information
               div.text-muted
                 .d-inline
-                  .d-inline.mr-1(v-if="state === 'Saving..'")
-                    i.fas.fa-sync.fa-spin
+                  .d-inline(v-if="state === 'Saving..'")
+                    i.fas.fa-sync.text-warning.fa-spin.d-inline.mr-1
+                  .d-inline
+                    .d-inline(v-if="state === 'Unsaved'")
+                      i.fas.fa-exclamation.text-warning.d-inline.mr-1
+                .d-inline
+                  .d-inline.mr-1(v-if="state === 'Saved at '")
+                    i.fas.fa-check.text-success
                 span.d-inline
-                  | {{ state}}
-                .d-inline(v-if="state === 'Saved at '")
+                  | {{ state }}
+                span.d-inline(v-if="state === 'Saved at '")
                   | {{ savedAt }}
         .row.mb-3
           .col-md-6
@@ -231,7 +232,6 @@ block scripts
     var expenseClaimApp = new Vue({
       el: '#expense-claim-app',
       data: {
-        loading: false,
         state: '',
         savedAt: '',
         previousMileage: parseFloat(#{previousMileage}),
@@ -430,7 +430,6 @@ block scripts
               expenseClaimData: JSON.stringify(this.$data),
             })
             .then(_.bind(function (result) {
-            debugger;
               this.state = 'Saved at ';
               this.savedAt = new moment ().format('YYYY-MM-DD HH:mma')
             }, this))
@@ -443,21 +442,25 @@ block scripts
       watch: {
         company: {
           handler: function () {
+            this.state = 'Unsaved';
             this.autoSave();
           },
         },
         costCentreNumber: {
           handler: function () {
+            this.state = 'Unsaved';
             this.autoSave();
           },
         },
         bankNumber: {
           handler: function () {
+            this.state = 'Unsaved';
             this.autoSave();
           },
         },
         items: {
           handler: function () {
+            this.state = 'Unsaved';
             // wait for DOM changes to propagate
             this.$nextTick(function () {
               var $item = $('.item').last();
@@ -469,6 +472,7 @@ block scripts
           immediate: true,
           deep: true,
           handler: function () {
+            this.state = 'Unsaved';
             this.autoSave();
           },
         },
@@ -493,7 +497,7 @@ block scripts
         },
       },
       mounted: function () {
-        this.loading = true;
+        this.state = 'Loading..';
         axios.get('/claims/save')
         .then(_.bind(function (result) {
           if (result.data) {
@@ -510,10 +514,10 @@ block scripts
               }, this));
             })
           }
-          this.loading = false;
+          this.state = 'Loaded';
         }, this))
         .catch(function (error) {
-          this.loading = false;
+          this.state = 'Error';
         });
       },
       directives: {
