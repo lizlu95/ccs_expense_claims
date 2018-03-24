@@ -418,6 +418,7 @@ block scripts
             // wait for DOM changes to propagate
             this.$nextTick(function () {
               var $item = $('.item').last();
+              debugger;
               $item.find('#receipt-file').first()[0].setCustomValidity('No file < 2MB and receipt not lost.');
             });
           },
@@ -461,6 +462,13 @@ block scripts
             this.$data.items = data.items;
             this.$data.costCentreNumber = data.costCentreNumber;
             this.$data.bankNumber = data.bankNumber;
+            // trigger recaculation of any mileage
+            // in case previousMileage has changed
+            this.$nextTick(function () {
+              $.each(this.items, _.bind(function (index, item) {
+                this.updateItemTotal(item);
+              }, this));
+            })
           }
           this.loading = false;
         }, this))
