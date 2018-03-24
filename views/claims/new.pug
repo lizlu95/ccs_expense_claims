@@ -423,16 +423,53 @@ block scripts
           this.validateReceipt(item, event);
           this.addTooltip(item, event);
         },
+        autoSave: _.debounce(function () {
+          if (!this.loading) {
+            this.state = 'Saving..';
+            axios.post('/claims/save', {
+              expenseClaimData: JSON.stringify(this.$data),
+            })
+            .then(_.bind(function (result) {
+            debugger;
+              this.state = 'Saved at ';
+              this.savedAt = new moment ().format('YYYY-MM-DD HH:mma')
+            }, this))
+            .catch(_.bind(function (error) {
+              this.state = 'Error';
+            }));
+          }
+        }, 3000),
       },
       watch: {
+        company: {
+          handler: function () {
+            this.autoSave();
+          },
+        },
+        costCentreNumber: {
+          handler: function () {
+            this.autoSave();
+          },
+        },
+        bankNumber: {
+          handler: function () {
+            this.autoSave();
+          },
+        },
         items: {
-          immediate: true,
           handler: function () {
             // wait for DOM changes to propagate
             this.$nextTick(function () {
               var $item = $('.item').last();
               $item.find('#receipt-file').first()[0].setCustomValidity('No file < 2MB and receipt not lost.');
             });
+          },
+        },
+        items: {
+          immediate: true,
+          deep: true,
+          handler: function () {
+            this.autoSave();
           },
         },
       },
@@ -455,21 +492,6 @@ block scripts
           }, 0);
         },
       },
-      updated: _.debounce(function () {
-        if (!this.loading) {
-          this.state = 'Saving..';
-          axios.post('/claims/save', {
-            expenseClaimData: JSON.stringify(this.$data),
-          })
-          .then(_.bind(function (result) {
-            this.state = 'Saved at ';
-            this.savedAt = new moment ().format('YYYY-MM-DD HH:mma')
-          }, this))
-          .catch(_.bind(function (error) {
-            this.state = 'Error';
-          }));
-        }
-      }, 3000),
       mounted: function () {
         this.loading = true;
         axios.get('/claims/save')
