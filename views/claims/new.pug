@@ -418,7 +418,6 @@ block scripts
             // wait for DOM changes to propagate
             this.$nextTick(function () {
               var $item = $('.item').last();
-              debugger;
               $item.find('#receipt-file').first()[0].setCustomValidity('No file < 2MB and receipt not lost.');
             });
           },
