@@ -456,17 +456,19 @@ block scripts
         },
       },
       updated: _.debounce(function () {
-        this.state = 'Saving..';
-        axios.post('/claims/save', {
-          expenseClaimData: JSON.stringify(this.$data),
-        })
-        .then(_.bind(function (result) {
-          this.state = 'Saved at ';
-          this.savedAt = new moment ().format('YYYY-MM-DD HH:mma')
-        }, this))
-        .catch(_.bind(function (error) {
-          this.state = 'Error';
-        }));
+        if (!this.loading) {
+          this.state = 'Saving..';
+          axios.post('/claims/save', {
+            expenseClaimData: JSON.stringify(this.$data),
+          })
+          .then(_.bind(function (result) {
+            this.state = 'Saved at ';
+            this.savedAt = new moment ().format('YYYY-MM-DD HH:mma')
+          }, this))
+          .catch(_.bind(function (error) {
+            this.state = 'Error';
+          }));
+        }
       }, 3000),
       mounted: function () {
         this.loading = true;
