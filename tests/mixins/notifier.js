@@ -65,7 +65,7 @@ describe('notifier tests', function () {
     var expenseClaim = expenseClaimOne;
 
     var submitterTo = submitter.name + '<' + submitter.email + '>';
-    var submitterSubject = 'Expense Claim Approval Submitted';
+    var submitterSubject = 'Expense Claim ' + expenseClaim.id + ' Approval Submitted';
     var submitterMessage = 'Hello, please find your submitted request at ' +
         req.protocol +
         '://' +
@@ -74,7 +74,7 @@ describe('notifier tests', function () {
         expenseClaim.id;
 
     var approverTo = approver.name + '<' + approver.email + '>';
-    var approverSubject = 'Expense Claim Approval Requested';
+    var approverSubject = 'Expense Claim ' + expenseClaim.id + ' Approval Requested';
     var approverMessage = 'Hello, your review has been requested for the expense claim at ' +
         req.protocol +
         '://' +
