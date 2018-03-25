@@ -68,13 +68,17 @@ router.post('', function (req, res, next) {
         } else {
           req.flash('error', 'Could not create approval limit.');
 
-          res.redirect('/limits');
+          res.redirect('/limits/new');
         }
+      }).catch((error) => {
+        req.flash('error', 'Validation error. Please ensure a unique entry.');
+
+        res.redirect('/limits/new');
       });
     } else {
       req.flash('error', 'Could not find employee with id specified.');
 
-      res.redirect('/limits');
+      res.redirect('/limits/new');
     }
   });
 });
