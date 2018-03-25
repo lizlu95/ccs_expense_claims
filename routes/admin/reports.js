@@ -407,7 +407,7 @@ function generateCSVReport(expenseClaims, userId, reportType){
     }
 
     var rows = _.map(expenseClaims, (expenseClaim) => {
-        var amount = _.reduce(expenseClaim.ExpenseClaimItem, (memo, expenseClaimItem) => {
+        var amount = _.reduce(expenseClaim.ExpenseClaimItems, (memo, expenseClaimItem) => {
             return memo + expenseClaimItem.total;
         }, 0);
         var row = {
