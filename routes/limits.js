@@ -83,6 +83,37 @@ router.post('', function (req, res, next) {
   });
 });
 
+/* GET /limits/:id/edit */
+router.get('/:id/edit', function (req, res, next) {
+  res.locals.title = 'Edit Limit ' + req.params.id;
+
+  CostCentre.findAll().then((costCentres) => {
+    res.locals.costCentres = costCentres;
+
+    ApprovalLimit.findOne({
+      where: {
+        id: {
+          [Op.eq]: req.params.id,
+        },
+      },
+      include: [
+        Employee,
+        CostCentre,
+      ],
+    }).then((approvalLimit) => {
+      if (approvalLimit) {
+        res.locals.approvalLimit = approvalLimit;
+
+        res.render('limits/new');
+      } else {
+        req.flash('error', 'Could not find approval limit.');
+
+        res.redirect('/limits');
+      }
+    });
+  });
+});
+
 /* GET /limits/:id */
 router.get('/:id', function (req, res, next) {
   res.locals.title = 'Limit ' + req.params.id;

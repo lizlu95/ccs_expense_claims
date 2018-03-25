@@ -31,9 +31,17 @@ block inner-content
                 tbody
                   each approvalLimit in approvalLimits
                     if approvalLimit.Employee
-                      tr
+                      tr.clickable(data-id=approvalLimit.id)
                         td= approvalLimit.Employee.id
                         td= approvalLimit.Employee.email
                         td= approvalLimit.Employee.name
                         td= approvalLimit.CostCentre.number
                         td= approvalLimit.limit
+
+block scripts
+  script.
+    $(document).ready(function () {
+      $('.table tr').on('click', function (event) {
+        window.location = '/limits/' + $(event.target).closest('tr').data('id');
+      });
+    });

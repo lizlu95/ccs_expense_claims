@@ -15,6 +15,7 @@ block inner-content
                   th Employee Name
                   th Cost Centre
                   th Amount
+                  th
               tbody
                 tr
                   td= approvalLimit.id
@@ -22,3 +23,12 @@ block inner-content
                   td= approvalLimit.Employee.name
                   td= approvalLimit.CostCentre.number
                   td= approvalLimit.limit
+                  td.limit-edit.clickable
+                    i.fa.fa-cog
+block scripts
+  script.
+    $(document).ready(function () {
+      $('.limit-edit').on('click', function () {
+        window.location = '/limits/' + #{approvalLimit.id} + '/edit';
+      });
+    });

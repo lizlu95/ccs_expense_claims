@@ -1,39 +1,74 @@
 extends ../dashboard
 
 block inner-content
-  h1.mb-4.text-center New Limit
+  if approvalLimit
+    h1.mb-4.text-center Edit Limit #{approvalLimit.id}
+  else
+    h1.mb-4.text-center New Limit
   .row
     .col-12
-      form.needs-validation(novalidate method='POST' action='/limits')
-        .row.mb-4
-          .col-md-6
-            label(for='employee-id') Employee ID
-            input#employee-id.form-control(type='number' name='employeeId' required)
-            .invalid-feedback
-              | Please enter a valid employee ID.
-            .valid-feedback
-              | Looks good!
-          .col-md-6
-            label(for='cost-centre') Cost Centre
-            select#cost-centre.custom-select(name='costCentreId' required)
-              option(value='') Choose..
-              each costCentre in costCentres
-                option(value= costCentre.id)= costCentre.number
-            .invalid-feedback
-              | Please select a cost centre.
-            .valid-feedback
-              | Looks good!
-        .row.mb-4
-          .col-md-6
-            label(for='limit') Limit
-            input#limit.form-control(type='number' name='limit' required)
-            .invalid-feedback
-              | Please enter a valid limit.
-            .valid-feedback
-              | Looks good!
-        .row.mb-4
-          .col-12
-            button.btn-lg.w-100(type='submit' class='btn btn-success') Submit
+      if approvalLimit
+        form.needs-validation(novalidate method='POST' action=`/limits/${approvalLimit.id}`)
+          .row.mb-4
+            .col-md-6
+              label(for='employee-id') Employee ID
+              input#employee-id.form-control(type='number' value=approvalLimit.Employee.id name='employeeId' required)
+              .invalid-feedback
+                | Please enter a valid employee ID.
+              .valid-feedback
+                | Looks good!
+            .col-md-6
+              label(for='cost-centre') Cost Centre
+              select#cost-centre.custom-select(name='costCentreId' value=approvalLimit.costCentreId required)
+                option(value='') Choose..
+                each costCentre in costCentres
+                  option(value= costCentre.id)= costCentre.number
+              .invalid-feedback
+                | Please select a cost centre.
+              .valid-feedback
+                | Looks good!
+          .row.mb-4
+            .col-md-6
+              label(for='limit') Limit
+              input#limit.form-control(type='number' name='limit' value=approvalLimit.limit required)
+              .invalid-feedback
+                | Please enter a valid limit.
+              .valid-feedback
+                | Looks good!
+          .row.mb-4
+            .col-12
+              button.btn-lg.w-100(type='submit' class='btn btn-success') Submit
+      else
+        form.needs-validation(novalidate method='POST' action='/limits')
+          .row.mb-4
+            .col-md-6
+              label(for='employee-id') Employee ID
+              input#employee-id.form-control(type='number' name='employeeId' required)
+              .invalid-feedback
+                | Please enter a valid employee ID.
+              .valid-feedback
+                | Looks good!
+            .col-md-6
+              label(for='cost-centre') Cost Centre
+              select#cost-centre.custom-select(name='costCentreId' required)
+                option(value='') Choose..
+                each costCentre in costCentres
+                  option(value= costCentre.id)= costCentre.number
+              .invalid-feedback
+                | Please select a cost centre.
+              .valid-feedback
+                | Looks good!
+          .row.mb-4
+            .col-md-6
+              label(for='limit') Limit
+              input#limit.form-control(type='number' name='limit' required)
+              .invalid-feedback
+                | Please enter a valid limit.
+              .valid-feedback
+                | Looks good!
+          .row.mb-4
+            .col-12
+              button.btn-lg.w-100(type='submit' class='btn btn-success') Submit
 block scripts
   script.
     (function() {
