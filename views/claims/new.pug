@@ -190,7 +190,7 @@ block inner-content
                 .input-group-prepend
                   .input-group-text $
                 input#total.form-control(type='number' :value='itemsTotal' readonly=true)
-                input#total-max.form-control(type='float' :value='itemsTotal' max=maxPerDiemRemaining style='display: none;')
+                input#total-max.form-control(type='number' :value='itemsTotal' max=maxPerDiemRemaining style='display: none;')
                 .invalid-feedback
                   | Please ensure your total amount is less than $#{maxPerDiemRemaining}.
                 .valid-feedback
