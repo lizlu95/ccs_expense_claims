@@ -10,7 +10,6 @@ const Op = require('sequelize').Op;
 
 const s3 = require('../../s3');
 
-const fs = require('fs');
 
 const database = require('../../models/index');
 const Report = database.Report;
@@ -29,7 +28,6 @@ router.get('', function (req, res, next) {
         case Report.TYPE.NAV:
         case Report.TYPE.T24:
         case Report.TYPE.PAYROLL:
-            console.log('get non stat');
             return handleGetNonStatReport(req, res, next);
         default:
             return handleGetReport(req, res, next);
@@ -66,9 +64,7 @@ function handleGetNonStatReport(req, res, next){
             var rep = {};
             rep['id'] = report.id;
             rep['type'] = report.type;
-
-            // TODO: need to add status to reports
-            // rep['status'] = report.status;
+            rep['report_download'] = '/reports/' + report.id;
 
             return rep;
         });
@@ -278,7 +274,6 @@ function generateStatsReport(req, res, next){
             console.log(err);
             next(err);
         } else {
-            // TODO: render something else?
             res.render('admin/statReport');
         }
     });
@@ -307,7 +302,6 @@ function generateNAVReport(req, res, next){
             }
         }]
     }).then(function(expenseClaims){
-        console.log(expenseClaims.length);
         var rows = _.map(expenseClaims, (expenseClaim) => {
             var amount = _.reduce(expenseClaim.ExpenseClaimItem, (memo, expenseClaimItem) => {
                 return memo + expenseClaimItem.total;
@@ -321,7 +315,7 @@ function generateNAVReport(req, res, next){
                 _51: "51",
                 CR: "CR",
                 "-": "-",
-                status: expenseClaim.status,
+                status2: expenseClaim.status,
                 empty1:"",
                 empty2:"",
                 empty3:"",
@@ -338,45 +332,52 @@ function generateNAVReport(req, res, next){
         opts['quote'] = "";
 
         var csv = json2csv(rows, opts);
-        console.log(csv);
 
-        var params = {
-            Bucket: s3.config.params.Bucket,
-            Key: "t24testreport",
-            Body: csv
-        };
-        s3.putObject(params, function(err, data){
-            if (err) {
-                console.log(err)
-            } else {
-                console.log("Successfully uploaded data to myBucket/myKey");
-                console.log("data returned:");
-                console.log(data);
-            }
-
+        sequelize.transaction(function(t){
+            return Report.create({
+                employeeId: req.user.id,
+                type: Report.TYPE.NAV,
+            }, {transaction: t});
+        }).then(function(newReport){
+            let params = {
+                Bucket: s3.config.params.Bucket,
+                Key: getReportName(newReport.id),
+                Body: csv
+            };
+            s3.putObject(params, function(err, data){
+                if (err) {
+                    console.log("aws s3 report storage failed!");
+                    console.log(err)
+                } else {
+                    console.log("aws s3 report storage success!");
+                    newReport.downloadLink = "http://"+ s3.config.params.Bucket +".s3.amazonaws.com/" + getReportName(newReport.id);
+                    newReport.save({fields: ['downloadLink']}).then(() => {
+                        res.redirect('/reports?report_type=nav');
+                    })
+                }
+            });
+        }).catch(function(err){
+            console.log("report db entry creation failed!");
+            console.log(err);
         });
     });
+}
 
-    res.redirect('/reports?report_type=NAV');
+function getReportName(id){
+    return "report" + id + ".csv";
 }
 
 
 // GET /reports/:id
 router.get('/:id', function (req, res, next) {
     Report.findById(req.params.id).then(function(report){
-        // TODO this does not work
-        res.status(200);
-        res.send(report);
-
-        // TODO deal with other types of reports
-        // NAV, T24, PAYROLL
+        res.redirect(report.downloadLink);
     })
 });
 
 // DELETE /reports/:id
 router.delete('/:id', function(req, res, next){
-    // TODO: add new is_deleted column to reports table
-    // modify column to delete report
+    // TODO remove s3 file, then remove local entry
 });
 
 module.exports = router;

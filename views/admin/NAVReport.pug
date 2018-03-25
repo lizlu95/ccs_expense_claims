@@ -33,7 +33,6 @@ block inner-content
                                         input(type='checkbox' name=report.id)
                                         |   #{report.id}
                                     td #{report.type}
-                                    if report.bool
-                                        td.bg-success True
-                                    else
-                                        td.bg-warning False
+                                    td
+                                        form(method='get', action=report.report_download)
+                                            button.btn.btn-primary.btn-lg(type = submit) Download

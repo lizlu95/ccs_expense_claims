@@ -1,12 +1,14 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-  // TODO: new key column
-
   var Report = sequelize.define('Report', {
     employeeId: {
       type: DataTypes.INTEGER,
       field: 'employee_id',
+    },
+    downloadLink: {
+        type: DataTypes.STRING,
+        field: 'download_link',
     },
     type: {
       type: DataTypes.STRING,
