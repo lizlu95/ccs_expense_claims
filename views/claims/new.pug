@@ -4,7 +4,7 @@ block inner-content
   .row.mb-4
     .col-12.text-center
       h1 New Claim
-  form.needs-validation(novalidate action='/claims' method='POST')
+  form#claim-form.needs-validation(novalidate action='/claims' method='POST')
     .row.mb-4
       .col-12
         .row.mb-3
