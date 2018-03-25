@@ -85,7 +85,7 @@ router.post('', function (req, res, next) {
 
 /* GET /limits/:id/edit */
 router.get('/:id/edit', function (req, res, next) {
-  res.locals.title = 'Edit Limit ' + req.params.id;
+  res.locals.title = 'Limit ' + req.params.id;
 
   CostCentre.findAll().then((costCentres) => {
     res.locals.costCentres = costCentres;
