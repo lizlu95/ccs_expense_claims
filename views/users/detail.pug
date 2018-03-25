@@ -44,7 +44,7 @@ block inner-content
                   th Limit
               tbody
                 each approvalLimit in user.ApprovalLimits
-                  tr
+                  tr.limit-row.clickable(data-id=approvalLimit.id)
                     td= approvalLimit.id
                     td= approvalLimit.CostCentre.number
                     td= approvalLimit.limit
@@ -53,5 +53,8 @@ block scripts
     $(document).ready(function() {
       $('.manager-cell').on('click', function (event) {
         window.location = '/users/' + #{user.managerId};
+      });
+      $('.limit-row').on('click', function (event) {
+        window.location = '/limits/' + $(event.target).closest('tr').data('id');
       });
     });
