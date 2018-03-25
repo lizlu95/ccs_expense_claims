@@ -40,15 +40,54 @@ function handleGetReport(req, res, next){
     res.locals.STAT = Report.TYPE.STATS;
     res.locals.NAV = Report.TYPE.NAV;
 
-    res.render('admin/reportIndex');
+    Report.findAll().then((reports) => {
+        var simplifiedReports = _.map(reports, (report) => {
+            var rep = {};
+            rep['id'] = report.id;
+            rep['type'] = report.type;
+            rep['report_download'] = '/reports/' + report.id;
+
+            return rep;
+        });
+        res.locals.reports = simplifiedReports;
+
+        res.render('admin/reportIndex');
+    });
 }
 
 function handleGetStatistics(req, res, next){
     res.locals.title = 'Statistics Report';
-    res.locals.allSubmitters = true;
-    res.locals.allApprovers = true;
-    res.locals.allDates = true;
-    res.locals.allCostCentres = true;
+
+    res.locals.submitterName = req.session.submitterName;
+    res.locals.allSubmitters = req.session.allSubmitters || !req.session.submitterName;
+    req.session.submitterName = null;
+    req.session.allSubmitters = null;
+
+    res.locals.approverName = req.session.approverName;
+    res.locals.allApprovers = req.session.allApprovers || !req.session.approverName;
+    req.session.allApprovers = null;
+    req.session.approverName = null;
+
+    res.locals.reportStartDate = req.session.reportStartDate;
+    res.locals.reportEndDate  = req.session.reportEndDate;
+    res.locals.allDates = req.session.allDates || !(req.session.reportStartDate || req.session.reportEndDate);
+    req.session.reportStartDate = null;
+    req.session.reportEndDate  = null;
+    req.session.allDates = null;
+
+    res.locals.costCentreName = req.session.costCentreName;
+    res.locals.allCostCentres = req.session.allCostCentres || !req.session.costCentreName;
+    req.session.costCentreName = null;
+    req.session.allCostCentres = null;
+
+    res.locals.submitted = req.session.submitted;
+    res.locals.pending = req.session.pending;
+    res.locals.approved = req.session.approved;
+    res.locals.declined = req.session.declined;
+    req.session.submitted = null;
+    req.session.pending = null;
+    req.session.approved = null;
+    req.session.declined = null;
 
     async.waterfall([
         function(callback){
@@ -56,7 +95,7 @@ function handleGetStatistics(req, res, next){
                 let simpleEmployees = _.map(employees, (employee) => {
                     var emp = {};
                     emp.name = employee.name;
-                    emp.id = employee.id;
+                    // emp.id = employee.id;
                     return emp;
                 });
                 res.locals.employees = simpleEmployees;
@@ -67,7 +106,7 @@ function handleGetStatistics(req, res, next){
                 let simpleCostCentres = _.map(costCentres, (costCentre) => {
                     var cc = {};
                     cc.name = costCentre.name;
-                    cc.id = costCentre.id;
+                    // cc.number = costCentre.number;
                     return cc;
                 });
                 res.locals.cost_centres = simpleCostCentres;
@@ -86,11 +125,7 @@ function handleGetStatistics(req, res, next){
 
 function handleGetNonStatReport(req, res, next){
     res.locals.title = 'NAV Report';
-    Report.findAll({
-        where: {
-            type: {[Op.eq]: Report.TYPE.NAV}
-        }
-    }).then((reports) => {
+    Report.findAll().then((reports) => {
         var simplifiedReports = _.map(reports, (report) => {
             var rep = {};
             rep['id'] = report.id;
@@ -101,7 +136,7 @@ function handleGetNonStatReport(req, res, next){
         });
         res.locals.reports = simplifiedReports;
 
-        res.render('admin/NAVReport');
+        res.render('admin/AdminReport');
     });
 
 }
@@ -117,7 +152,7 @@ function handleGetNonStatReport(req, res, next){
 //      submitter_name    (optional)
 //      approver_name     (optional)
 router.post('', function(req, res, next){
-    switch(req.query.report_type){
+    switch(req.body.report_type){
         case Report.TYPE.STATS:
             return generateStatsReport(req, res, next);
         case Report.TYPE.NAV:
@@ -145,10 +180,10 @@ function generateStatsReport(req, res, next){
                         {name: {[Op.like]: '%' + req.body.submitter_name + '%'}}]}
             }).then((submitter) => {
                 if(submitter && req.body.submitter_name){
-                    res.locals.submitterName = submitter.name;
+                    req.session.submitterName = submitter.name;
                     submitterId = submitter.id;
                 } else if(!req.body.submitter_name){
-                    res.locals.allSubmitters = true;
+                    req.session.allSubmitters = true;
                 }
 
                 Employee.findOne({
@@ -158,10 +193,10 @@ function generateStatsReport(req, res, next){
                             {name: {[Op.like]: '%' + req.body.approver_name + '%'}}]}
                 }).then((approver) => {
                     if(approver && req.body.approver_name){
-                        res.locals.approverName = approver.name;
+                        req.session.approverName = approver.name;
                         approverId = approver.id;
                     } else if(!req.body.approver_name){
-                        res.locals.allApprovers = true;
+                        req.session.allApprovers = true;
                     }
 
                     callback(null, submitterId, approverId);
@@ -178,10 +213,10 @@ function generateStatsReport(req, res, next){
             } else if(!req.body.all_approvers && req.body.approver_name && !req.body.all_submitters && req.body.submitter_name){
                 if(!approverId || !submitterId){
                     if(!approverId){
-                        res.locals.approverName = req.body.approver_name + ' was not found!';
+                        req.session.approverName = req.body.approver_name + ' was not found!';
                     }
                     if(!submitterId){
-                        res.locals.submitterName = req.body.submitter_name + ' was not found!';
+                        req.session.submitterName = req.body.submitter_name + ' was not found!';
                     }
 
                     return callback(null, []);
@@ -205,7 +240,7 @@ function generateStatsReport(req, res, next){
                 });
             } else if(!req.body.all_submitters && req.body.submitter_name && (req.body.all_approvers || !req.body.approver_name)){
                 if(!submitterId){
-                    res.locals.submitterName = req.body.submitter_name + ' was not found!'
+                    req.session.submitterName = req.body.submitter_name + ' was not found!'
                     return callback(null, []);
                 }
 
@@ -219,7 +254,7 @@ function generateStatsReport(req, res, next){
                     });
             } else if(!req.body.all_approvers && req.body.approver_name && (req.body.all_submitters || !req.body.submitter_name)){
                 if(!approverId){
-                    res.locals.approverName = req.body.approver_name + ' was not found!';
+                    req.session.approverName = req.body.approver_name + ' was not found!';
                     return callback(null, []);
                 }
 
@@ -254,32 +289,32 @@ function generateStatsReport(req, res, next){
 
                     if(req.body.cost_centre && !req.body.all_cost_centres){
                         if(costCentre){
-                            res.locals.costCentreName = costCentre.name;
+                            req.session.costCentreName = costCentre.name;
                             whereBlock['costCentreId'] = {[Op.eq]: costCentre.id};
                         } else {
-                            res.locals.costCentreName = req.body.cost_centre + " was not found!";
+                            req.session.costCentreName = req.body.cost_centre + " was not found!";
                             return callback(null, []);
                         }
                     } else {
-                        res.locals.allCostCentres = true;
+                        req.session.allCostCentres = true;
                     }
 
                     if(!req.body.all_dates){
                         if(req.body.report_start_date && req.body.report_end_date){
-                            res.locals.reportStartDate = req.body.report_start_date;
-                            res.locals.reportEndDate = req.body.report_end_date;
+                            req.session.reportStartDate = req.body.report_start_date;
+                            req.session.reportEndDate = req.body.report_end_date;
                             whereBlock['created_at'] = {[Op.gte]: req.body.report_start_date, [Op.lte]: req.body.report_end_date};
                         } else if(req.body.report_start_date){
-                            res.locals.reportStartDate = req.body.report_start_date;
+                            req.session.reportStartDate = req.body.report_start_date;
                             whereBlock['created_at'] = {[Op.gte]: req.body.report_start_date};
                         } else if(req.body.report_end_date){
-                            res.locals.reportEndDate = req.body.report_end_date;
-                            whereBlock['created_at'] = {[Op.lt]: req.body.report_end_date};
+                            req.session.reportEndDate = req.body.report_end_date;
+                            whereBlock['created_at'] = {[Op.lte]: req.body.report_end_date};
                         } else {
-                            res.locals.allDates = true;
+                            req.session.allDates = true;
                         }
                     } else {
-                        res.locals.allDates = true;
+                        req.session.allDates = true;
                     }
 
                     ExpenseClaim.findAll({
@@ -294,10 +329,10 @@ function generateStatsReport(req, res, next){
                 return expenseClaim.status;
             });
             // use expenseClaims to get all relevant info
-            res.locals.submitted = expenseClaims.length;
-            res.locals.pending = summary[ExpenseClaim.STATUS.PENDING] || 0;
-            res.locals.approved = summary[ExpenseClaim.STATUS.APPROVED] || 0;
-            res.locals.declined = summary[ExpenseClaim.STATUS.REJECTED] || 0;
+            req.session.submitted = expenseClaims.length;
+            req.session.pending = summary[ExpenseClaim.STATUS.PENDING] || 0;
+            req.session.approved = summary[ExpenseClaim.STATUS.APPROVED] || 0;
+            req.session.declined = summary[ExpenseClaim.STATUS.REJECTED] || 0;
             callback(null);
         }
     ], function (err) {
@@ -305,7 +340,8 @@ function generateStatsReport(req, res, next){
             console.log(err);
             next(err);
         } else {
-            res.render('admin/statReport');
+            res.redirect('/reports?report_type=statistics');
+            // res.render('admin/statReport');
         }
     });
 }
@@ -314,8 +350,30 @@ function generatePayrollReport(req, res, next){
 
 }
 
-function generateNAVReport(req, res, next){
+function generateT24Report(req, res, next){
+    var startDate = req.body.report_start_date;
+    var endDate = req.body.report_end_date;
+    ExpenseClaim.findAll({
+        where: {
+            created_at: {[Op.gte]: startDate, [Op.lte]: endDate},
+            bankNumber: {[Op.regexp]: '^[0-9]+$'}
+        }, include: [{
+            model: ExpenseClaimItem,
+        }, {
+            model: EmployeeExpenseClaim,
+            where: {
+                isActive: {[Op.eq]: 1}
+            }
+        }]
+    }).then(function(expenseClaims){
+        if(expenseClaims.length === 0){
+            req.flash('error', 'No relevant claims in date range!');
+            return res.redirect('/reports?report_type=nav');
+        }
 
+        generateCSVReport(expenseClaims, req.user.id, Report.TYPE.T24);
+        return res.redirect('/reports?report_type=nav');
+    });
 }
 
 function generateNAVReport(req, res, next){
@@ -323,7 +381,7 @@ function generateNAVReport(req, res, next){
     var endDate = req.body.report_end_date;
     ExpenseClaim.findAll({
         where: {
-            created_at: {[Op.gte]: startDate, [Op.lt]: endDate}
+            created_at: {[Op.gte]: startDate, [Op.lte]: endDate}
         }, include: [{
             model: ExpenseClaimItem,
         }, {
@@ -338,69 +396,76 @@ function generateNAVReport(req, res, next){
             return res.redirect('/reports?report_type=nav');
         }
 
-        var rows = _.map(expenseClaims, (expenseClaim) => {
-            var amount = _.reduce(expenseClaim.ExpenseClaimItem, (memo, expenseClaimItem) => {
-                return memo + expenseClaimItem.total;
-            }, 0);
-            var row = {
-                bank_number: expenseClaim.bankNumber,
-                currency_type: "CAD",
-                date: expenseClaim.createdAt,
-                status: expenseClaim.status,
-                dollar_amount: "$" + amount,
-                _51: "51",
-                CR: "CR",
-                "-": "-",
-                status2: expenseClaim.status,
-                empty1:"",
-                empty2:"",
-                empty3:"",
-                dollar_value: amount,
-                bank_number2: expenseClaim.bankNumber,
-            };
-            return row;
-        });
+        generateCSVReport(expenseClaims, req.user.id, Report.TYPE.NAV);
+        return res.redirect('/reports?report_type=nav');
+    });
+}
 
-        var opts = {};
-        opts['fields'] = rows[0].keys;
-        opts['delimiter'] = "|";
-        opts['header'] = false;
-        opts['quote'] = "";
+function generateCSVReport(expenseClaims, userId, reportType){
+    if(expenseClaims.length === 0){
+        return;
+    }
 
-        var csv = json2csv(rows, opts);
+    var rows = _.map(expenseClaims, (expenseClaim) => {
+        var amount = _.reduce(expenseClaim.ExpenseClaimItem, (memo, expenseClaimItem) => {
+            return memo + expenseClaimItem.total;
+        }, 0);
+        var row = {
+            bank_number: expenseClaim.bankNumber,
+            currency_type: "CAD",
+            date: expenseClaim.createdAt,
+            status: expenseClaim.status,
+            dollar_amount: "$" + amount,
+            _51: "51",
+            CR: "CR",
+            "-": "-",
+            status2: expenseClaim.status,
+            empty1:"",
+            empty2:"",
+            empty3:"",
+            dollar_value: amount,
+            bank_number2: expenseClaim.bankNumber,
+        };
+        return row;
+    });
 
-        sequelize.transaction(function(t){
-            return Report.create({
-                employeeId: req.user.id,
-                type: Report.TYPE.NAV,
-            }, {transaction: t}).then(function(newReport){
-                let reportKey = getReportName(newReport.id);
-                return newReport.update({key: reportKey}, {fields:['key'], transaction:t}).then((updatedReport) => {
-                    let params = {
-                        Bucket: s3.config.params.Bucket,
-                        Key: reportKey,
-                        Body: csv
-                    };
-                    s3.putObject(params, function(err, data){
-                        if (err) {
-                            console.log("aws s3 report storage failed!");
-                            console.log(err)
-                        } else {
-                            console.log("aws s3 report storage success!");
-                            updatedReport.downloadLink = "http://"+ s3.config.params.Bucket +".s3.amazonaws.com/" + reportKey;
-                            updatedReport.save({fields: ['downloadLink']}).then(() => {
-                                res.redirect('/reports?report_type=nav');
-                            })
-                        }
-                    });
-                }).catch(function(err){
-                    console.log("report key updating failed!");
-                    console.log(err);
+    var opts = {};
+    opts['fields'] = rows[0].keys;
+    opts['delimiter'] = "|";
+    opts['header'] = false;
+    opts['quote'] = "";
+
+    var csv = json2csv(rows, opts);
+
+    return sequelize.transaction(function(t){
+        return Report.create({
+            employeeId: userId,
+            type: reportType,
+        }, {transaction: t}).then(function(newReport){
+            let reportKey = getReportName(newReport.id);
+            return newReport.update({key: reportKey}, {fields:['key'], transaction:t}).then((updatedReport) => {
+                let params = {
+                    Bucket: s3.config.params.Bucket,
+                    Key: reportKey,
+                    Body: csv
+                };
+                s3.putObject(params, function(err, data){
+                    if (err) {
+                        console.log("aws s3 report storage failed!");
+                        console.log(err)
+                    } else {
+                        console.log("aws s3 report storage success!");
+                        updatedReport.downloadLink = "http://"+ s3.config.params.Bucket +".s3.amazonaws.com/" + reportKey;
+                        updatedReport.save({fields: ['downloadLink']});
+                    }
                 });
             }).catch(function(err){
-                console.log("report db entry creation failed!");
+                console.log("report key updating failed!");
                 console.log(err);
             });
+        }).catch(function(err){
+            console.log("report db entry creation failed!");
+            console.log(err);
         });
     });
 }

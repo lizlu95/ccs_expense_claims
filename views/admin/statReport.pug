@@ -1,7 +1,7 @@
 extends ../dashboard
 
 block inner-content
-  form(method='post', action='/reports?report_type=statistics')
+  form(method='post', action='/reports')
     h1.text-center.mb-4 Reports
     h2.text-center.mb-3 Statistics
     .container
@@ -14,7 +14,7 @@ block inner-content
           input#submitters.form-control(type="text" list="submitter_list" placeholder='id,name,..' name='submitter_name' value=submitterName)
           datalist#submitter_list
             each employee in employees
-              option(value=employee.id) #{employee.name}
+              option(value=employee.name) #{employee.name}
         .col-2.mt-4
           .custom-control.custom-checkbox
             input#allsub.custom-control-input(
@@ -30,7 +30,7 @@ block inner-content
           input#approvers.form-control(type="text" list="approver_list" placeholder='id,name,..' name='approver_name' value=approverName)
           datalist#approver_list
             each employee in employees
-              option(value=employee.id) #{employee.name}
+              option(value=employee.name) #{employee.name}
         .col-2.mt-4
           .custom-control.custom-checkbox
             input#allapp.custom-control-input(
@@ -46,7 +46,7 @@ block inner-content
           input#costCentres.form-control(type="text" list="cost_centre_list" placeholder='id,number,..' name='cost_centre' value=costCentreName)
           datalist#cost_centre_list
             each cost_centre in cost_centres
-              option(value=cost_centre.id) #{cost_centre.name}
+              option(value=cost_centre.name) #{cost_centre.name}
         .col-2.mt-4
           .custom-control.custom-checkbox
             input#allcc.custom-control-input(
@@ -72,6 +72,14 @@ block inner-content
               checked=allDates
             )
             label.custom-control-label(for='alld') All Date
+      input(
+        hidden
+        name='report_type'
+        value='statistics'
+      )
+      .row
+        .col-2.mb-3
+          button.btn.btn-primary.btn-lg(type='submit') Submit
 
       hr.mb-4
       p Number of submitted requests: #{submitted}
@@ -79,9 +87,6 @@ block inner-content
       p Number of approved request(s): #{approved}
       p Number of declined request(s): #{declined}
 
-      .row
-        .col-2.mb-3
-          button.btn.btn-primary.btn-lg(type='submit') Submit
 
 block scripts
   script.

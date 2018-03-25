@@ -1,5 +1,27 @@
 extends ../dashboard
 
+mixin reportsTable(reportType)
+    thead
+        tr
+            th Report ID
+            th Type
+            th Download
+            th Delete
+    tbody
+        -
+        each report in reports
+            if !reportType || report.type === reportType
+                tr
+                    td #{report.id}
+                    td #{report.type}
+                    td
+                        form(method='get', action=report.report_download)
+                            button.btn.btn-primary.btn-lg(type = submit) Download
+                    td
+                        form(method='post', action=report.report_download + "/delete")
+                            button.btn.btn-primary.btn-lg(type = submit) Delete
+
+
 block inner-content
     .row
         a(href='/reports?report_type=statistics')
@@ -16,76 +38,25 @@ block inner-content
                 li.nav-item
                     a(class='nav-link active' href='#all' id='all-tab' data-toggle='tab' aria-controls='home' aria-expanded='true') All
                 li.nav-item
-                    a(class='nav-link' href='#statistic' id='statistic-tab' data-toggle='tab') Statistic
+                    a(class='nav-link' href='#payroll' id='payroll-tab' data-toggle='tab') Payroll
                 li.nav-item
-                    a(class='nav-link' href='#T24' id='T24-tab' data-toggle='tab') T24
-            div.tab-content
+                    a(class='nav-link' href='#nav' id='NAV-tab' data-toggle='tab') NAV
+                li.nav-item
+                    a(class='nav-link' href='#t24' id='T24-tab' data-toggle='tab') T24
+            div.tab-content.clickable
                 div.tab-pane.show.active(id='all')
                     .table-responsive
                         table(class='table table-striped table-hover' cellpadding='5')
-                            thead
-                                tr
-                                    th Report ID
-                                    th Attribute 1
-                                    th Attribute 2
-                                    th Boolean Type
-                            tbody
-                                -
-                                    var allReports = [{id: 1, a1: 1, a2: 1, bool: true }, {id: 2, a1: '2', a2: '2', bool: false }, {id: 3, a1: 1, a2: 1, bool: true }, {id: 4, a1: '2', a2: '2', bool: false }]
-                                each allR in allReports
-                                    tr
-                                        td
-                                            input(type='checkbox' name=allR.id)
-                                            |   #{allR.id}
-                                        td #{allR.a1}
-                                        td #{allR.a2}
-                                        if allR.bool
-                                            td.bg-success True
-                                        else
-                                            td.bg-warning False
-                div.tab-pane(id='statistic')
+                            +reportsTable()
+                div.tab-pane(id='payroll')
                     .table-responsive
                         table(class='table table-striped table-hover' cellpadding='5')
-                            thead
-                                tr
-                                    th Report ID
-                                    th Attribute 1
-                                    th Attribute 2
-                                    th Boolean Type
-                            tbody
-                                -
-                                    var statReports = [{id: 1, a1: 1, a2: 1, bool: true }, {id: 2, a1: '2', a2: '2', bool: false }]
-                                each statR in statReports
-                                    tr
-                                        td
-                                            input(type='checkbox' name=statR.id)
-                                            |   #{statR.id}
-                                        td #{statR.a1}
-                                        td #{statR.a2}
-                                        if statR.bool
-                                            td.bg-success True
-                                        else
-                                            td.bg-warning False
-                div.tab-pane(id='T24')
+                            +reportsTable('payroll')
+                div.tab-pane(id='nav')
                     .table-responsive
                         table(class='table table-striped table-hover' cellpadding='5')
-                            thead
-                                tr
-                                    th Report ID
-                                    th Attribute 1
-                                    th Attribute 2
-                                    th Boolean Type
-                            tbody
-                                -
-                                    var T24Reports = [{id: 3, a1: 1, a2: 1, bool: true }, {id: 4, a1: '2', a2: '2', bool: false }]
-                                each T24R in T24Reports
-                                    tr
-                                        td
-                                            input(type='checkbox' name=T24R.id)
-                                            |   #{T24R.id}
-                                        td #{T24R.a1}
-                                        td #{T24R.a2}
-                                        if T24R.bool
-                                            td.bg-success True
-                                        else
-                                            td.bg-warning False
+                            +reportsTable('nav')
+                div.tab-pane(id='t24')
+                    .table-responsive
+                        table(class='table table-striped table-hover' cellpadding='5')
+                            +reportsTable('t24')

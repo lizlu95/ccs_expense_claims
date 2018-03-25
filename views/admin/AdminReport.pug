@@ -1,10 +1,37 @@
 extends ../dashboard
 
 block inner-content
-    h1 NAV Reports
+    h1 Admin Reports
         h3 Filters
-        form(method='post', action='/reports?report_type=nav')
+        form(method='post', action='/reports')
             .container
+                .row
+                    .col-2.mt-4
+                        .custom-control.custom-radio
+                            input#navreport.custom-control-input(
+                                name='report_type'
+                                type='radio'
+                                value='nav'
+                                checked
+                            )
+                            label.custom-control-label(for='navreport') NAV
+                    .col-2.mt-4
+                        .custom-control.custom-radio
+                            input#payrollreport.custom-control-input(
+                                name='report_type'
+                                type='radio'
+                                value='payroll'
+                                disabled
+                            )
+                            label.custom-control-label(for='payrollreport') Payroll
+                    .col-2.mt-4
+                        .custom-control.custom-radio
+                            input#t24report.custom-control-input(
+                                name='report_type'
+                                type='radio'
+                                value='t24'
+                            )
+                            label.custom-control-label(for='t24report') T24
                 .row
                     .col-4.mb-3
                         label(for='fdate') From Date
@@ -25,13 +52,12 @@ block inner-content
                                 th Report ID
                                 th Type
                                 th Download
+                                th Delete
                         tbody
                             -
                             each report in reports
                                 tr
-                                    td
-                                        input(type='checkbox' name=report.id)
-                                        |   #{report.id}
+                                    td #{report.id}
                                     td #{report.type}
                                     td
                                         form(method='get', action=report.report_download)
