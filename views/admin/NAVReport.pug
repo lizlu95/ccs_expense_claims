@@ -8,10 +8,10 @@ block inner-content
                 .row
                     .col-4.mb-3
                         label(for='fdate') From Date
-                        input#fdate.form-control(type='date' value='' name='report_start_date')
+                        input#fdate.form-control(type='date' value='' name='report_start_date' required)
                     .col-4.mb-3
                         label(for='tdate') To Date
-                        input#tdate.form-control(type='date' value='' name='report_end_date')
+                        input#tdate.form-control(type='date' value='' name='report_end_date' required)
                 .row
                     .col-2.mb-3
                         button.btn.btn-primary.btn-lg(type='submit') Submit
@@ -24,7 +24,7 @@ block inner-content
                             tr
                                 th Report ID
                                 th Type
-                                th Ready?
+                                th Download
                         tbody
                             -
                             each report in reports
@@ -36,3 +36,6 @@ block inner-content
                                     td
                                         form(method='get', action=report.report_download)
                                             button.btn.btn-primary.btn-lg(type = submit) Download
+                                    td
+                                        form(method='post', action=report.report_download + "/delete")
+                                            button.btn.btn-primary.btn-lg(type = submit) Delete

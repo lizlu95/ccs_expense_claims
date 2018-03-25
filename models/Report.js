@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         field: 'download_link',
     },
+    key: {
+        type: DataTypes.STRING,
+    },
     type: {
       type: DataTypes.STRING,
     },

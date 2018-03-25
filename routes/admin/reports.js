@@ -368,28 +368,34 @@ function generateNAVReport(req, res, next){
             return Report.create({
                 employeeId: req.user.id,
                 type: Report.TYPE.NAV,
-            }, {transaction: t});
-        }).then(function(newReport){
-            let params = {
-                Bucket: s3.config.params.Bucket,
-                Key: getReportName(newReport.id),
-                Body: csv
-            };
-            s3.putObject(params, function(err, data){
-                if (err) {
-                    console.log("aws s3 report storage failed!");
-                    console.log(err)
-                } else {
-                    console.log("aws s3 report storage success!");
-                    newReport.downloadLink = "http://"+ s3.config.params.Bucket +".s3.amazonaws.com/" + getReportName(newReport.id);
-                    newReport.save({fields: ['downloadLink']}).then(() => {
-                        res.redirect('/reports?report_type=nav');
-                    })
-                }
+            }, {transaction: t}).then(function(newReport){
+                let reportKey = getReportName(newReport.id);
+                return newReport.update({key: reportKey}, {fields:['key'], transaction:t}).then((updatedReport) => {
+                    let params = {
+                        Bucket: s3.config.params.Bucket,
+                        Key: reportKey,
+                        Body: csv
+                    };
+                    s3.putObject(params, function(err, data){
+                        if (err) {
+                            console.log("aws s3 report storage failed!");
+                            console.log(err)
+                        } else {
+                            console.log("aws s3 report storage success!");
+                            updatedReport.downloadLink = "http://"+ s3.config.params.Bucket +".s3.amazonaws.com/" + reportKey;
+                            updatedReport.save({fields: ['downloadLink']}).then(() => {
+                                res.redirect('/reports?report_type=nav');
+                            })
+                        }
+                    });
+                }).catch(function(err){
+                    console.log("report key updating failed!");
+                    console.log(err);
+                });
+            }).catch(function(err){
+                console.log("report db entry creation failed!");
+                console.log(err);
             });
-        }).catch(function(err){
-            console.log("report db entry creation failed!");
-            console.log(err);
         });
     });
 }
@@ -406,9 +412,35 @@ router.get('/:id', function (req, res, next) {
     })
 });
 
+router.post('/:id/delete', function(req, res, next) {
+    deleteReport(req.params.id).then(()=> {
+        // TODO redirects before report is destroyed
+        // res.redirect('/reports?report_type=' + Report.TYPE.NAV);
+        res.redirect('/reports');
+    });
+});
+
 // DELETE /reports/:id
 router.delete('/:id', function(req, res, next){
-    // TODO remove s3 file, then remove local entry
+    deleteReport(req.params.id);
 });
+
+function deleteReport(id){
+    return Report.findOne({
+        where: {id: {[Op.eq]: id}}
+    }).then((report) => {
+        let params = {};
+        params.Bucket = s3.config.params.Bucket;
+        params.Key = report.key;
+        return s3.deleteObject(params, function(err, data){
+            if(err){
+                console.log("failed to delete aws s3 report object!");
+                console.log(err);
+            } else {
+                return report.destroy();
+            }
+        });
+    });
+}
 
 module.exports = router;
