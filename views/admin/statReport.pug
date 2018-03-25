@@ -11,7 +11,10 @@ block inner-content
       .row
         .col-4.mb-2
           label(for='submitters') Submitter
-          input#submitters.form-control(type="text" list="submitters" placeholder='id,name,..' name='submitter_name' value=submitterName)
+          input#submitters.form-control(type="text" list="submitter_list" placeholder='id,name,..' name='submitter_name' value=submitterName)
+          datalist#submitter_list
+            each employee in employees
+              option(value=employee.id) #{employee.name}
         .col-2.mt-4
           .custom-control.custom-checkbox
             input#allsub.custom-control-input(
@@ -24,7 +27,10 @@ block inner-content
       .row
         .col-4.mb-2
           label(for='approvers') Approver
-          input#approvers.form-control(type="text" list="approvers" placeholder='id,name,..' name='approver_name' value=approverName)
+          input#approvers.form-control(type="text" list="approver_list" placeholder='id,name,..' name='approver_name' value=approverName)
+          datalist#approver_list
+            each employee in employees
+              option(value=employee.id) #{employee.name}
         .col-2.mt-4
           .custom-control.custom-checkbox
             input#allapp.custom-control-input(
@@ -37,7 +43,10 @@ block inner-content
       .row
         .col-4.mb-2
           label(for='costCentres') Cost Centres
-          input#costCentres.form-control(type="text" list="costCentres" placeholder='id,number,..' name='cost_centre' value=costCentreName)
+          input#costCentres.form-control(type="text" list="cost_centre_list" placeholder='id,number,..' name='cost_centre' value=costCentreName)
+          datalist#cost_centre_list
+            each cost_centre in cost_centres
+              option(value=cost_centre.id) #{cost_centre.name}
         .col-2.mt-4
           .custom-control.custom-checkbox
             input#allcc.custom-control-input(

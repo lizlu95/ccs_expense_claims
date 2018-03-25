@@ -50,7 +50,38 @@ function handleGetStatistics(req, res, next){
     res.locals.allDates = true;
     res.locals.allCostCentres = true;
 
-    res.render('admin/statReport');
+    async.waterfall([
+        function(callback){
+            Employee.findAll().then((employees) => {
+                let simpleEmployees = _.map(employees, (employee) => {
+                    var emp = {};
+                    emp.name = employee.name;
+                    emp.id = employee.id;
+                    return emp;
+                });
+                res.locals.employees = simpleEmployees;
+                callback(null);
+            });
+        }, function(callback){
+            CostCentre.findAll().then((costCentres) =>{
+                let simpleCostCentres = _.map(costCentres, (costCentre) => {
+                    var cc = {};
+                    cc.name = costCentre.name;
+                    cc.id = costCentre.id;
+                    return cc;
+                });
+                res.locals.cost_centres = simpleCostCentres;
+                callback(null);
+            });
+        }
+    ], function(err){
+        if(err){
+            console.log('get stats page failed!');
+            next(err);
+        } else {
+            res.render('admin/statReport');
+        }
+    });
 }
 
 function handleGetNonStatReport(req, res, next){
@@ -237,7 +268,7 @@ function generateStatsReport(req, res, next){
                         if(req.body.report_start_date && req.body.report_end_date){
                             res.locals.reportStartDate = req.body.report_start_date;
                             res.locals.reportEndDate = req.body.report_end_date;
-                            whereBlock['created_at'] = {[Op.gte]: req.body.report_start_date, [Op.lt]: req.body.report_end_date};
+                            whereBlock['created_at'] = {[Op.gte]: req.body.report_start_date, [Op.lte]: req.body.report_end_date};
                         } else if(req.body.report_start_date){
                             res.locals.reportStartDate = req.body.report_start_date;
                             whereBlock['created_at'] = {[Op.gte]: req.body.report_start_date};
