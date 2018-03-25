@@ -610,9 +610,10 @@ router.get('/:id/forwardees', function (req, res, next) {
   findApprovalLimits(expenseClaimId, req.user.id).then(function (approvalLimits) {
     let forwardees = [];
     for (let approvalLimit of approvalLimits) {
+      var employeeName = approvalLimit.Employee ? approvalLimit.Employee.name : '';
       forwardees.push({
         employeeId: approvalLimit.employeeId,
-        employeeName: approvalLimit.Employee.name,
+        employeeName: employeeName,
       });
     }
     res.locals.forwardees = forwardees;
