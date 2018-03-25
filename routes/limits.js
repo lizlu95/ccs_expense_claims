@@ -46,19 +46,33 @@ router.get('/new', function (req, res, next) {
   });
 });
 
-/* POST /limits/new */
+/* POST /limits */
 router.post('', function (req, res, next) {
-  ApprovalLimit.create({
-    employeeId: req.body.employeeId,
-    costCentreId: req.body.costCentreId,
-    limit: req.body.limit,
-  }).then((approvalLimit) => {
-    if (approvalLimit) {
-      req.flash('success', 'Approval limit successfully created.');
+  Employee.findOne({
+    where: {
+      id: {
+        [Op.eq]: req.body.employeeId,
+      },
+    },
+  }).then((employee) => {
+    if (employee) {
+      ApprovalLimit.create({
+        employeeId: req.body.employeeId,
+        costCentreId: req.body.costCentreId,
+        limit: req.body.limit,
+      }).then((approvalLimit) => {
+        if (approvalLimit) {
+          req.flash('success', 'Approval limit successfully created.');
 
-      res.redirect('/limits/' + approvalLimit.id);
+          res.redirect('/limits/' + approvalLimit.id);
+        } else {
+          req.flash('error', 'Could not create approval limit.');
+
+          res.redirect('/limits');
+        }
+      });
     } else {
-      req.flash('error', 'Could not create approval limit.');
+      req.flash('error', 'Could not find employee with id specified.');
 
       res.redirect('/limits');
     }
