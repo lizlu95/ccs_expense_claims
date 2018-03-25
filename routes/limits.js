@@ -79,4 +79,31 @@ router.post('', function (req, res, next) {
   });
 });
 
+/* GET /limits/:id */
+router.get('/:id', function (req, res, next) {
+  res.locals.title = 'Limit ' + req.params.id;
+
+  ApprovalLimit.findOne({
+    where: {
+      id: {
+        [Op.eq]: req.params.id,
+      },
+    },
+    include: [
+      Employee,
+      CostCentre,
+    ],
+  }).then((approvalLimit) => {
+    if (approvalLimit) {
+      res.locals.approvalLimit = approvalLimit;
+
+      res.render('limits/detail.pug');
+    } else {
+      req.flash('error', 'Could not find approval limit.');
+
+      res.redirect('/limits');
+    }
+  });
+});
+
 module.exports = router;

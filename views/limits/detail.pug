@@ -1,0 +1,24 @@
+extends ../dashboard
+
+block inner-content
+  h1.mb-4.text-center Limit #{approvalLimit.id}
+  .row.mb-3
+    .col-md-12.col-lg-12
+      div.tab-content.mb-3
+        div.tab-pane.show.active(id='user')
+          .table-responsive
+            table(class='table table-striped table-hover' cellpadding='5')
+              thead
+                tr
+                  th ID
+                  th Employee ID
+                  th Employee Name
+                  th Cost Centre
+                  th Amount
+              tbody
+                tr
+                  td= approvalLimit.id
+                  td= approvalLimit.Employee.id
+                  td= approvalLimit.Employee.name
+                  td= approvalLimit.CostCentre.number
+                  td= approvalLimit.limit
