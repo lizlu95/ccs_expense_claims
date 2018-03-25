@@ -16,7 +16,7 @@ router.get('', function (req, res, next) {
   if (req.query.filter) {
     conditions = {
       where: {
-        id: {
+        employeeId: {
           [Op.in]: JSON.parse('[' + req.query.filter + ']'),
         },
       },
