@@ -24,14 +24,25 @@ mixin reportsTable(reportType)
 
 block inner-content
     .row
-        a(href='/reports?report_type=statistics')
-            button Statistics Report
-    .row
-        a(href='/reports?report_type=nav')
-            button NAV Report
+        .col-2.mb-3
+            form(method='get', action='/reports?report_type=nav')
+                input(
+                    hidden
+                    name='report_type'
+                    value='nav'
+                )
+                button.btn.btn-primary.btn-lg(type=submit) Admin Reports
+        .col-2.mb-3
+            form(action='/reports?report_type=statistics')
+                input(
+                    hidden
+                    name='report_type'
+                    value='statistics'
+                )
+                button.btn.btn-primary.btn-lg(type=submit) Statistics Report
     .row.mb-3
         .col-12.text-center
-            h2 Created Report
+            h2 Created Reports
     .row.mb-3
         .col-md-12.col-lg-12
             ul.nav.nav-tabs
