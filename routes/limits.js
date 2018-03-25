@@ -114,6 +114,37 @@ router.get('/:id/edit', function (req, res, next) {
   });
 });
 
+/* PUT /limits/:id */
+router.put('/:id', function (req, res, next) {
+  ApprovalLimit.findOne({
+    where: {
+      id: {
+        [Op.eq]: req.params.id,
+      },
+    },
+  }).then((approvalLimit) => {
+    if (approvalLimit) {
+      approvalLimit.updateAttributes({
+        employeeId: req.body.employeeId,
+        costCentreId: req.body.costCentreId,
+        limit: req.body.limit,
+      }).then(() => {
+        req.flash('success', 'Successfully updated approval limit.');
+
+        res.redirect('/limits/' + approvalLimit.id);
+      }).catch(() => {
+        req.flash('error', 'Failed to update approval limit.');
+
+        res.redirect('/limits/' + approvalLimit.id);
+      });
+    } else {
+      req.flash('error', 'Could not find approval limit.');
+
+      res.redirect('/limits');
+    }
+  });
+});
+
 /* GET /limits/:id */
 router.get('/:id', function (req, res, next) {
   res.locals.title = 'Limit ' + req.params.id;

@@ -9,6 +9,7 @@ block inner-content
     .col-12
       if approvalLimit
         form.needs-validation(novalidate method='POST' action=`/limits/${approvalLimit.id}`)
+          input(type='hidden' name='_method' value='PUT')
           .row.mb-4
             .col-md-6
               label(for='employee-id') Employee ID
@@ -19,10 +20,13 @@ block inner-content
                 | Looks good!
             .col-md-6
               label(for='cost-centre') Cost Centre
-              select#cost-centre.custom-select(name='costCentreId' value=approvalLimit.costCentreId required)
+              select#cost-centre.custom-select(name='costCentreId' required)
                 option(value='') Choose..
                 each costCentre in costCentres
-                  option(value= costCentre.id)= costCentre.number
+                  if costCentre.id == approvalLimit.costCentreId
+                    option(value= costCentre.id selected='selected')= costCentre.number
+                  else
+                    option(value= costCentre.id)= costCentre.number
               .invalid-feedback
                 | Please select a cost centre.
               .valid-feedback
