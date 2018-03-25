@@ -1,6 +1,8 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
+  // TODO: new key column
+
   var Report = sequelize.define('Report', {
     employeeId: {
       type: DataTypes.INTEGER,
@@ -24,6 +26,13 @@ module.exports = (sequelize, DataTypes) => {
 
   Report.associate = function (models) {
     Report.Employee = Report.belongsTo(models.Employee);
+  };
+
+  Report.TYPE = {
+      DEFAULT: 'nav',
+      NAV: 'nav',
+      T24: 't24',
+      PAYROLL: 'payroll',
   };
 
   return Report;
