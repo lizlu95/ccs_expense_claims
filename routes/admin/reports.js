@@ -23,14 +23,29 @@ const CostCentre = database.CostCentre;
 
 /* GET /reports */
 router.get('', function (req, res, next) {
-    if(req.params.type === 'statistics'){
-        return handleGetStatistics();
-    } else {
-        return handleGetNAV();
+    switch(req.query.report_type){
+        case Report.TYPE.STATS:
+            return handleGetStatistics(req, res, next);
+        case Report.TYPE.NAV:
+        case Report.TYPE.T24:
+        case Report.TYPE.PAYROLL:
+            console.log('get non stat');
+            return handleGetNonStatReport(req, res, next);
+        default:
+            return handleGetReport(req, res, next);
     }
+
 });
 
-function handleGetStatistics(){
+function handleGetReport(req, res, next){
+    res.locals.title = 'Reports';
+    res.locals.STAT = Report.TYPE.STATS;
+    res.locals.NAV = Report.TYPE.NAV;
+
+    res.render('admin/reportIndex');
+}
+
+function handleGetStatistics(req, res, next){
     res.locals.title = 'Statistics Report';
     res.locals.allSubmitters = true;
     res.locals.allApprovers = true;
@@ -40,7 +55,7 @@ function handleGetStatistics(){
     res.render('admin/statReport');
 }
 
-function handleGetNAV(){
+function handleGetNonStatReport(req, res, next){
     res.locals.title = 'NAV Report';
     Report.findAll({
         where: {
@@ -75,15 +90,21 @@ function handleGetNAV(){
 //      submitter_name    (optional)
 //      approver_name     (optional)
 router.post('', function(req, res, next){
-    // TODO deal with non-statistics reports
-    if(req.params.type === 'statistics'){
-        return generateStatsReport();
-    } else {
-        generateT24Report();
+    switch(req.query.report_type){
+        case Report.TYPE.STATS:
+            return generateStatsReport(req, res, next);
+        case Report.TYPE.NAV:
+            return generateNAVReport(req, res, next);
+        case Report.TYPE.T24:
+            return generateT24Report(req, res, next);
+        case Report.TYPE.PAYROLL:
+            return generatePayrollReport(req, res, next);
+        default:
+            return next();
     }
 });
 
-function generateStatsReport(){
+function generateStatsReport(req, res, next){
     async.waterfall([
         function(callback){
             var submitterId = null;
@@ -263,84 +284,80 @@ function generateStatsReport(){
     });
 }
 
-function generateNAVReport(){
+function generatePayrollReport(req, res, next){
 
 }
 
-function generateT24Report(){
+function generateNAVReport(req, res, next){
+
+}
+
+function generateNAVReport(req, res, next){
     var startDate = req.body.report_start_date;
     var endDate = req.body.report_end_date;
-    async.waterfall([
-        function(callback){
-            ExpenseClaim.findAll({
-                where: {
-                    created_at: {[Op.gte]: startDate, [Op.lt]: endDate}
-                }, include: [{
-                    model: ExpenseClaimItem,
-                }, {
-                    model: EmployeeExpenseClaim,
-                    where: {
-                        isActive: {[Op.eq]: 1}
-                    }
-                }]
-            }).then(function(expenseClaims){
-                console.log(expenseClaims.length);
-                var rows = _.map(expenseClaims, (expenseClaim) => {
-                    var amount = _.reduce(expenseClaim.ExpenseClaimItem, (memo, expenseClaimItem) => {
-                        return memo + expenseClaimItem.total;
-                    }, 0);
-                    var row = {
-                        bank_number: expenseClaim.bankNumber,
-                        currency_type: "CAD",
-                        date: expenseClaim.createdAt,
-                        status: expenseClaim.status,
-                        dollar_amount: "$" + amount,
-                        _51: "51",
-                        CR: "CR",
-                        "-": "-",
-                        status: expenseClaim.status,
-                        empty1:"",
-                        empty2:"",
-                        empty3:"",
-                        dollar_value: amount,
-                        bank_number2: expenseClaim.bankNumber,
-                    };
-                    return row;
-                });
+    ExpenseClaim.findAll({
+        where: {
+            created_at: {[Op.gte]: startDate, [Op.lt]: endDate}
+        }, include: [{
+            model: ExpenseClaimItem,
+        }, {
+            model: EmployeeExpenseClaim,
+            where: {
+                isActive: {[Op.eq]: 1}
+            }
+        }]
+    }).then(function(expenseClaims){
+        console.log(expenseClaims.length);
+        var rows = _.map(expenseClaims, (expenseClaim) => {
+            var amount = _.reduce(expenseClaim.ExpenseClaimItem, (memo, expenseClaimItem) => {
+                return memo + expenseClaimItem.total;
+            }, 0);
+            var row = {
+                bank_number: expenseClaim.bankNumber,
+                currency_type: "CAD",
+                date: expenseClaim.createdAt,
+                status: expenseClaim.status,
+                dollar_amount: "$" + amount,
+                _51: "51",
+                CR: "CR",
+                "-": "-",
+                status: expenseClaim.status,
+                empty1:"",
+                empty2:"",
+                empty3:"",
+                dollar_value: amount,
+                bank_number2: expenseClaim.bankNumber,
+            };
+            return row;
+        });
 
-                var opts = {};
-                opts['fields'] = rows[0].keys;
-                opts['delimiter'] = "|";
-                opts['header'] = false;
-                opts['quote'] = "";
+        var opts = {};
+        opts['fields'] = rows[0].keys;
+        opts['delimiter'] = "|";
+        opts['header'] = false;
+        opts['quote'] = "";
 
-                var csv = json2csv(rows, opts);
-                console.log(csv);
+        var csv = json2csv(rows, opts);
+        console.log(csv);
 
-                var params = {
-                    Bucket: s3.config.params.Bucket,
-                    Key: "t24testreport",
-                    Body: csv
-                };
-                s3.putObject(params, function(err, data){
-                    if (err) {
-                        console.log(err)
-                    } else {
-                        console.log("Successfully uploaded data to myBucket/myKey");
-                        console.log("data returned:");
-                        console.log(data);
-                    }
-                });
-            });
-        }
-    ], function(err){
-        if(err){
-            console.log(err);
-            next(err);
-        } else {
-            res.redirect('/reports/NAV');
-        }
+        var params = {
+            Bucket: s3.config.params.Bucket,
+            Key: "t24testreport",
+            Body: csv
+        };
+        s3.putObject(params, function(err, data){
+            if (err) {
+                console.log(err)
+            } else {
+                console.log("Successfully uploaded data to myBucket/myKey");
+                console.log("data returned:");
+                console.log(data);
+            }
+
+        });
     });
+
+    res.redirect('/reports?report_type=NAV');
 }
 
 

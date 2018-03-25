@@ -3,7 +3,7 @@ extends ../dashboard
 block inner-content
     h1 NAV Reports
         h3 Filters
-        form(method='post', action='/reports/NAV')
+        form(method='post', action='/reports?report_type=nav')
             .container
                 .row
                     .col-4.mb-3
@@ -12,10 +12,6 @@ block inner-content
                     .col-4.mb-3
                         label(for='tdate') To Date
                         input#tdate.form-control(type='date' value='' name='report_end_date')
-                    .col-2.mt-4
-                        .custom-control.custom-radio
-                            input#alld.custom-control-input(name='all_dates' type='checkbox')
-                            label.custom-control-label(for='alld') All Date
                 .row
                     .col-2.mb-3
                         button.btn.btn-primary.btn-lg(type='submit') Submit

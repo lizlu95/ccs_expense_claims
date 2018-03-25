@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   Report.TYPE = {
-      DEFAULT: 'nav',
+      STATS: 'statistics',
       NAV: 'nav',
       T24: 't24',
       PAYROLL: 'payroll',
