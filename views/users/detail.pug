@@ -21,13 +21,11 @@ block inner-content
                   td= user.id
                   td= user.email
                   td= user.name
-                  td
-                    a(href=`/users/${user.managerId}`)= user.managerId
+                  td.clickable.manager-cell= user.managerId
                   if user.manager
-                    td
-                      a(href=`/users/${user.managerId}`)= user.manager.name
+                    td.clickable.manager-cell= user.manager.name
                   else
-                    td
+                    td.clickable.manager-cell
                   if user.isAdmin
                     td.table-success Admin
                   else
@@ -37,7 +35,7 @@ block inner-content
     .col-md-12.col-lg-12
       div.tab-content.mb-3
         div.tab-pane.show.active(id='limit')
-          .table-responsive
+          .table-responsive#table-limits
             table(class='table table-striped table-hover' cellpadding='5')
               thead
                 tr
@@ -50,3 +48,10 @@ block inner-content
                     td= approvalLimit.id
                     td= approvalLimit.CostCentre.number
                     td= approvalLimit.limit
+block scripts
+  script.
+    $(document).ready(function() {
+      $('.manager-cell').on('click', function (event) {
+        window.location = '/users/' + #{user.managerId};
+      });
+    });
