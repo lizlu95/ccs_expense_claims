@@ -333,6 +333,11 @@ function generateNAVReport(req, res, next){
             }
         }]
     }).then(function(expenseClaims){
+        if(expenseClaims.length === 0){
+            req.flash('error', 'No claims in date range!');
+            return res.redirect('/reports?report_type=nav');
+        }
+
         var rows = _.map(expenseClaims, (expenseClaim) => {
             var amount = _.reduce(expenseClaim.ExpenseClaimItem, (memo, expenseClaimItem) => {
                 return memo + expenseClaimItem.total;
