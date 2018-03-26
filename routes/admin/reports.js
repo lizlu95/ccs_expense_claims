@@ -1,3 +1,4 @@
+const moment = require('moment');
 const json2csv = require('json2csv').parse;
 const async = require('async');
 const express = require('express');
@@ -303,13 +304,13 @@ function generateStatsReport(req, res, next){
                         if(req.body.report_start_date && req.body.report_end_date){
                             req.session.reportStartDate = req.body.report_start_date;
                             req.session.reportEndDate = req.body.report_end_date;
-                            whereBlock['created_at'] = {[Op.gte]: req.body.report_start_date, [Op.lte]: req.body.report_end_date};
+                            whereBlock['created_at'] = {[Op.gte]: req.body.report_start_date, [Op.lte]: moment(req.body.report_end_date).endOf("day")};
                         } else if(req.body.report_start_date){
                             req.session.reportStartDate = req.body.report_start_date;
                             whereBlock['created_at'] = {[Op.gte]: req.body.report_start_date};
                         } else if(req.body.report_end_date){
                             req.session.reportEndDate = req.body.report_end_date;
-                            whereBlock['created_at'] = {[Op.lte]: req.body.report_end_date};
+                            whereBlock['created_at'] = {[Op.lte]: moment(req.body.report_end_date).endOf("day")};
                         } else {
                             req.session.allDates = true;
                         }
@@ -355,7 +356,7 @@ function generateT24Report(req, res, next){
     var endDate = req.body.report_end_date;
     ExpenseClaim.findAll({
         where: {
-            created_at: {[Op.gte]: startDate, [Op.lte]: endDate},
+            created_at: {[Op.gte]: startDate, [Op.lte]: moment(endDate).endOf("day")},
             bankNumber: {[Op.regexp]: '^[0-9]+$'}
         }, include: [{
             model: ExpenseClaimItem,
@@ -381,7 +382,7 @@ function generateNAVReport(req, res, next){
     var endDate = req.body.report_end_date;
     ExpenseClaim.findAll({
         where: {
-            created_at: {[Op.gte]: startDate, [Op.lte]: endDate}
+            created_at: {[Op.gte]: startDate, [Op.lte]: moment(endDate).endOf("day")}
         }, include: [{
             model: ExpenseClaimItem,
         }, {
