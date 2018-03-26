@@ -61,10 +61,10 @@ block inner-content
                                     td #{report.type}
                                     td
                                         form(method='get', action=report.report_download)
-                                            button.btn.btn-primary(type = submit) Download
+                                            button.btn.btn-info.btn-sm(type = submit) Download
                                     td
                                         form(method='post', action=report.report_download + "/delete")
-                                            button.btn.btn-primary(type = submit) Delete
+                                            button.btn.btn-danger.btn-sm(type = submit) Delete
 block scripts
   script.
     $('.date').datepicker({
