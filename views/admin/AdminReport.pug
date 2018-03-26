@@ -35,13 +35,13 @@ block inner-content
                 .row
                     .col-4.mb-3
                         label(for='fdate') From Date
-                        input#fdate.form-control(type='date' value='' name='report_start_date' required)
+                        input#fdate.date.form-control(type='text' value='' name='report_start_date' placeholder='yyyy-mm-dd' required)
                     .col-4.mb-3
                         label(for='tdate') To Date
-                        input#tdate.form-control(type='date' value='' name='report_end_date' required)
+                        input#tdate.date.form-control(type='text' value='' name='report_end_date' placeholder='yyyy-mm-dd' required)
                 .row
                     .col-2.mb-3
-                        button.btn.btn-primary.btn-lg(type='submit') Submit
+                        button.btn.btn-success(type='submit') Submit
         h3 Report List
         div.tab-content
             div.tab-pane.show.active(id='report')
@@ -65,3 +65,8 @@ block inner-content
                                     td
                                         form(method='post', action=report.report_download + "/delete")
                                             button.btn.btn-primary.btn-lg(type = submit) Delete
+block scripts
+  script.
+    $('.date').datepicker({
+      dateFormat: 'yy-mm-dd'
+    });
