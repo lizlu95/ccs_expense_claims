@@ -1,12 +1,12 @@
 extends ../dashboard
 
 block inner-content
-    h1 Admin Reports
-        h3 Filters
+    h1.text-center.mb-4 Reports
+        h3.text-center.mb-3 Filters
         form(method='post', action='/reports')
             .container
-                .row
-                    .col-2.mt-4
+                .row.mb-3
+                    .col-4
                         .custom-control.custom-radio
                             input#navreport.custom-control-input(
                                 name='report_type'
@@ -15,7 +15,7 @@ block inner-content
                                 checked
                             )
                             label.custom-control-label(for='navreport') NAV
-                    .col-2.mt-4
+                    .col-4
                         .custom-control.custom-radio
                             input#payrollreport.custom-control-input(
                                 name='report_type'
@@ -24,7 +24,7 @@ block inner-content
                                 disabled
                             )
                             label.custom-control-label(for='payrollreport') Payroll
-                    .col-2.mt-4
+                    .col-4
                         .custom-control.custom-radio
                             input#t24report.custom-control-input(
                                 name='report_type'
@@ -32,17 +32,17 @@ block inner-content
                                 value='t24'
                             )
                             label.custom-control-label(for='t24report') T24
-                .row
-                    .col-4.mb-3
-                        label(for='fdate') From Date
+                .row.mb-4
+                    .col-6
+                        label(for='fdate') From
                         input#fdate.date.form-control(type='text' value='' name='report_start_date' placeholder='yyyy-mm-dd' required)
-                    .col-4.mb-3
-                        label(for='tdate') To Date
+                    .col-6
+                        label(for='tdate') To
                         input#tdate.date.form-control(type='text' value='' name='report_end_date' placeholder='yyyy-mm-dd' required)
-                .row
-                    .col-2.mb-3
-                        button.btn.btn-success(type='submit') Submit
-        h3 Report List
+                .row.mb-4
+                    .col-12
+                        button.w-100.btn.btn-success(type='submit') Submit
+        h2.text-center.my-3 Reports
         div.tab-content
             div.tab-pane.show.active(id='report')
                 .table-responsive
