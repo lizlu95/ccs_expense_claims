@@ -487,7 +487,7 @@ router.post('/:id/delete', function(req, res, next) {
     deleteReport(req.params.id).then(()=> {
         // TODO redirects before report is destroyed
         // res.redirect('/reports?report_type=' + Report.TYPE.NAV);
-        res.redirect('/reports');
+        res.redirect('/reports?report_type=nav');
     });
 });
 
