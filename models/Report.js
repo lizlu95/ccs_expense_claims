@@ -6,6 +6,13 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       field: 'employee_id',
     },
+    downloadLink: {
+        type: DataTypes.STRING,
+        field: 'download_link',
+    },
+    key: {
+        type: DataTypes.STRING,
+    },
     type: {
       type: DataTypes.STRING,
     },
@@ -24,6 +31,13 @@ module.exports = (sequelize, DataTypes) => {
 
   Report.associate = function (models) {
     Report.Employee = Report.belongsTo(models.Employee);
+  };
+
+  Report.TYPE = {
+      STATS: 'statistics',
+      NAV: 'nav',
+      T24: 't24',
+      PAYROLL: 'payroll',
   };
 
   return Report;

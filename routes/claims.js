@@ -22,6 +22,7 @@ const Company = database.Company;
 const Receipt = database.Receipt;
 const ApprovalLimit = database.ApprovalLimit;
 const Configuration = database.Configuration;
+const AutoSave = database.AutoSave;
 
 /* GET /claims */
 router.get('', function (req, res, next) {
@@ -58,6 +59,19 @@ router.get('', function (req, res, next) {
     } else {
       res.render('claims/list');
     }
+  });
+});
+
+/* GET /claims/save */
+router.get('/save', function (req, res, next) {
+  AutoSave.findOne({
+    where: {
+      employeeId: {
+        [Op.eq]: req.user.id,
+      },
+    },
+  }).then((autoSave) => {
+    res.json(autoSave);
   });
 });
 
@@ -405,15 +419,23 @@ router.post('', function (req, res, next) {
             }],
             transaction: t,
           }).then(function (expenseClaim) {
-            var notifier = new Notifier(req);
-            notifier.notifyExpenseClaimSubmitted(employeeId, managerId, expenseClaim.id)
-              .then((info) => {
-                callback(null, expenseClaim);
-              })
-              .catch((err) => {
-                // TODO flash message forward based on err
-                callback(null, expenseClaim);
-              });
+            AutoSave.destroy({
+              where: {
+                employeeId: {
+                  [Op.eq]: req.user.id,
+                },
+              },
+            }).then(() => {
+              var notifier = new Notifier(req);
+              notifier.notifyExpenseClaimSubmitted(employeeId, managerId, expenseClaim.id)
+                .then((info) => {
+                  callback(null, expenseClaim);
+                })
+                .catch((err) => {
+                  // TODO flash message forward based on err
+                  callback(null, expenseClaim);
+                });
+            });
           }).catch(function(err) {
             callback(err);
           });
@@ -431,6 +453,23 @@ router.post('', function (req, res, next) {
     } else {
       res.redirect('/claims/' + expenseClaim.id);
     }
+  });
+});
+
+/* POST /save */
+router.post('/save', function (req, res, next) {
+  AutoSave.findOrCreate({
+    where: {
+      employeeId: req.user.id,
+    },
+  }).then((autoSave) => {
+    autoSave[0].updateAttributes({
+      data: req.body.expenseClaimData,
+    }).then((autoSave) => {
+      res.status(200).end();
+    }).catch(() => {
+      res.status(404).end();
+    });
   });
 });
 
@@ -571,9 +610,10 @@ router.get('/:id/forwardees', function (req, res, next) {
   findApprovalLimits(expenseClaimId, req.user.id).then(function (approvalLimits) {
     let forwardees = [];
     for (let approvalLimit of approvalLimits) {
+      var employeeName = approvalLimit.Employee ? approvalLimit.Employee.name : '';
       forwardees.push({
         employeeId: approvalLimit.employeeId,
-        employeeName: approvalLimit.Employee.name,
+        employeeName: employeeName,
       });
     }
     res.locals.forwardees = forwardees;

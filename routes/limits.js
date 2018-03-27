@@ -16,7 +16,7 @@ router.get('', function (req, res, next) {
   if (req.query.filter) {
     conditions = {
       where: {
-        id: {
+        employeeId: {
           [Op.in]: JSON.parse('[' + req.query.filter + ']'),
         },
       },
@@ -46,19 +46,126 @@ router.get('/new', function (req, res, next) {
   });
 });
 
-/* POST /limits/new */
+/* POST /limits */
 router.post('', function (req, res, next) {
-  ApprovalLimit.create({
-    employeeId: req.body.employeeId,
-    costCentreId: req.body.costCentreId,
-    limit: req.body.limit,
+  Employee.findOne({
+    where: {
+      id: {
+        [Op.eq]: req.body.employeeId,
+      },
+    },
+  }).then((employee) => {
+    if (employee) {
+      ApprovalLimit.create({
+        employeeId: req.body.employeeId,
+        costCentreId: req.body.costCentreId,
+        limit: req.body.limit,
+      }).then((approvalLimit) => {
+        if (approvalLimit) {
+          req.flash('success', 'Approval limit successfully created.');
+
+          res.redirect('/limits/' + approvalLimit.id);
+        } else {
+          req.flash('error', 'Could not create approval limit.');
+
+          res.redirect('/limits/new');
+        }
+      }).catch((error) => {
+        req.flash('error', 'Validation error. Please ensure a unique entry.');
+
+        res.redirect('/limits/new');
+      });
+    } else {
+      req.flash('error', 'Could not find employee with id specified.');
+
+      res.redirect('/limits/new');
+    }
+  });
+});
+
+/* GET /limits/:id/edit */
+router.get('/:id/edit', function (req, res, next) {
+  res.locals.title = 'Limit ' + req.params.id;
+
+  CostCentre.findAll().then((costCentres) => {
+    res.locals.costCentres = costCentres;
+
+    ApprovalLimit.findOne({
+      where: {
+        id: {
+          [Op.eq]: req.params.id,
+        },
+      },
+      include: [
+        Employee,
+        CostCentre,
+      ],
+    }).then((approvalLimit) => {
+      if (approvalLimit) {
+        res.locals.approvalLimit = approvalLimit;
+
+        res.render('limits/new');
+      } else {
+        req.flash('error', 'Could not find approval limit.');
+
+        res.redirect('/limits');
+      }
+    });
+  });
+});
+
+/* PUT /limits/:id */
+router.put('/:id', function (req, res, next) {
+  ApprovalLimit.findOne({
+    where: {
+      id: {
+        [Op.eq]: req.params.id,
+      },
+    },
   }).then((approvalLimit) => {
     if (approvalLimit) {
-      req.flash('success', 'Approval limit successfully created.');
+      approvalLimit.updateAttributes({
+        employeeId: req.body.employeeId,
+        costCentreId: req.body.costCentreId,
+        limit: req.body.limit,
+      }).then(() => {
+        req.flash('success', 'Successfully updated approval limit.');
 
-      res.redirect('/limits/' + approvalLimit.id);
+        res.redirect('/limits/' + approvalLimit.id);
+      }).catch(() => {
+        req.flash('error', 'Failed to update approval limit.');
+
+        res.redirect('/limits/' + approvalLimit.id);
+      });
     } else {
-      req.flash('error', 'Could not create approval limit.');
+      req.flash('error', 'Could not find approval limit.');
+
+      res.redirect('/limits');
+    }
+  });
+});
+
+/* GET /limits/:id */
+router.get('/:id', function (req, res, next) {
+  res.locals.title = 'Limit ' + req.params.id;
+
+  ApprovalLimit.findOne({
+    where: {
+      id: {
+        [Op.eq]: req.params.id,
+      },
+    },
+    include: [
+      Employee,
+      CostCentre,
+    ],
+  }).then((approvalLimit) => {
+    if (approvalLimit) {
+      res.locals.approvalLimit = approvalLimit;
+
+      res.render('limits/detail.pug');
+    } else {
+      req.flash('error', 'Could not find approval limit.');
 
       res.redirect('/limits');
     }

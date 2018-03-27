@@ -13,6 +13,7 @@ const Op = Sequelize.Op;
 const sassMiddleware = require('node-sass-middleware');
 const flash = require('connect-flash');
 const _ = require('underscore');
+const methodOverride = require('method-override');
 
 // routes
 const index = require('./routes/index');
@@ -46,6 +47,14 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
+}));
+app.use(methodOverride(function (req, res) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
+    var method = req.body._method;
+    delete req.body._method;
+    return method;
+  }
 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -159,7 +168,9 @@ app.use(function (req, res, next) {
     ],
     limit: 10,
   }).then((expenseClaims) => {
-    res.locals.recentExpenseClaims = expenseClaims;
+    res.locals.recentExpenseClaims = _.uniq(expenseClaims, false, (expenseClaim) => {
+      return expenseClaim.id;
+    });
 
     next();
   });

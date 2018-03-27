@@ -96,6 +96,7 @@ router.post('/settings', (req, res, next) => {
     for (let x in kArr) {
         pArr.push(updateSetting(kArr[x], newValue[x]));
     }
+<<<<<<< HEAD
     Promise.all(pArr).then((results) => {
         let hasNoInput = true;
         for (let x of results) {
@@ -107,6 +108,9 @@ router.post('/settings', (req, res, next) => {
         if (hasNoInput) {
             req.flash('error', 'No setting value is changed');
         }
+=======
+    Promise.all(pArr).then(() => {
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
         res.redirect('/system/configuration')
     }).catch((error) => {
         next(error)
@@ -115,13 +119,18 @@ router.post('/settings', (req, res, next) => {
 
 /* update value for one system configuration */
 updateSetting = (name, value) => {
+<<<<<<< HEAD
     return new Promise((fulfill) => {
+=======
+    return new Promise((fulfill, reject) => {
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
         if (value === '') {
             /* no change request for these configuration */
             fulfill(name + ' does not change')
         } else {
             /*  one change request
                 Configurations.update return a promise */
+<<<<<<< HEAD
             Configuration.findOne({
                 where: {
                     name: name
@@ -142,6 +151,19 @@ updateSetting = (name, value) => {
                         message: name + ' is ' + value + ' already'
                     });
                 }
+=======
+            Configuration.update({
+                name: name,
+                value: value
+            }, {
+                where: {
+                    name: name
+                }
+            }).then(() => {
+                fulfill(name + ': ' + value)
+            }).catch((error) => {
+                reject(error);
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
             })
         }
     })
@@ -158,7 +180,10 @@ router.post('/users', (req, res, next) => {
             for (let x of users) {
                 selectedIDs.push(x.id);
             }
+<<<<<<< HEAD
             req.flash('success', 'All employees selected');
+=======
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
             res.redirect('/system/configuration')
         }).catch((error) => {
             next(error);
@@ -172,7 +197,10 @@ router.post('/users', (req, res, next) => {
             },
         }).then((configuration) => {
             selectedIDs = JSON.parse(configuration.value);
+<<<<<<< HEAD
             req.flash('success', 'Only admin type Employees selected');
+=======
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
             res.redirect('/system/configuration')
         }).catch((error) => {
             next(error);
@@ -207,7 +235,10 @@ router.post('/users', (req, res, next) => {
             if (err) {
                 next(err);
             } else {
+<<<<<<< HEAD
                 req.flash('success', 'Only normal user type Employees selected');
+=======
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
                 res.redirect('/system/configuration')
             }
         });
@@ -243,10 +274,14 @@ router.post('/users', (req, res, next) => {
                         }
                     }
                 }
+<<<<<<< HEAD
                 if (moveArr.includes(req.user.id)) {
                     req.flash('error', 'Your are Employee' + req.user.id + ', you cannot demote yourself');
                     callback(null)
                 } else if (numNotAdmin === 0 && numAdmin > 0) {
+=======
+                if (numNotAdmin === 0 && numAdmin > 0) {
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
                     for (let x of moveArr) {
                         let index = admins.indexOf(x);
                         if (index !== -1) {
@@ -262,6 +297,7 @@ router.post('/users', (req, res, next) => {
                             name: Admin_Arr_Name_MYSQL
                         }
                     }).then(function () {
+<<<<<<< HEAD
                         req.flash('success', 'Employee ' + moveArr + ' changed to normal user');
                         callback(null)
                     })
@@ -270,6 +306,11 @@ router.post('/users', (req, res, next) => {
                     callback(null)
                 } else {
                     req.flash('error', 'Employee ' + notMoveArr + ' is normal user already');
+=======
+                        callback(null)
+                    })
+                } else {
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
                     callback(null)
                 }
             }
@@ -312,10 +353,14 @@ router.post('/users', (req, res, next) => {
                         }
                     }
                 }
+<<<<<<< HEAD
                 if (notAddArr.includes(req.user.id)) {
                     req.flash('error', 'Your are Employee' + req.user.id + ', you cannot promote yourself');
                     callback(null)
                 } else if (numNotAdmin > 0 && numAdmin === 0) {
+=======
+                if (numNotAdmin > 0 && numAdmin === 0) {
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
                     for (let x of addArr) {
                         admins.push(x);
                     }
@@ -327,6 +372,7 @@ router.post('/users', (req, res, next) => {
                         where: {
                             name: Admin_Arr_Name_MYSQL
                         }
+<<<<<<< HEAD
                     }).then(() => {
                         req.flash('success', 'Employee ' + addArr + ' changed to admin');
                         callback(null)
@@ -336,6 +382,12 @@ router.post('/users', (req, res, next) => {
                     callback(null)
                 } else {
                     req.flash('error', 'Employee ' + notAddArr + ' is admin already');
+=======
+                    }).then(function () {
+                        callback(null)
+                    })
+                } else {
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
                     callback(null)
                 }
             }
@@ -365,6 +417,7 @@ router.post('/users', (req, res, next) => {
                 }
                 if (isContain) {
                     selectedIDs = idArr;
+<<<<<<< HEAD
                     req.flash('success', 'successfully find Employee' + idArr);
                     res.redirect('/system/configuration')
                 } else {
@@ -373,13 +426,20 @@ router.post('/users', (req, res, next) => {
                     } else {
                         req.flash('error', 'Employee ' + notUsersID + ' is not on employee list');
                     }
+=======
+                    res.redirect('/system/configuration')
+                } else {
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
                     res.redirect('/system/configuration')
                 }
             }).catch((error) => {
                 next(error);
             })
         } catch (error) {
+<<<<<<< HEAD
             req.flash('error', body.filter + ' is not valid employee ID');
+=======
+>>>>>>> 65e7beeebda143b880813df30d3a420b0eaa72f4
             res.redirect('/system/configuration')
         }
     }

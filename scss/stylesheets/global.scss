@@ -26,6 +26,11 @@ a {
   margin-bottom: 6rem !important;
 }
 
+.my-49 {
+  margin-top: 2rem !important;
+  margin-bottom: 9rem !important;
+}
+
 .mb-10 {
   margin-bottom: 10rem !important;
 }
@@ -70,7 +75,7 @@ a {
 
 .progress {
   font-size: 1rem;
-  height: 50px;
+  height: 45px;
 }
 
 .custom-file-label {
@@ -99,4 +104,8 @@ a {
 
 .ui-datepicker {
   z-index: 999 !important;
+}
+
+label {
+  font-weight: bold;
 }
