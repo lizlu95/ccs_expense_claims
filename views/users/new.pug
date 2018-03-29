@@ -23,11 +23,7 @@ block inner-content
         .row.mb-4
           .col-md-6
             label(for='manager-id') Manager ID
-            input#manager-id.form-control(type='number' name='managerId' required)
-            .invalid-feedback
-              | Please enter a valid manager ID.
-            .valid-feedback
-              | Looks good!
+            input#manager-id.form-control(type='number' name='managerId')
           .col-md-6
             label(for='employee-email') Email
             input#employee-email.form-control(type='text' name='email' required)

@@ -143,56 +143,90 @@ router.get('/:id', function (req, res, next) {
 router.post('', function (req, res, next) {
   var newEmployeeId = req.body.id;
   var temporaryPassword = req.body.password;
-  sequelize.transaction(function (t) {
-    return Employee.create({
-      id: newEmployeeId,
-      name: req.body.name,
-      managerId: req.body.managerId,
-      email: req.body.email,
-      password: temporaryPassword,
-    }, {
-      transaction: t,
-    }).then((employee) => {
-      if (req.body.isAdmin) {
-        return Configuration.findOne({
+
+  async.waterfall([
+    (callback) => {
+      if (req.body.managerId) {
+        Employee.findOne({
           where: {
-            name: {
-              [Op.eq]: 'admin_employee_ids',
+            id: {
+              [Op.eq]: req.body.managerId,
             },
           },
-        }).then((configuration) => {
-          return configuration.updateAttributes({
-            value: '[' + JSON.parse(configuration.value).concat(newEmployeeId).toString() + ']',
-          }, {
-            transaction: t,
-          });
+        }).then((employee) => {
+          if (employee) {
+            callback(null);
+          } else {
+            callback('Could not find manager with specified ID.');
+          }
         });
       } else {
-        return Promise.resolve();
+        callback(null);
       }
-    });
-  }).then(() => {
-      async.waterfall([
-        (callback) => {
-          var notifier = new Notifier(req);
-          notifier.notifyNewEmployee(newEmployeeId, temporaryPassword)
-            .then((info) => {
-              callback(null);
-            })
-            .catch((err) => {
-              callback(null);
+    },
+    (callback) => {
+      sequelize.transaction(function (t) {
+        var employeeAttributes = {
+          id: newEmployeeId,
+          name: req.body.name,
+          email: req.body.email,
+          password: temporaryPassword,
+        };
+        if (req.body.managerId) {
+          _.extend(employeeAttributes, {
+            managerId: req.body.managerId,
+          });
+        }
+        return Employee.create(employeeAttributes, {
+          transaction: t,
+        }).then((employee) => {
+          if (req.body.isAdmin) {
+            return Configuration.findOne({
+              where: {
+                name: {
+                  [Op.eq]: 'admin_employee_ids',
+                },
+              },
+            }).then((configuration) => {
+              return configuration.updateAttributes({
+                value: '[' + JSON.parse(configuration.value).concat(newEmployeeId).toString() + ']',
+              }, {
+                transaction: t,
+              });
             });
-        },
-      ], (err) => {
-        req.flash('success', 'User successfully created.');
-
-        // success regardless of success of email
-        res.redirect('/users/' + newEmployeeId);
+          } else {
+            return Promise.resolve();
+          }
+        });
+      }).then(() => {
+        async.waterfall([
+          (callback) => {
+            var notifier = new Notifier(req);
+            notifier.notifyNewEmployee(newEmployeeId, temporaryPassword)
+              .then((info) => {
+                callback(null);
+              })
+              .catch((err) => {
+                callback(null);
+              });
+          },
+        ], (err) => {
+          callback(null, 'User successfully created.');
+        });
+      }).catch(() => {
+        callback('Could not create user.');
       });
-  }).catch(() => {
-    req.flash('error', 'Could not create user.');
+    },
+  ], (err, success) => {
+    if (err) {
+      req.flash('error', err);
 
-    res.redirect('/users/' + newEmployeeId);
+      res.redirect('/users/new');
+    } else {
+      req.flash('success', success);
+
+      res.redirect('/users/' + newEmployeeId);
+    }
   });
 });
 
