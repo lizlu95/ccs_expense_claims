@@ -9,7 +9,8 @@ const Op = require('sequelize').Op;
 
 const NEW_SETTING_VALUE_NAME_JS = 'newSettingsValue';
 const Admin_Arr_Name_MYSQL = 'admin_employee_ids';
-
+const Min_Pug = 0;
+const Max_Pug = 100;
 let selectedIDs;
 /* GET /system/configuration
    read data from database */
@@ -19,6 +20,8 @@ router.get('/', (req, res, next) => {
         (callback) => {
             res.locals.title = 'System Configuration';
             res.locals.newSettingValuePug = NEW_SETTING_VALUE_NAME_JS;
+            res.locals.minPug = Min_Pug;
+            res.locals.maxPug = Max_Pug;
             callback(null);
         },
         (callback) => {
