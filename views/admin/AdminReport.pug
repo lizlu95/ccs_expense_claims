@@ -18,7 +18,8 @@ mixin reportsTable(reportType)
                         form(method='get', action=report.report_download)
                             button.btn.btn-info.btn-sm(type = submit) Download
                     td
-                        form(method='post', action=report.report_download + "/delete")
+                        form(method='post', action=report.report_download + "")
+                            input(type='hidden' name='_method' value='DELETE')
                             button.btn.btn-danger.btn-sm(type = submit) Delete
 
 

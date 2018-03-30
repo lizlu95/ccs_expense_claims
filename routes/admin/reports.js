@@ -29,32 +29,11 @@ router.get('', function (req, res, next) {
         case Report.TYPE.NAV:
         case Report.TYPE.T24:
         case Report.TYPE.PAYROLL:
-            return handleGetNonStatReport(req, res, next);
         default:
-            return handleGetReport(req, res, next);
+            return handleGetNonStatReport(req, res, next);
     }
 
 });
-
-function handleGetReport(req, res, next){
-    res.locals.title = 'Reports';
-    res.locals.STAT = Report.TYPE.STATS;
-    res.locals.NAV = Report.TYPE.NAV;
-
-    Report.findAll().then((reports) => {
-        var simplifiedReports = _.map(reports, (report) => {
-            var rep = {};
-            rep['id'] = report.id;
-            rep['type'] = report.type;
-            rep['report_download'] = '/reports/' + report.id;
-
-            return rep;
-        });
-        res.locals.reports = simplifiedReports;
-
-        res.render('admin/reportIndex');
-    });
-}
 
 function handleGetStatistics(req, res, next){
     res.locals.title = 'Statistics Report';
@@ -356,6 +335,7 @@ function generateT24Report(req, res, next){
     var endDate = req.body.report_end_date;
     ExpenseClaim.findAll({
         where: {
+            status: ExpenseClaim.STATUS.APPROVED,
             created_at: {[Op.gte]: startDate, [Op.lte]: moment(endDate).endOf("day")},
             bankNumber: {[Op.regexp]: '^[0-9]+$'}
         }, include: [{
@@ -382,6 +362,7 @@ function generateNAVReport(req, res, next){
     var endDate = req.body.report_end_date;
     ExpenseClaim.findAll({
         where: {
+            status: ExpenseClaim.STATUS.APPROVED,
             created_at: {[Op.gte]: startDate, [Op.lte]: moment(endDate).endOf("day")}
         }, include: [{
             model: ExpenseClaimItem,
@@ -483,35 +464,37 @@ router.get('/:id', function (req, res, next) {
     })
 });
 
-router.post('/:id/delete', function(req, res, next) {
-    deleteReport(req.params.id).then(()=> {
-        // TODO redirects before report is destroyed
-        // res.redirect('/reports?report_type=' + Report.TYPE.NAV);
-        res.redirect('/reports?report_type=nav');
-    });
-});
-
 // DELETE /reports/:id
 router.delete('/:id', function(req, res, next){
-    deleteReport(req.params.id);
-});
-
-function deleteReport(id){
-    return Report.findOne({
-        where: {id: {[Op.eq]: id}}
+    Report.findOne({
+        where: {id: {[Op.eq]: req.params.id}}
     }).then((report) => {
+        if(!report){
+            req.flash('error', 'No relevant claims in date range!');
+            return res.redirect('/reports?report_type=nav');
+        } else if(!report.key){
+            req.flash('error', 'Report key missing, failed to delete!');
+            return res.redirect('/reports?report_type=nav');
+        }
+
         let params = {};
         params.Bucket = s3.config.params.Bucket;
         params.Key = report.key;
-        return s3.deleteObject(params, function(err, data){
+        s3.deleteObject(params, function(err, data){
             if(err){
                 console.log("failed to delete aws s3 report object!");
                 console.log(err);
+                req.flash('error', 'Failed to delete!');
+                return res.redirect('/reports?report_type=nav');
             } else {
-                return report.destroy();
+                report.destroy().then(() => {
+                    req.flash('error', 'Report deleted!');
+                    return res.redirect('/reports?report_type=nav');
+                });
             }
         });
     });
-}
+});
+
 
 module.exports = router;
