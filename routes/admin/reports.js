@@ -1,5 +1,7 @@
 const moment = require('moment');
 const json2csv = require('json2csv').parse;
+var dateFormat = require('dateformat');
+
 const async = require('async');
 const express = require('express');
 const router = express.Router();
@@ -327,7 +329,52 @@ function generateStatsReport(req, res, next){
 }
 
 function generatePayrollReport(req, res, next){
+    let startDate = req.body.report_start_date;
+    let endDate = req.body.report_end_date;
+    ExpenseClaim.findAll({
+        where: {
+            status: ExpenseClaim.STATUS.APPROVED,
+            created_at: {[Op.gte]: startDate, [Op.lte]: moment(endDate).endOf("day")},
+            bankNumber: {[Op.regexp]: '^([^0-9]*)$'}
+        }, include: [{
+            model: ExpenseClaimItem,
+        }, {
+            model: EmployeeExpenseClaim,
+            where: {
+                isActive: {[Op.eq]: 1},
+                isOwner: {[Op.eq]: 1}
+            }, include : [{
+                model: Employee
+            }]
+        }]
+    }).then((expenseClaims) => {
+        if(expenseClaims.length === 0){
+            req.flash('error', 'No relevant claims in date range!');
+            return res.redirect('/reports?report_type=nav');
+        }
 
+        let rows = _.map(expenseClaims, (expenseClaim) => {
+            let amount = _.reduce(expenseClaim.ExpenseClaimItems, (memo, expenseClaimItem) => {
+                return memo + expenseClaimItem.total;
+            }, 0);
+            let row = {
+                Name: expenseClaim.EmployeeExpenseClaims[0].Employee.name,
+                employeeId: expenseClaim.EmployeeExpenseClaims[0].Employee.id,
+                Amount: amount,
+            };
+            return row;
+        });
+
+        let opts = {};
+        opts['fields'] = rows[0].keys;
+        opts['delimiter'] = "|";
+        opts['quote'] = "";
+
+        let csv = json2csv(rows, opts);
+
+        saveReport(req.user.id, Report.TYPE.PAYROLL, csv);
+        return res.redirect('/reports?report_type=nav');
+    });
 }
 
 function generateT24Report(req, res, next){
@@ -395,13 +442,13 @@ function generateCSVReport(expenseClaims, userId, reportType){
         var row = {
             bank_number: expenseClaim.bankNumber,
             currency_type: "CAD",
-            date: expenseClaim.createdAt,
-            status: expenseClaim.status,
+            date: dateFormat(expenseClaim.createdAt, "yyyymmdd"),
+            status: "EXP CLAIM REIMB",
             dollar_amount: "$" + amount,
             _51: "51",
             CR: "CR",
             "-": "-",
-            status2: expenseClaim.status,
+            status2: "EXP CLAIM REIMB",
             empty1:"",
             empty2:"",
             empty3:"",
@@ -419,6 +466,10 @@ function generateCSVReport(expenseClaims, userId, reportType){
 
     var csv = json2csv(rows, opts);
 
+    return saveReport(userId, reportType, csv);
+}
+
+function saveReport(userId, reportType, csv){
     return sequelize.transaction(function(t){
         return Report.create({
             employeeId: userId,
@@ -488,7 +539,7 @@ router.delete('/:id', function(req, res, next){
                 return res.redirect('/reports?report_type=nav');
             } else {
                 report.destroy().then(() => {
-                    req.flash('error', 'Report deleted!');
+                    req.flash('success', 'Report deleted!');
                     return res.redirect('/reports?report_type=nav');
                 });
             }

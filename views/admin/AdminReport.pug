@@ -25,7 +25,7 @@ mixin reportsTable(reportType)
 
 block inner-content
     h1.text-center.mb-4 Reports
-        h3.text-center.mb-3 Filters
+        h3.text-center.mb-3 Report Type
         form(method='post', action='/reports')
             .container
                 .row.mb-3
@@ -44,7 +44,6 @@ block inner-content
                                 name='report_type'
                                 type='radio'
                                 value='payroll'
-                                disabled
                             )
                             label.custom-control-label(for='payrollreport') Payroll
                     .col-4
