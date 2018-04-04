@@ -38,47 +38,78 @@ router.get('/:id/signature', function (req, res, next) {
     });
   }
 });
-
+let selected;
 /* GET /users */
 router.get('', function (req, res, next) {
   res.locals.title = 'Users';
+  if(typeof selected === 'undefined') {
+      Employee.findAll().then((employees) => {
+          selected = [];
+          for (let x of employees) {
+            selected.push(x.id);
+          }
+          Configuration.findOne({
+              where: {
+                  name: {
+                      [Op.eq]: 'admin_employee_ids',
+                  },
+              },
+          }).then((configuration) => {
+              if (configuration) {
+                  var adminIds = JSON.parse(configuration.value);
+                  _.each(employees, (employee) => {
+                      employee.isAdmin = _.contains(adminIds, employee.id);
+                  });
 
-  var conditions = {};
-  if (req.query.filter) {
-    conditions = {
-      where: {
-        id: {
-          [Op.in]: JSON.parse('[' + req.query.filter + ']'),
-        },
-      },
-    };
-  }
-  _.extend(conditions, {
-    include: [{
-      model: Employee,
-      as: 'manager',
-    }],
-  });
-  Employee.findAll(conditions).then((employees) => {
-    Configuration.findOne({
-      where: {
-        name: {
-          [Op.eq]: 'admin_employee_ids',
-        },
-      },
-    }).then((configuration) => {
-      if (configuration) {
-        var adminIds = JSON.parse(configuration.value);
-        _.each(employees, (employee) => {
-          employee.isAdmin = _.contains(adminIds, employee.id);
-        });
+                  res.locals.users = employees;
+              }
 
-        res.locals.users = employees;
+              res.render('users/list');
+          });
+      });
+  } else {
+      var conditions = {};
+      if (req.query.filter) {
+          try {
+              selected = JSON.parse('[' + req.query.filter + ']');
+          } catch (error) {
+          } finally {
+              conditions = {
+                  where: {
+                      id: {
+                          [Op.in]: selected,
+                      },
+                  },
+              };
+          }
       }
+      _.extend(conditions, {
+          include: [{
+              model: Employee,
+              as: 'manager',
+          }],
+      });
+      Employee.findAll(conditions).then((employees) => {
+          Configuration.findOne({
+              where: {
+                  name: {
+                      [Op.eq]: 'admin_employee_ids',
+                  },
+              },
+          }).then((configuration) => {
+              if (configuration) {
+                  var adminIds = JSON.parse(configuration.value);
+                  _.each(employees, (employee) => {
+                      employee.isAdmin = _.contains(adminIds, employee.id);
+                  });
 
-      res.render('users/list');
-    });
-  });
+                  res.locals.users = employees;
+              }
+
+              res.render('users/list');
+          });
+      });
+  }
 });
 
 /* GET /users/new */

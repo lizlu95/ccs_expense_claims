@@ -18,13 +18,14 @@ mixin reportsTable(reportType)
                         form(method='get', action=report.report_download)
                             button.btn.btn-info.btn-sm(type = submit) Download
                     td
-                        form(method='post', action=report.report_download + "/delete")
+                        form(method='post', action=report.report_download + "")
+                            input(type='hidden' name='_method' value='DELETE')
                             button.btn.btn-danger.btn-sm(type = submit) Delete
 
 
 block inner-content
     h1.text-center.mb-4 Reports
-        h3.text-center.mb-3 Filters
+        h3.text-center.mb-3 Report Type
         form(method='post', action='/reports')
             .container
                 .row.mb-3
@@ -43,7 +44,6 @@ block inner-content
                                 name='report_type'
                                 type='radio'
                                 value='payroll'
-                                disabled
                             )
                             label.custom-control-label(for='payrollreport') Payroll
                     .col-4
