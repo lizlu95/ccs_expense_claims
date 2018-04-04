@@ -8,31 +8,63 @@ const ApprovalLimit = database.ApprovalLimit;
 const Employee = database.Employee;
 const CostCentre = database.CostCentre;
 
+let selected;
 /* GET /limits */
 router.get('', function (req, res, next) {
-  res.locals.title = 'Limits';
+    res.locals.title = 'Limits';
+    if(typeof selected === 'undefined') {
+        Employee.findAll().then((employees) => {
+            selected = [];
+            for (let x of employees) {
+                selected.push(x.id);
+            }
+            conditions = {
+                where: {
+                    employeeId: {
+                        [Op.in]: selected,
+                    },
+                },
+            };
+            _.extend(conditions, {
+                include: [
+                    Employee,
+                    CostCentre,
+                ],
+            });
+            ApprovalLimit.findAll(conditions).then((approvalLimits) => {
+                res.locals.approvalLimits = approvalLimits;
 
-  var conditions = {};
-  if (req.query.filter) {
-    conditions = {
-      where: {
-        employeeId: {
-          [Op.in]: JSON.parse('[' + req.query.filter + ']'),
-        },
-      },
-    };
-  }
-  _.extend(conditions, {
-    include: [
-      Employee,
-      CostCentre,
-    ],
-  });
-  ApprovalLimit.findAll(conditions).then((approvalLimits) => {
-    res.locals.approvalLimits = approvalLimits;
+                res.render('limits/list');
+            });
+        });
+    } else {
+        var conditions = {};
+        if (req.query.filter) {
+            try {
+                selected = JSON.parse('[' + req.query.filter + ']');
+            } catch (error) {
+            } finally {
+                conditions = {
+                    where: {
+                        employeeId: {
+                            [Op.in]: selected,
+                        },
+                    },
+                };
+            }
+        }
+        _.extend(conditions, {
+            include: [
+                Employee,
+                CostCentre,
+            ],
+        });
+        ApprovalLimit.findAll(conditions).then((approvalLimits) => {
+            res.locals.approvalLimits = approvalLimits;
 
-    res.render('limits/list');
-  });
+            res.render('limits/list');
+        });
+    }
 });
 
 /* GET /limits/new */
