@@ -477,7 +477,6 @@ router.post('/save', function (req, res, next) {
 // TODO PUT
 router.post('/:id', function (req, res, next) {
   var expenseClaimId = req.params.id;
-  // TODO make it a transaction then notify
   var status = req.body.status;
 
   res.locals.title = 'Claim ' + expenseClaimId;
