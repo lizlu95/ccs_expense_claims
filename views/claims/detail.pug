@@ -124,7 +124,7 @@ block inner-content
                     +expenseClaimLog(employeeExpenseClaim)
                     td= employeeExpenseClaim.createdAt
 
-  if (isActiveManager && status == 'pending')
+  if (isActiveManager && expenseClaim.status == 'pending')
     .row.mb-4
       form(method='post', action='/claims/' + expenseClaim.id)
         +updateButtons(employee)
